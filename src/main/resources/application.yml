@@ -1,0 +1,22 @@
+server:
+  port: 8080
+
+# Database Properties
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/Test
+    username: AntoninaTest
+    password: AntoninaTest
+
+  # Hibernate Properties
+  # spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+    # Hibernate ddl auto (create, create-drop, validate, update)
+    hibernate:
+      ddl-auto: update
