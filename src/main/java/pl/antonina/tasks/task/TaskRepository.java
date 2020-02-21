@@ -8,6 +8,6 @@ import java.util.List;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    List<Task> findByParentIdOrderByNameAsc(Long parentId);
-    List<Task> findByParentIdAndNameContains(Long parentId, String name);
+    List<Task> findByParentIdOrderByNameAsc(long parentId);
+    List<Task> findByParentIdAndNameContains(long parentId, String name);
 }

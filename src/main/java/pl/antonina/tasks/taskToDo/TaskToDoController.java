@@ -8,19 +8,19 @@ import java.util.List;
 @RequestMapping("api/parents/{parentId}/children/{childId}/tasksToDo")
 public class TaskToDoController {
 
-    private TaskToDoService taskToDoService;
+    private final TaskToDoService taskToDoService;
 
     public TaskToDoController(TaskToDoService taskToDoService) {
         this.taskToDoService = taskToDoService;
     }
 
     @GetMapping("/{id}")
-    public TaskToDo getTaskToDo(@PathVariable Long parentId, @PathVariable Long childId, @PathVariable Long id){
+    public TaskToDoView getTaskToDo(@PathVariable Long parentId, @PathVariable Long childId, @PathVariable Long id){
         return taskToDoService.getTaskToDo(id);
     }
 
     @GetMapping
-    public List<TaskToDo> getTasksToDoByChildByDoneByApproved(@PathVariable Long parentId, @PathVariable Long childId,
+    public List<TaskToDoView> getTasksToDoByChildByDoneByApproved(@PathVariable Long parentId, @PathVariable Long childId,
                                                               @RequestParam boolean done, @RequestParam boolean approved) {
         return taskToDoService.getTasksToDoByChildByDoneByApproved(childId, done, approved);
     }

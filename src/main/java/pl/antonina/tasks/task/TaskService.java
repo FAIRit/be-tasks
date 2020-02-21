@@ -11,56 +11,63 @@ import java.util.stream.Collectors;
 @Service
 public class TaskService {
 
-    private TaskRepository taskRepository;
-    private ParentService parentService;
+    private final TaskRepository taskRepository;
+    private final ParentRepository parentRepository;
+    private final TaskMapper taskMapper;
 
-    public TaskService(TaskRepository taskRepository, ParentRepository parentRepository, ParentService parentService) {
+    public TaskService(TaskRepository taskRepository,
+                       ParentRepository parentRepository,
+                       TaskMapper taskMapper) {
         this.taskRepository = taskRepository;
-        this.parentService = parentService;
+        this.parentRepository = parentRepository;
+        this.taskMapper = taskMapper;
     }
 
-    public List<TaskToGet> getByParent(Long parentId) {
+    List<TaskView> getByParent(Long parentId) {
         return taskRepository.findByParentIdOrderByNameAsc(parentId).stream()
-                .map(this::mapTaskToGet)
+                .map(taskMapper::mapTaskView)
                 .collect(Collectors.toList());
     }
 
-    public List<TaskToGet> getByParentAndName(Long parentId, String name) {
+    List<TaskView> getByParentAndName(long parentId, String name) {
         return taskRepository.findByParentIdAndNameContains(parentId, name).stream()
-                .map(this::mapTaskToGet)
+                .map(taskMapper::mapTaskView)
                 .collect(Collectors.toList());
     }
 
-    public TaskToGet getTask(Long id) {
-        return mapTaskToGet(taskRepository.findById(id).orElseThrow());
+    TaskView getTask(long id) {
+        Task task = taskRepository.findById(id).orElseThrow();
+        return taskMapper.mapTaskView(task);
     }
 
-    public void addTask(Long parentId, TaskData taskData) {
-        Parent parent = parentService.getParent(parentId);
+    void addTask(long parentId, TaskData taskData) {
+        Parent parent = parentRepository.findById(parentId).orElseThrow();
         Task task = mapTask(taskData, new Task());
         task.setParent(parent);
         taskRepository.save(task);
     }
 
-    public void updateTask(Long parentId, Long id, TaskData taskData) {
-        Parent parent = parentService.getParent(parentId);
+    void updateTask(long parentId, long id, TaskData taskData) {
         Task task = taskRepository.findById(id).orElseThrow();
-        taskRepository.save(mapTask(taskData, task));
+        checkParentId(parentId, task);
+        mapTask(taskData, task);
+        taskRepository.save(task);
     }
 
-    public void deleteTask(Long id) {
-        taskRepository.deleteById(id);
+    private void checkParentId(long parentId, Task task) {
+        if (!task.getParent().getId().equals(parentId)) {
+            throw new IllegalArgumentException("Wrong parentId");
+        }
     }
 
-    public TaskToGet mapTaskToGet(Task task) {
-        TaskToGet taskToGet = new TaskToGet();
-        taskToGet.setName(task.getName());
-        taskToGet.setDescription(task.getDescription());
-        taskToGet.setPoints(task.getPoints());
-        return taskToGet;
+    void deleteTask(long parentId, long id) {
+        taskRepository.findById(id).ifPresent(task -> {
+            checkParentId(parentId, task);
+            taskRepository.delete(task);
+        });
     }
 
-    public Task mapTask(TaskData taskData, Task task){
+    private Task mapTask(TaskData taskData, Task task) {
         task.setName(taskData.getName());
         task.setDescription(taskData.getDescription());
         task.setPoints(taskData.getPoints());

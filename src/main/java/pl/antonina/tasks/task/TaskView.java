@@ -4,7 +4,7 @@ import lombok.Data;
 import pl.antonina.tasks.parent.Parent;
 
 @Data
-public class TaskToGet {
+public class TaskView {
     private String name;
     private String description;
     private Integer points;

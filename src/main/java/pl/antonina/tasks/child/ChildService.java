@@ -17,15 +17,15 @@ public class ChildService {
         this.parentRepository = parentRepository;
     }
 
-    public Child getChild(Long id) {
+    Child getChild(Long id) {
         return childRepository.findById(id).orElseThrow();
     }
 
-    public List<Child> getChildrenByParentId(Long parentId) {
+    List<Child> getChildrenByParentId(Long parentId) {
         return childRepository.findByParentId(parentId);
     }
 
-    public void addChild(Long parentId, ChildData childData) {
+    void addChild(Long parentId, ChildData childData) {
         Parent parent = parentRepository.findById(parentId).orElseThrow();
         Child child = new Child();
         child.setName(childData.getName());
@@ -36,7 +36,7 @@ public class ChildService {
         childRepository.save(child);
     }
 
-    public void updateChild(Long id, ChildData childData) {
+    void updateChild(Long id, ChildData childData) {
         Child child = getChild(id);
         child.setName(childData.getName());
         child.setGender(childData.getGender());
@@ -44,7 +44,7 @@ public class ChildService {
         childRepository.save(child);
     }
 
-    public void deleteChild(Long id) {
+    void deleteChild(Long id) {
         childRepository.deleteById(id);
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 @RequestMapping("/api/parents/{parentId}/children")
 public class ChildController {
 
-    private ChildService childService;
+    private final ChildService childService;
 
     public ChildController(ChildService childService) {
         this.childService = childService;
