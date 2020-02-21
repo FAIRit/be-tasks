@@ -4,7 +4,7 @@ server:
 # Database Properties
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/Test
+    url: jdbc:postgresql://localhost:5433/tasks
     username: AntoninaTest
     password: AntoninaTest
 

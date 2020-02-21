@@ -1,6 +1,7 @@
 package pl.antonina.tasks.parent;
 
 import lombok.Data;
+import pl.antonina.tasks.Gender;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,4 +16,5 @@ public class Parent {
     @GeneratedValue
     private Long id;
     private String name;
+    private Gender gender;
 }
