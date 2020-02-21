@@ -11,7 +11,7 @@ public class ParentService {
         this.parentRepository = parentRepository;
     }
 
-    Parent getParent(Long id) {
+    Parent getParent(long id) {
         return parentRepository.findById(id).orElseThrow();
     }
 
@@ -22,14 +22,14 @@ public class ParentService {
         parentRepository.save(parent);
     }
 
-    void updateParent(Long id, ParentData parentData) {
+    void updateParent(long id, ParentData parentData) {
         Parent parent = getParent(id);
         parent.setName(parentData.getName());
         parent.setGender(parentData.getGender());
         parentRepository.save(parent);
     }
 
-    void deleteParent(Long id) {
+    void deleteParent(long id) {
         parentRepository.deleteById(id);
     }
 }

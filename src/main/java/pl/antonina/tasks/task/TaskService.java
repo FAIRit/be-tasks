@@ -23,7 +23,7 @@ public class TaskService {
         this.taskMapper = taskMapper;
     }
 
-    List<TaskView> getByParent(Long parentId) {
+    List<TaskView> getByParent(long parentId) {
         return taskRepository.findByParentIdOrderByNameAsc(parentId).stream()
                 .map(taskMapper::mapTaskView)
                 .collect(Collectors.toList());

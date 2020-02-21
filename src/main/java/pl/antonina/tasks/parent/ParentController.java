@@ -13,7 +13,7 @@ public class ParentController {
     }
 
     @GetMapping("/{id}")
-    public Parent getParent(@PathVariable Long id) {
+    public Parent getParent(@PathVariable long id) {
         return parentService.getParent(id);
     }
 
@@ -23,12 +23,12 @@ public class ParentController {
     }
 
     @PutMapping("/{id}")
-    public void updateParent(@PathVariable Long id, @RequestBody ParentData parentData) {
+    public void updateParent(@PathVariable long id, @RequestBody ParentData parentData) {
         parentService.updateParent(id, parentData);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteParent(@PathVariable Long id){
+    public void deleteParent(@PathVariable long id){
         parentService.deleteParent(id);
     }
 }

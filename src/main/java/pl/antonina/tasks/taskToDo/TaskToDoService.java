@@ -27,19 +27,19 @@ public class TaskToDoService {
         this.taskToDoMapper = taskToDoMapper;
     }
 
-    TaskToDoView getTaskToDo(Long id) {
+    TaskToDoView getTaskToDo(long id) {
         TaskToDo taskToDo = taskToDoRepository.findById(id).orElseThrow();
         return taskToDoMapper.mapTaskToDoView(taskToDo);
     }
 
-    List<TaskToDoView> getTasksToDoByChildByDoneByApproved(Long childId, boolean done, boolean approved) {
+    List<TaskToDoView> getTasksToDoByChildByDoneByApproved(long childId, boolean done, boolean approved) {
         List<TaskToDo> taskToDoList = taskToDoRepository.findByChildIdAndDoneAndApprovedOrderByExpectedDateDesc(childId, done, approved);
         return taskToDoList.stream()
                 .map(taskToDoMapper::mapTaskToDoView)
                 .collect(Collectors.toList());
     }
 
-    void addTaskToDo(Long childId, Long taskId, TaskToDoData taskToDoData) {
+    void addTaskToDo(long childId, long taskId, TaskToDoData taskToDoData) {
         Child child = childRepository.findById(childId).orElseThrow();
         Task task = taskRepository.findById(taskId).orElseThrow();
         TaskToDo taskToDo = mapTaskToDo(taskToDoData, new TaskToDo());
@@ -48,13 +48,13 @@ public class TaskToDoService {
         taskToDoRepository.save(taskToDo);
     }
 
-    void updateTaskToDo(Long id, TaskToDoData taskToDoData) {
+    void updateTaskToDo(long id, TaskToDoData taskToDoData) {
         TaskToDo taskToDo = taskToDoRepository.findById(id).orElseThrow();
         mapTaskToDo(taskToDoData, taskToDo);
         taskToDoRepository.save(taskToDo);
     }
 
-    void deleteTaskToDo(Long id) {
+    void deleteTaskToDo(long id) {
         taskToDoRepository.deleteById(id);
     }
 
