@@ -15,34 +15,31 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<Task> getByParentId(@PathVariable Long parentId){
-        return taskService.getByParent(parentId);
+    public List<TaskToGet> getByParentIdAndByName(@PathVariable Long parentId, @RequestParam(required = false) String name) {
+        if (name != null) {
+            return taskService.getByParentAndName(parentId, name);
+        } else {
+            return taskService.getByParent(parentId);
+        }
     }
-
-    /*
-    @GetMapping
-    public List<Task> getByParentIdByName(@PathVariable Long parentId, @RequestParam String name){
-        return taskService.getByParentByName(parentId, name);
-    }
-     */
 
     @GetMapping("/{id}")
-    public Task getTask(@PathVariable Long parentId, @PathVariable Long id){
+    public TaskToGet getTask(@PathVariable Long parentId, @PathVariable Long id) {
         return taskService.getTask(id);
     }
 
     @PostMapping
-    public void addTask(@PathVariable Long parentId, @RequestBody TaskData taskData){
+    public void addTask(@PathVariable Long parentId, @RequestBody TaskData taskData) {
         taskService.addTask(parentId, taskData);
     }
 
     @PutMapping("/{id}")
-    public void updateTask(@PathVariable Long parentId,@PathVariable Long id, @RequestBody TaskData taskData){
+    public void updateTask(@PathVariable Long parentId, @PathVariable Long id, @RequestBody TaskData taskData) {
         taskService.updateTask(parentId, id, taskData);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable Long parentId, @PathVariable Long id){
+    public void deleteTask(@PathVariable Long parentId, @PathVariable Long id) {
         taskService.deleteTask(id);
     }
 }

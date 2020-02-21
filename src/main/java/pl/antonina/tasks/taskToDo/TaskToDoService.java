@@ -2,27 +2,23 @@ package pl.antonina.tasks.taskToDo;
 
 import org.springframework.stereotype.Service;
 import pl.antonina.tasks.child.Child;
-import pl.antonina.tasks.child.ChildService;
-import pl.antonina.tasks.parent.Parent;
-import pl.antonina.tasks.parent.ParentService;
+import pl.antonina.tasks.child.ChildRepository;
 import pl.antonina.tasks.task.Task;
-import pl.antonina.tasks.task.TaskService;
+import pl.antonina.tasks.task.TaskRepository;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 @Service
 public class TaskToDoService {
 
     private TaskToDoRepository taskToDoRepository;
-    private TaskService taskService;
-    private ChildService childService;
+    private TaskRepository taskRepository;
+    private ChildRepository childRepository;
 
-    public TaskToDoService(TaskToDoRepository taskToDoRepository, TaskService taskService, ChildService childService) {
+    public TaskToDoService(TaskToDoRepository taskToDoRepository, TaskRepository taskRepository, ChildRepository childRepository) {
         this.taskToDoRepository = taskToDoRepository;
-        this.taskService = taskService;
-        this.childService = childService;
+        this.taskRepository = taskRepository;
+        this.childRepository = childRepository;
     }
 
     public TaskToDo getTaskToDo(Long id) {
@@ -34,8 +30,8 @@ public class TaskToDoService {
     }
 
     public void addTaskToDo(Long childId, Long taskId, TaskToDoData taskToDoData) {
-        Child child = childService.getChild(childId);
-        Task task = taskService.getTask(taskId);
+        Child child = childRepository.findById(childId).orElseThrow();
+        Task task = taskRepository.findById(taskId).orElseThrow();
         TaskToDo taskToDo = new TaskToDo();
         taskToDo.setTask(task);
         taskToDo.setChild(child);
