@@ -18,10 +18,6 @@ public class TaskService {
         this.parentService = parentService;
     }
 
-    public List<Task> getAll() {
-        return taskRepository.findAll();
-    }
-
     public List<Task> getByParent(Long parentId) {
         return taskRepository.findByParentIdOrderByNameAsc(parentId);
     }
@@ -54,6 +50,6 @@ public class TaskService {
     }
 
     public void deleteTask(Long id) {
-        taskRepository.delete(getTask(id));
+        taskRepository.deleteById(id);
     }
 }

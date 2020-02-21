@@ -45,6 +45,6 @@ public class ChildService {
     }
 
     public void deleteChild(Long id) {
-        childRepository.delete(getChild(id));
+        childRepository.deleteById(id);
     }
 }

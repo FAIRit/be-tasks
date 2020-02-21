@@ -1,5 +1,6 @@
 package pl.antonina.tasks.taskToDo;
 
+import lombok.Data;
 import pl.antonina.tasks.child.Child;
 import pl.antonina.tasks.task.Task;
 
@@ -8,6 +9,7 @@ import java.time.Instant;
 
 @Entity
 @Table(name = "tasksToDo")
+@Data
 public class TaskToDo {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tasksToDo_gen")

@@ -1,2 +1,2 @@
-kid-sTasksApp REST API
+tasksApp REST API
 http://localhost:8080/swagger-ui.html#/
