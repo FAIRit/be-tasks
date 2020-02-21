@@ -13,7 +13,8 @@ import java.time.Instant;
 @Data
 public class Child {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "children_gen")
+    @SequenceGenerator(name = "children_gen", sequenceName = "children_sequence", allocationSize = 1)
     private Long id;
     @ManyToOne
     private Parent parent;

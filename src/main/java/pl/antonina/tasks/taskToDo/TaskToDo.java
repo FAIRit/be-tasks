@@ -10,7 +10,8 @@ import java.time.Instant;
 @Table(name = "tasksToDo")
 public class TaskToDo {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tasksToDo_gen")
+    @SequenceGenerator(name = "tasksToDo_gen", sequenceName = "tasksToDo_sequence", allocationSize = 1)
     private Long id;
     @ManyToOne
     private Child child;

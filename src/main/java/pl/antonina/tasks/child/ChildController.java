@@ -20,7 +20,7 @@ public class ChildController {
     }
 
     @GetMapping("/{id}")
-    public Child getChild(@PathVariable Long id){
+    public Child getChild(@PathVariable Long parentId, @PathVariable Long id){
         return childService.getChild(id);
     }
 
@@ -30,12 +30,12 @@ public class ChildController {
     }
 
     @PutMapping("/{id}")
-    public void updateChile(@PathVariable Long id, @RequestBody ChildData childData){
+    public void updateChile(@PathVariable Long parentId, @PathVariable Long id, @RequestBody ChildData childData){
         childService.updateChild(id, childData);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteChild(@PathVariable Long id){
+    public void deleteChild(@PathVariable Long parentId, @PathVariable Long id){
         childService.deleteChild(id);
     }
 }

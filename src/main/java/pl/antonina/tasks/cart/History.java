@@ -14,7 +14,8 @@ import java.time.Instant;
 @Setter
 public class History {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "history_gen")
+    @SequenceGenerator(name = "history_gen", sequenceName = "history_sequence", allocationSize = 1)
     private Long id;
     @ManyToOne
     private Child child;

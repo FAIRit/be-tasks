@@ -10,7 +10,8 @@ import javax.persistence.*;
 @Data
 public class Task {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tasks_gen")
+    @SequenceGenerator(name = "tasks_gen", sequenceName = "tasks_sequence", allocationSize = 1)
     private Long id;
     @ManyToOne
     private Parent parent;
