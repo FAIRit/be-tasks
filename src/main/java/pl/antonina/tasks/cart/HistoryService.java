@@ -27,22 +27,22 @@ public class HistoryService {
                 .collect(Collectors.toList());
     }
 
-     void addHistory(long childId, HistoryData historyData) {
+    void addHistory(long childId, HistoryData historyData) {
         Child child = childRepository.findById(childId).orElseThrow();
-        History history = mapHistory(historyData, new History());
+        History history = new History();
+        mapHistory(historyData, history);
         history.setChild(child);
         historyRepository.save(history);
     }
 
-     void deleteHistory(long id) {
+    void deleteHistory(long id) {
         historyRepository.deleteById(id);
     }
 
-    private History mapHistory(HistoryData historyData, History history){
+    private void mapHistory(HistoryData historyData, History history) {
         history.setMessage(historyData.getMessage());
         history.setModificationDate(historyData.getModificationDate());
         history.setQuantity(historyData.getQuantity());
-        return history;
     }
 }
 

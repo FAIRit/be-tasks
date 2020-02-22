@@ -6,30 +6,36 @@ import org.springframework.stereotype.Service;
 public class ParentService {
 
     private final ParentRepository parentRepository;
+    private final ParentMapper parentMapper;
 
-    public ParentService(ParentRepository parentRepository) {
+    public ParentService(ParentRepository parentRepository, ParentMapper parentMapper) {
         this.parentRepository = parentRepository;
+        this.parentMapper = parentMapper;
     }
 
-    Parent getParent(long id) {
-        return parentRepository.findById(id).orElseThrow();
+    ParentView getParent(long id) {
+        Parent parent = parentRepository.findById(id).orElseThrow();
+        return parentMapper.mapParentView(parent);
     }
 
     void addParent(ParentData parentData) {
         Parent parent = new Parent();
-        parent.setName(parentData.getName());
-        parent.setGender(parentData.getGender());
+        mapParent(parentData, parent);
         parentRepository.save(parent);
     }
 
     void updateParent(long id, ParentData parentData) {
-        Parent parent = getParent(id);
-        parent.setName(parentData.getName());
-        parent.setGender(parentData.getGender());
+        Parent parent = parentRepository.findById(id).orElseThrow();
+        mapParent(parentData, parent);
         parentRepository.save(parent);
     }
 
     void deleteParent(long id) {
         parentRepository.deleteById(id);
+    }
+
+    private void mapParent(ParentData parentData, Parent parent){
+        parent.setName(parentData.getName());
+        parent.setGender(parentData.getGender());
     }
 }

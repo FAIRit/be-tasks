@@ -13,7 +13,7 @@ public class ParentController {
     }
 
     @GetMapping("/{id}")
-    public Parent getParent(@PathVariable long id) {
+    public ParentView getParent(@PathVariable long id) {
         return parentService.getParent(id);
     }
 

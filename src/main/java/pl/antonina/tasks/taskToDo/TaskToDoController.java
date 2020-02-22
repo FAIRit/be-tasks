@@ -21,7 +21,7 @@ public class TaskToDoController {
 
     @GetMapping
     public List<TaskToDoView> getTasksToDoByChildByDoneByApproved(@RequestParam long childId, @RequestParam boolean done, @RequestParam boolean approved) {
-        return taskToDoService.getTasksToDoByChildByDoneByApproved(childId, done, approved);
+        return taskToDoService.getTasksToDo(childId, done, approved);
     }
 
     @PostMapping

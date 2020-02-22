@@ -32,7 +32,7 @@ public class TaskToDoService {
         return taskToDoMapper.mapTaskToDoView(taskToDo);
     }
 
-    List<TaskToDoView> getTasksToDoByChildByDoneByApproved(long childId, boolean done, boolean approved) {
+    List<TaskToDoView> getTasksToDo(long childId, boolean done, boolean approved) {
         List<TaskToDo> taskToDoList = taskToDoRepository.findByChildIdAndDoneAndApprovedOrderByExpectedDateDesc(childId, done, approved);
         return taskToDoList.stream()
                 .map(taskToDoMapper::mapTaskToDoView)
@@ -42,7 +42,8 @@ public class TaskToDoService {
     void addTaskToDo(long childId, long taskId, TaskToDoData taskToDoData) {
         Child child = childRepository.findById(childId).orElseThrow();
         Task task = taskRepository.findById(taskId).orElseThrow();
-        TaskToDo taskToDo = mapTaskToDo(taskToDoData, new TaskToDo());
+        TaskToDo taskToDo = new TaskToDo();
+        mapTaskToDo(taskToDoData, taskToDo);
         taskToDo.setTask(task);
         taskToDo.setChild(child);
         taskToDoRepository.save(taskToDo);
@@ -58,12 +59,11 @@ public class TaskToDoService {
         taskToDoRepository.deleteById(id);
     }
 
-    private TaskToDo mapTaskToDo(TaskToDoData taskToDoData, TaskToDo taskToDo) {
+    private void mapTaskToDo(TaskToDoData taskToDoData, TaskToDo taskToDo) {
         taskToDo.setStartDate(taskToDoData.getStartDate());
         taskToDo.setExpectedDate(taskToDoData.getExpectedDate());
         taskToDo.setFinishDate(taskToDoData.getFinishDate());
         taskToDo.setDone(taskToDoData.isDone());
         taskToDo.setApproved(taskToDoData.isApproved());
-        return taskToDo;
     }
 }

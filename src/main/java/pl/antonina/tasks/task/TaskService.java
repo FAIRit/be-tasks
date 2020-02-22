@@ -42,7 +42,8 @@ public class TaskService {
 
     void addTask(long parentId, TaskData taskData) {
         Parent parent = parentRepository.findById(parentId).orElseThrow();
-        Task task = mapTask(taskData, new Task());
+        Task task = new Task();
+        mapTask(taskData, task);
         task.setParent(parent);
         taskRepository.save(task);
     }
@@ -67,10 +68,9 @@ public class TaskService {
         });
     }
 
-    private Task mapTask(TaskData taskData, Task task) {
+    private void mapTask(TaskData taskData, Task task) {
         task.setName(taskData.getName());
         task.setDescription(taskData.getDescription());
         task.setPoints(taskData.getPoints());
-        return task;
     }
 }

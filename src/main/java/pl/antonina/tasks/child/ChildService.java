@@ -34,14 +34,16 @@ public class ChildService {
 
     void addChild(long parentId, ChildData childData) {
         Parent parent = parentRepository.findById(parentId).orElseThrow();
-        Child child = mapChild(childData, new Child());
+        Child child = new Child();
+        mapChild(childData, child);
         child.setParent(parent);
         child.setPoints(0);
         childRepository.save(child);
     }
 
     void updateChild(long id, ChildData childData) {
-        Child child = mapChild(childData, childRepository.findById(id).orElseThrow());
+        Child child = childRepository.findById(id).orElseThrow();
+        mapChild(childData, child);
         childRepository.save(child);
     }
 
@@ -49,10 +51,9 @@ public class ChildService {
         childRepository.deleteById(id);
     }
 
-    private Child mapChild(ChildData childData, Child child){
+    private void mapChild(ChildData childData, Child child) {
         child.setName(childData.getName());
         child.setGender(childData.getGender());
         child.setBirthDate(childData.getBirthDate());
-        return child;
     }
 }
