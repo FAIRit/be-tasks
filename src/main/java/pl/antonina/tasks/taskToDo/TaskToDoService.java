@@ -1,6 +1,7 @@
 package pl.antonina.tasks.taskToDo;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.antonina.tasks.cart.History;
 import pl.antonina.tasks.cart.HistoryRepository;
 import pl.antonina.tasks.child.Child;
@@ -74,6 +75,7 @@ public class TaskToDoService {
         taskToDo.setDone(true);
     }
 
+    @Transactional
     void setApproved(long id) {
         TaskToDo taskToDo = taskToDoRepository.findById(id).orElseThrow();
         taskToDo.setApproved(true);
