@@ -15,12 +15,12 @@ public class ChildController {
     }
 
     @GetMapping
-    public List<Child> getChildByParentId(@PathVariable long parentId){
+    public List<ChildView> getChildByParentId(@PathVariable long parentId){
         return childService.getChildrenByParentId(parentId);
     }
 
     @GetMapping("/{id}")
-    public Child getChild(@PathVariable long parentId, @PathVariable long id){
+    public ChildView getChild(@PathVariable long parentId, @PathVariable long id){
         return childService.getChild(id);
     }
 
