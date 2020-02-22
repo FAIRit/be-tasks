@@ -1,7 +1,7 @@
 package pl.antonina.tasks.parent;
 
 import lombok.Data;
-import pl.antonina.tasks.Gender;
+import pl.antonina.tasks.gender.Gender;
 
 @Data
 public class ParentData {

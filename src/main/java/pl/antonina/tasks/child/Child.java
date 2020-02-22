@@ -2,7 +2,7 @@ package pl.antonina.tasks.child;
 
 
 import lombok.Data;
-import pl.antonina.tasks.Gender;
+import pl.antonina.tasks.gender.Gender;
 import pl.antonina.tasks.parent.Parent;
 
 import javax.persistence.*;

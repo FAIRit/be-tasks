@@ -1,7 +1,7 @@
 package pl.antonina.tasks.child;
 
 import lombok.Data;
-import pl.antonina.tasks.Gender;
+import pl.antonina.tasks.gender.Gender;
 
 import java.time.Instant;
 

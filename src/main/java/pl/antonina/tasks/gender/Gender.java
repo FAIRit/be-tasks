@@ -1,4 +1,4 @@
-package pl.antonina.tasks;
+package pl.antonina.tasks.gender;
 
 public enum Gender {
     MALE, FEMALE;
