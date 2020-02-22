@@ -1,11 +1,14 @@
 package pl.antonina.tasks.taskToDo;
 
 import org.springframework.stereotype.Service;
+import pl.antonina.tasks.cart.History;
+import pl.antonina.tasks.cart.HistoryRepository;
 import pl.antonina.tasks.child.Child;
 import pl.antonina.tasks.child.ChildRepository;
 import pl.antonina.tasks.task.Task;
 import pl.antonina.tasks.task.TaskRepository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,15 +19,17 @@ public class TaskToDoService {
     private final TaskRepository taskRepository;
     private final ChildRepository childRepository;
     private final TaskToDoMapper taskToDoMapper;
+    private final HistoryRepository historyRepository;
 
     public TaskToDoService(TaskToDoRepository taskToDoRepository,
                            TaskRepository taskRepository,
                            ChildRepository childRepository,
-                           TaskToDoMapper taskToDoMapper) {
+                           TaskToDoMapper taskToDoMapper, HistoryRepository historyRepository) {
         this.taskToDoRepository = taskToDoRepository;
         this.taskRepository = taskRepository;
         this.childRepository = childRepository;
         this.taskToDoMapper = taskToDoMapper;
+        this.historyRepository = historyRepository;
     }
 
     TaskToDoView getTaskToDo(long id) {
@@ -46,6 +51,7 @@ public class TaskToDoService {
         mapTaskToDo(taskToDoData, taskToDo);
         taskToDo.setTask(task);
         taskToDo.setChild(child);
+        taskToDo.setStartDate(Instant.now());
         taskToDoRepository.save(taskToDo);
     }
 
@@ -60,10 +66,27 @@ public class TaskToDoService {
     }
 
     private void mapTaskToDo(TaskToDoData taskToDoData, TaskToDo taskToDo) {
-        taskToDo.setStartDate(taskToDoData.getStartDate());
         taskToDo.setExpectedDate(taskToDoData.getExpectedDate());
-        taskToDo.setFinishDate(taskToDoData.getFinishDate());
-        taskToDo.setDone(taskToDoData.isDone());
-        taskToDo.setApproved(taskToDoData.isApproved());
+    }
+
+    public void setDone(long id) {
+        TaskToDo taskToDo = taskToDoRepository.findById(id).orElseThrow();
+        taskToDo.setDone(true);
+    }
+
+    void setApproved(long id) {
+        TaskToDo taskToDo = taskToDoRepository.findById(id).orElseThrow();
+        taskToDo.setApproved(true);
+
+        History history = new History();
+        history.setQuantity(taskToDo.getTask().getPoints());
+        history.setModificationDate(Instant.now());
+        history.setMessage("Approved: " + taskToDo.getTask().getName() + ". " + taskToDo.getTask().getDescription());
+        history.setChild(taskToDo.getChild());
+        historyRepository.save(history);
+
+        Child child = childRepository.findById(taskToDo.getChild().getId()).orElseThrow();
+        Integer newPoints = child.getPoints() + taskToDo.getTask().getPoints();
+        child.setPoints(newPoints);
     }
 }

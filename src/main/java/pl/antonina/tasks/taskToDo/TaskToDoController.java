@@ -15,7 +15,7 @@ public class TaskToDoController {
     }
 
     @GetMapping("/{id}")
-    public TaskToDoView getTaskToDo(@PathVariable long id){
+    public TaskToDoView getTaskToDo(@PathVariable long id) {
         return taskToDoService.getTaskToDo(id);
     }
 
@@ -30,12 +30,22 @@ public class TaskToDoController {
     }
 
     @PutMapping("/{id}")
-    public void updateTaskToDo(@PathVariable long id, @RequestBody TaskToDoData taskToDoData){
+    public void updateTaskToDo(@PathVariable long id, @RequestBody TaskToDoData taskToDoData) {
         taskToDoService.updateTaskToDo(id, taskToDoData);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTaskToDo(@PathVariable long id){
+    public void deleteTaskToDo(@PathVariable long id) {
         taskToDoService.deleteTaskToDo(id);
+    }
+
+    @PutMapping("/{id}/done")
+    public void setDone(@PathVariable long id) {
+        taskToDoService.setDone(id);
+    }
+
+    @PutMapping("/{id}/approved")
+    public void setApproved(@PathVariable long id) {
+        taskToDoService.setApproved(id);
     }
 }
