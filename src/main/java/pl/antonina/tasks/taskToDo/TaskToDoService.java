@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class TaskToDoService {
+class TaskToDoService {
 
     private final TaskToDoRepository taskToDoRepository;
     private final TaskRepository taskRepository;
@@ -70,7 +70,7 @@ public class TaskToDoService {
         taskToDo.setExpectedDate(taskToDoData.getExpectedDate());
     }
 
-    public void setDone(long id) {
+    void setDone(long id) {
         TaskToDo taskToDo = taskToDoRepository.findById(id).orElseThrow();
         taskToDo.setDone(true);
     }
@@ -79,6 +79,7 @@ public class TaskToDoService {
     void setApproved(long id) {
         TaskToDo taskToDo = taskToDoRepository.findById(id).orElseThrow();
         taskToDo.setApproved(true);
+        taskToDoRepository.save(taskToDo);
 
         History history = new History();
         history.setQuantity(taskToDo.getTask().getPoints());

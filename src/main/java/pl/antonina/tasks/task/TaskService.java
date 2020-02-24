@@ -3,13 +3,12 @@ package pl.antonina.tasks.task;
 import org.springframework.stereotype.Service;
 import pl.antonina.tasks.parent.Parent;
 import pl.antonina.tasks.parent.ParentRepository;
-import pl.antonina.tasks.parent.ParentService;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class TaskService {
+class TaskService {
 
     private final TaskRepository taskRepository;
     private final ParentRepository parentRepository;

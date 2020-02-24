@@ -1,7 +1,8 @@
 package pl.antonina.tasks.parent;
 
 import lombok.Data;
-import pl.antonina.tasks.gender.Gender;
+import pl.antonina.tasks.user.Gender;
+import pl.antonina.tasks.user.User;
 
 import javax.persistence.*;
 
@@ -15,4 +16,6 @@ public class Parent {
     private Long id;
     private String name;
     private Gender gender;
+    @OneToOne
+    private User user;
 }

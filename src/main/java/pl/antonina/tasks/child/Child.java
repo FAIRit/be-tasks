@@ -2,8 +2,9 @@ package pl.antonina.tasks.child;
 
 
 import lombok.Data;
-import pl.antonina.tasks.gender.Gender;
+import pl.antonina.tasks.user.Gender;
 import pl.antonina.tasks.parent.Parent;
+import pl.antonina.tasks.user.User;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -22,4 +23,6 @@ public class Child {
     private Integer points;
     private Gender gender;
     private Instant birthDate;
+    @OneToOne
+    private User user;
 }

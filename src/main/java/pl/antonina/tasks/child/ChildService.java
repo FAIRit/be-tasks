@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ChildService {
+class ChildService {
 
     private final ChildRepository childRepository;
     private final ParentRepository parentRepository;

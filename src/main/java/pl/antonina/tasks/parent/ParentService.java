@@ -3,7 +3,7 @@ package pl.antonina.tasks.parent;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ParentService {
+class ParentService {
 
     private final ParentRepository parentRepository;
     private final ParentMapper parentMapper;
