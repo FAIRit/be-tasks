@@ -8,6 +8,7 @@ import pl.antonina.tasks.user.User;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Entity
 @Table(name="children")
@@ -22,7 +23,7 @@ public class Child {
     private String name;
     private Integer points;
     private Gender gender;
-    private Instant birthDate;
+    private LocalDate birthDate;
     @OneToOne
     private User user;
 }
