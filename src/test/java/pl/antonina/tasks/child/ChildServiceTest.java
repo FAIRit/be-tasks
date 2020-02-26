@@ -78,7 +78,7 @@ class ChildServiceTest {
         long id = 123;
         ChildData childData = new ChildData();
         Gender gender = Gender.FEMALE;
-        LocalDate birthDate = LocalDate.of(2017, 02, 16);
+        LocalDate birthDate = LocalDate.of(2017, 2, 16);
         String name = "Natalia";
         childData.setGender(gender);
         childData.setBirthDate(birthDate);
@@ -121,11 +121,9 @@ class ChildServiceTest {
     void getChildrenByParentId() {
         long parentId = 123;
         Child child = mock(Child.class);
-        List<Child> childList = new ArrayList<>();
-        childList.add(child);
+        List<Child> childList = List.of(child);
         ChildView childView = mock(ChildView.class);
-        List<ChildView> childViewList = new ArrayList<>();
-        childViewList.add(childView);
+        List<ChildView> childViewList = List.of(childView);
 
         when(childRepository.findByParentId(parentId)).thenReturn(childList);
         when(childMapper.mapChildView(child)).thenReturn(childView);
