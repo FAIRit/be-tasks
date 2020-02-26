@@ -36,8 +36,8 @@ class ParentServiceTest {
     void addParent() {
         ParentData parentData = new ParentData();
         Gender gender = Gender.FEMALE;
-        parentData.setGender(gender);
         String name = "Antonina";
+        parentData.setGender(gender);
         parentData.setName(name);
 
         parentService.addParent(parentData);

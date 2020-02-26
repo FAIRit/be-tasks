@@ -38,7 +38,7 @@ class HistoryMapperTest {
         history.setMessage(message);
         history.setQuantity(quantity);
 
-        Child child = mock(Child.class);
+        Child child = new Child();
         history.setChild(child);
 
         ChildView childView = mock(ChildView.class);
