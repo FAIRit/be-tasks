@@ -49,7 +49,7 @@ class TaskToDoService {
         Child child = childRepository.findById(childId).orElseThrow();
         Task task = taskRepository.findById(taskId).orElseThrow();
         TaskToDo taskToDo = new TaskToDo();
-        mapTaskToDo(taskToDoData, taskToDo);
+        taskToDo.setExpectedDate(taskToDoData.getExpectedDate());
         taskToDo.setTask(task);
         taskToDo.setChild(child);
         taskToDo.setStartDate(Instant.now());
@@ -58,7 +58,7 @@ class TaskToDoService {
 
     void updateTaskToDo(long id, TaskToDoData taskToDoData) {
         TaskToDo taskToDo = taskToDoRepository.findById(id).orElseThrow();
-        mapTaskToDo(taskToDoData, taskToDo);
+        taskToDo.setExpectedDate(taskToDoData.getExpectedDate());
         taskToDoRepository.save(taskToDo);
     }
 
@@ -66,13 +66,10 @@ class TaskToDoService {
         taskToDoRepository.deleteById(id);
     }
 
-    private void mapTaskToDo(TaskToDoData taskToDoData, TaskToDo taskToDo) {
-        taskToDo.setExpectedDate(taskToDoData.getExpectedDate());
-    }
-
     void setDone(long id) {
         TaskToDo taskToDo = taskToDoRepository.findById(id).orElseThrow();
         taskToDo.setDone(true);
+        taskToDoRepository.save(taskToDo);
     }
 
     @Transactional
@@ -91,5 +88,6 @@ class TaskToDoService {
         Child child = childRepository.findById(taskToDo.getChild().getId()).orElseThrow();
         Integer newPoints = child.getPoints() + taskToDo.getTask().getPoints();
         child.setPoints(newPoints);
+        childRepository.save(child);
     }
 }

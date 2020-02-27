@@ -11,4 +11,6 @@ class ChildData {
     private String name;
     private Gender gender;
     private LocalDate birthDate;
+    private String email;
+    private String password;
 }

@@ -1,6 +1,7 @@
 package pl.antonina.tasks.parent;
 
 import org.springframework.stereotype.Service;
+import pl.antonina.tasks.user.User;
 
 @Service
 class ParentService {
@@ -19,23 +20,25 @@ class ParentService {
     }
 
     void addParent(ParentData parentData) {
+        User user = new User();
+        user.setEmail(parentData.getEmail());
+        user.setPassword(parentData.getPassword());
+
         Parent parent = new Parent();
-        mapParent(parentData, parent);
+        parent.setName(parentData.getName());
+        parent.setGender(parentData.getGender());
+        parent.setUser(user);
         parentRepository.save(parent);
     }
 
     void updateParent(long id, ParentData parentData) {
         Parent parent = parentRepository.findById(id).orElseThrow();
-        mapParent(parentData, parent);
+        parent.setName(parentData.getName());
+        parent.setGender(parentData.getGender());
         parentRepository.save(parent);
     }
 
     void deleteParent(long id) {
         parentRepository.deleteById(id);
-    }
-
-    private void mapParent(ParentData parentData, Parent parent){
-        parent.setName(parentData.getName());
-        parent.setGender(parentData.getGender());
     }
 }

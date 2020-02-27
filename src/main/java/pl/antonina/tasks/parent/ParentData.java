@@ -7,4 +7,6 @@ import pl.antonina.tasks.user.Gender;
 class ParentData {
     private String name;
     private Gender gender;
+    private String email;
+    private String password;
 }

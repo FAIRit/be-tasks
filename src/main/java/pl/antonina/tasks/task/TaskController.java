@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/parents/{parentId}/tasks")
+@RequestMapping("/api/tasks")
 public class TaskController {
 
     private final TaskService taskService;
@@ -24,22 +24,22 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    public TaskView getTask(@PathVariable long parentId, @PathVariable long id) {
+    public TaskView getTask(@PathVariable long id) {
         return taskService.getTask(id);
     }
 
     @PostMapping
-    public void addTask(@PathVariable long parentId, @RequestBody TaskData taskData) {
+    public void addTask(@RequestParam long parentId, @RequestBody TaskData taskData) {
         taskService.addTask(parentId, taskData);
     }
 
     @PutMapping("/{id}")
-    public void updateTask(@PathVariable long parentId, @PathVariable long id, @RequestBody TaskData taskData) {
-        taskService.updateTask(parentId, id, taskData);
+    public void updateTask(@PathVariable long id, @RequestBody TaskData taskData) {
+        taskService.updateTask(id, taskData);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable long parentId, @PathVariable long id) {
-        taskService.deleteTask(parentId, id);
+    public void deleteTask(@PathVariable long id) {
+        taskService.deleteTask(id);
     }
 }
