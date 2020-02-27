@@ -8,6 +8,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.antonina.tasks.user.Gender;
+import pl.antonina.tasks.user.User;
+import pl.antonina.tasks.user.UserRepository;
 
 import java.util.Optional;
 
@@ -33,12 +35,30 @@ class ParentServiceTest {
     }
 
     @Test
+    void getParent() {
+        long id = 123;
+
+        Parent parent = new Parent();
+        ParentView parentView = new ParentView();
+
+        when(parentRepository.findById(id)).thenReturn(Optional.of(parent));
+        when(parentMapper.mapParentView(parent)).thenReturn(parentView);
+
+        ParentView parentViewResult = parentService.getParent(id);
+        assertThat(parentViewResult).isEqualTo(parentView);
+    }
+
+    @Test
     void addParent() {
         ParentData parentData = new ParentData();
         Gender gender = Gender.FEMALE;
         String name = "Antonina";
+        String password = "password";
+        String email= "amarikhina@gmail.com";
         parentData.setGender(gender);
         parentData.setName(name);
+        parentData.setEmail(email);
+        parentData.setPassword(password);
 
         parentService.addParent(parentData);
 
@@ -47,6 +67,8 @@ class ParentServiceTest {
 
         assertThat(parentCaptured.getName()).isEqualTo(name);
         assertThat(parentCaptured.getGender()).isEqualTo(Gender.FEMALE);
+        assertThat(parentCaptured.getUser().getPassword()).isEqualTo(password);
+        assertThat(parentCaptured.getUser().getEmail()).isEqualTo(email);
     }
 
     @Test
@@ -58,7 +80,8 @@ class ParentServiceTest {
         parentData.setName(name);
         parentData.setGender(gender);
 
-        when(parentRepository.findById(id)).thenReturn(Optional.of(new Parent()));
+        Parent parent = new Parent();
+        when(parentRepository.findById(id)).thenReturn(Optional.of(parent));
 
         parentService.updateParent(id, parentData);
 
@@ -74,19 +97,5 @@ class ParentServiceTest {
         long id = 123;
         parentService.deleteParent(id);
         verify(parentRepository).deleteById(id);
-    }
-
-    @Test
-    void getParent() {
-        long id = 123;
-
-        Parent parent = mock(Parent.class);
-        ParentView parentView = mock(ParentView.class);
-
-        when(parentRepository.findById(id)).thenReturn(Optional.of(parent));
-        when(parentMapper.mapParentView(parent)).thenReturn(parentView);
-
-        ParentView parentViewResult = parentService.getParent(id);
-        assertThat(parentViewResult).isEqualTo(parentView);
     }
 }

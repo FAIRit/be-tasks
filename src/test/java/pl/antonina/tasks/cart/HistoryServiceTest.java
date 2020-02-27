@@ -40,9 +40,9 @@ class HistoryServiceTest {
     @Test
     void getByChildId() {
         long childId = 123;
-        History history = mock(History.class);
+        History history = new History();
         List<History> historyList = List.of(history);
-        HistoryView historyView = mock(HistoryView.class);
+        HistoryView historyView = new HistoryView();
         List<HistoryView> historyViewList = List.of(historyView);
 
         when(historyRepository.findByChildId(childId)).thenReturn(historyList);
@@ -59,12 +59,13 @@ class HistoryServiceTest {
         String message = "Zapłaciłam 10 zł";
         Instant modificationDate = Instant.now();
         Integer quantity = 10;
+
         HistoryData historyData = new HistoryData();
         historyData.setMessage(message);
         historyData.setModificationDate(modificationDate);
         historyData.setQuantity(quantity);
 
-        Child child = mock(Child.class);
+        Child child = new Child();
 
         when(childRepository.findById(childId)).thenReturn(Optional.of(child));
         historyService.addHistory(childId, historyData);
