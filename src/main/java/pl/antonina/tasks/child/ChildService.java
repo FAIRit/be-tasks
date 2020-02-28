@@ -37,8 +37,8 @@ class ChildService {
         Parent parent = parentRepository.findById(parentId).orElseThrow();
 
         User user = new User();
-        user.setEmail(childData.getEmail());
-        user.setPassword(childData.getPassword());
+        user.setEmail(childData.getUserData().getEmail());
+        user.setPassword(childData.getUserData().getPassword());
 
         Child child = new Child();
         child.setName(childData.getName());
@@ -55,6 +55,8 @@ class ChildService {
         child.setName(childData.getName());
         child.setGender(childData.getGender());
         child.setBirthDate(childData.getBirthDate());
+        child.getUser().setEmail(childData.getUserData().getEmail());
+        child.getUser().setPassword(childData.getUserData().getPassword());
         childRepository.save(child);
     }
 

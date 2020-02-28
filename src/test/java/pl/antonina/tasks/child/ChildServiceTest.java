@@ -10,6 +10,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import pl.antonina.tasks.parent.Parent;
 import pl.antonina.tasks.parent.ParentRepository;
 import pl.antonina.tasks.user.Gender;
+import pl.antonina.tasks.user.User;
+import pl.antonina.tasks.user.UserData;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -79,13 +81,15 @@ class ChildServiceTest {
         Gender gender = Gender.FEMALE;
         String email = "amarikhina@gmail.com";
         String password = "password";
+        UserData userData = new UserData();
+        userData.setEmail(email);
+        userData.setPassword(password);
 
         ChildData childData = new ChildData();
         childData.setName(name);
         childData.setBirthDate(birthDate);
         childData.setGender(gender);
-        childData.setEmail(email);
-        childData.setPassword(password);
+        childData.setUserData(userData);
 
         Parent parent = new Parent();
         when(parentRepository.findById(parentId)).thenReturn(Optional.of(parent));
@@ -116,13 +120,20 @@ class ChildServiceTest {
         Gender gender = Gender.FEMALE;
         LocalDate birthDate = LocalDate.of(2017, 2, 16);
         String name = "Natalia";
+        String email = "amarikhina@gmail.com";
+        String password = "password";
+        UserData userData = new UserData();
+        userData.setEmail(email);
+        userData.setPassword(password);
 
         ChildData childData = new ChildData();
         childData.setGender(gender);
         childData.setBirthDate(birthDate);
         childData.setName(name);
+        childData.setUserData(userData);
 
         Child child = new Child();
+        child.setUser(new User());
         when(childRepository.findById(id)).thenReturn(Optional.of(child));
 
         childService.updateChild(id, childData);
@@ -133,6 +144,8 @@ class ChildServiceTest {
         assertThat(childCaptured.getGender()).isEqualTo(gender);
         assertThat(childCaptured.getBirthDate()).isEqualTo(birthDate);
         assertThat(childCaptured.getName()).isEqualTo(name);
+        assertThat(childCaptured.getUser().getPassword()).isEqualTo(password);
+        assertThat(childCaptured.getUser().getEmail()).isEqualTo(email);
     }
 
     @Test
