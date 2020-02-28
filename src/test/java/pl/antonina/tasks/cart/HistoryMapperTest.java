@@ -32,22 +32,22 @@ class HistoryMapperTest {
     void mapHistoryView() {
         History history = new History();
         String message = "Message";
-        Instant date = Instant.now();
+        Instant modificationDate = Instant.now();
         Integer quantity = 5;
-        history.setModificationDate(date);
+        history.setModificationDate(modificationDate);
         history.setMessage(message);
         history.setQuantity(quantity);
 
         Child child = new Child();
         history.setChild(child);
 
-        ChildView childView = mock(ChildView.class);
+        ChildView childView = new ChildView();
         when(childMapper.mapChildView(child)).thenReturn(childView);
 
         HistoryView historyView = historyMapper.mapHistoryView(history);
 
         assertThat(historyView.getMessage()).isEqualTo(message);
-        assertThat(historyView.getModificationDate()).isEqualTo(date);
+        assertThat(historyView.getModificationDate()).isEqualTo(modificationDate);
         assertThat(historyView.getQuantity()).isEqualTo(quantity);
         assertThat(historyView.getChildView()).isEqualTo(childView);
     }

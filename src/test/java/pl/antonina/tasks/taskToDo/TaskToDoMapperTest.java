@@ -42,19 +42,16 @@ class TaskToDoMapperTest {
         taskToDo.setDone(done);
         taskToDo.setApproved(approved);
 
-        Task task = new Task();
-        taskToDo.setTask(task);
-
-        TaskView taskView = mock(TaskView.class);
-        when(taskMapper.mapTaskView(task)).thenReturn(taskView);
+        TaskView taskView = new TaskView();
+        when(taskMapper.mapTaskView(taskToDo.getTask())).thenReturn(taskView);
 
         TaskToDoView taskToDoView = taskToDoMapper.mapTaskToDoView(taskToDo);
 
         assertThat(taskToDoView.getExpectedDate()).isEqualTo(expectedDate);
         assertThat(taskToDoView.getFinishDate()).isEqualTo(finishDate);
         assertThat(taskToDoView.getStartDate()).isEqualTo(startDate);
-        assertThat(taskToDoView.getTaskView()).isEqualTo(taskView);
         assertThat(taskToDoView.isDone()).isEqualTo(done);
         assertThat(taskToDoView.isApproved()).isEqualTo(approved);
+        assertThat(taskToDoView.getTaskView()).isEqualTo(taskView);
     }
 }

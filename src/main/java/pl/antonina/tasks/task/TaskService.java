@@ -47,24 +47,14 @@ class TaskService {
         taskRepository.save(task);
     }
 
-    void updateTask(long parentId, long id, TaskData taskData) {
+    void updateTask(long id, TaskData taskData) {
         Task task = taskRepository.findById(id).orElseThrow();
-        checkParentId(parentId, task);
         mapTask(taskData, task);
         taskRepository.save(task);
     }
 
-    private void checkParentId(long parentId, Task task) {
-        if (!task.getParent().getId().equals(parentId)) {
-            throw new IllegalArgumentException("Wrong parentId");
-        }
-    }
-
-    void deleteTask(long parentId, long id) {
-        taskRepository.findById(id).ifPresent(task -> {
-            checkParentId(parentId, task);
-            taskRepository.delete(task);
-        });
+    void deleteTask(long id) {
+        taskRepository.deleteById(id);
     }
 
     private void mapTask(TaskData taskData, Task task) {
