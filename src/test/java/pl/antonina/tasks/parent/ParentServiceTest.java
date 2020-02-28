@@ -10,10 +10,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import pl.antonina.tasks.user.Gender;
 import pl.antonina.tasks.user.User;
 import pl.antonina.tasks.user.UserData;
+import pl.antonina.tasks.user.UserRepository;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -24,6 +26,8 @@ class ParentServiceTest {
     private ParentMapper parentMapper;
     @Mock
     private ParentRepository parentRepository;
+    @Mock
+    private UserRepository userRepository;
 
     private ParentService parentService;
 
@@ -32,7 +36,7 @@ class ParentServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        parentService = new ParentService(parentRepository, parentMapper);
+        parentService = new ParentService(parentRepository, parentMapper, userRepository);
     }
 
     @Test
@@ -70,9 +74,25 @@ class ParentServiceTest {
         Parent parentCaptured = parentArgumentCaptor.getValue();
 
         assertThat(parentCaptured.getName()).isEqualTo(name);
-        assertThat(parentCaptured.getGender()).isEqualTo(Gender.FEMALE);
+        assertThat(parentCaptured.getGender()).isEqualTo(gender);
         assertThat(parentCaptured.getUser().getPassword()).isEqualTo(password);
         assertThat(parentCaptured.getUser().getEmail()).isEqualTo(email);
+    }
+
+    @Test
+    void addParentEmailExists() {
+        String email = "test@gmail.com";
+        UserData userData = new UserData();
+        userData.setEmail(email);
+        ParentData parentData = new ParentData();
+        parentData.setUserData(userData);
+
+        User userExists = new User();
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(userExists));
+
+        assertThatThrownBy(() -> parentService.addParent(parentData))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("User with given email already exists");
     }
 
     @Test
@@ -107,9 +127,33 @@ class ParentServiceTest {
     }
 
     @Test
+    void updateParentEmailExists() {
+        String email = "test@gmail.com";
+        UserData userData = new UserData();
+        userData.setEmail(email);
+        ParentData parentData = new ParentData();
+        parentData.setUserData(userData);
+
+        User existingUser = new User();
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(existingUser));
+
+        assertThatThrownBy(() -> parentService.updateParent(123, parentData))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("User with given email already exists");
+    }
+
+    @Test
     void deleteById() {
         long id = 123;
+        Parent parent = new Parent();
+        User user = new User();
+        user.setId(987L);
+        parent.setUser(user);
+        when(parentRepository.findById(id)).thenReturn(Optional.of(parent));
+
         parentService.deleteParent(id);
+
+        verify(userRepository).deleteById(user.getId());
         verify(parentRepository).deleteById(id);
     }
 }

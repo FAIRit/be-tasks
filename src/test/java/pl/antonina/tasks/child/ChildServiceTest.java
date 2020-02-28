@@ -12,6 +12,7 @@ import pl.antonina.tasks.parent.ParentRepository;
 import pl.antonina.tasks.user.Gender;
 import pl.antonina.tasks.user.User;
 import pl.antonina.tasks.user.UserData;
+import pl.antonina.tasks.user.UserRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,6 +33,8 @@ class ChildServiceTest {
     private ParentRepository parentRepository;
     @Mock
     private ChildMapper childMapper;
+    @Mock
+    private UserRepository userRepository;
 
     private ChildService childService;
 
@@ -40,7 +43,7 @@ class ChildServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        childService = new ChildService(childRepository, parentRepository, childMapper);
+        childService = new ChildService(childRepository, parentRepository, childMapper, userRepository);
     }
 
     @Test
@@ -110,8 +113,30 @@ class ChildServiceTest {
 
     @Test
     void addChildNoParent() {
-        assertThatThrownBy(() -> childService.addChild(123, new ChildData()))
+        String email = "test@wp.pl";
+        UserData userData = new UserData();
+        userData.setEmail(email);
+        ChildData childData = new ChildData();
+        childData.setUserData(userData);
+
+        assertThatThrownBy(() -> childService.addChild(123, childData))
                 .isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    void addChildEmailExists() {
+        String email = "test@wp.pl";
+        UserData userData = new UserData();
+        userData.setEmail(email);
+        ChildData childData = new ChildData();
+        childData.setUserData(userData);
+
+        User existingUser = new User();
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(existingUser));
+
+        assertThatThrownBy(() -> childService.addChild(123, childData))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("User with given email already exists");
     }
 
     @Test
@@ -149,9 +174,34 @@ class ChildServiceTest {
     }
 
     @Test
+    void updateChildEmailExists() {
+        String email = "test@gmail.com";
+        UserData userData = new UserData();
+        userData.setEmail(email);
+        ChildData childData = new ChildData();
+        childData.setUserData(userData);
+
+        User existingUser = new User();
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(existingUser));
+
+        assertThatThrownBy(() -> childService.updateChild(123, childData))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("User with given email already exists");
+    }
+
+    @Test
     void deleteChild() {
         long id = 123;
+
+        Child child = new Child();
+        User user = new User();
+        user.setId(1L);
+        child.setUser(user);
+        when(childRepository.findById(id)).thenReturn(Optional.of(child));
+
         childService.deleteChild(id);
+
+        verify(userRepository).deleteById(user.getId());
         verify(childRepository).deleteById(id);
     }
 }

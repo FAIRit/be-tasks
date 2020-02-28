@@ -1,9 +1,11 @@
 package pl.antonina.tasks.child;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.antonina.tasks.parent.Parent;
 import pl.antonina.tasks.parent.ParentRepository;
 import pl.antonina.tasks.user.User;
+import pl.antonina.tasks.user.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,11 +16,13 @@ class ChildService {
     private final ChildRepository childRepository;
     private final ParentRepository parentRepository;
     private final ChildMapper childMapper;
+    private final UserRepository userRepository;
 
-    public ChildService(ChildRepository childRepository, ParentRepository parentRepository, ChildMapper childMapper) {
+    public ChildService(ChildRepository childRepository, ParentRepository parentRepository, ChildMapper childMapper, UserRepository userRepository) {
         this.childRepository = childRepository;
         this.parentRepository = parentRepository;
         this.childMapper = childMapper;
+        this.userRepository = userRepository;
     }
 
     ChildView getChild(long id) {
@@ -34,10 +38,15 @@ class ChildService {
     }
 
     void addChild(long parentId, ChildData childData) {
-        Parent parent = parentRepository.findById(parentId).orElseThrow();
+        String email = childData.getUserData().getEmail();
+        boolean userExists = userRepository.findByEmail(email).isPresent();
+        if (userExists) {
+            throw new IllegalArgumentException("User with given email already exists");
+        }
 
+        Parent parent = parentRepository.findById(parentId).orElseThrow();
         User user = new User();
-        user.setEmail(childData.getUserData().getEmail());
+        user.setEmail(email);
         user.setPassword(childData.getUserData().getPassword());
 
         Child child = new Child();
@@ -51,16 +60,26 @@ class ChildService {
     }
 
     void updateChild(long id, ChildData childData) {
+        String email = childData.getUserData().getEmail();
+        boolean userExists = userRepository.findByEmail(email).isPresent();
+        if (userExists) {
+            throw new IllegalArgumentException("User with given email already exists");
+        }
+
         Child child = childRepository.findById(id).orElseThrow();
         child.setName(childData.getName());
         child.setGender(childData.getGender());
         child.setBirthDate(childData.getBirthDate());
-        child.getUser().setEmail(childData.getUserData().getEmail());
+        child.getUser().setEmail(email);
         child.getUser().setPassword(childData.getUserData().getPassword());
         childRepository.save(child);
     }
 
+    @Transactional
     void deleteChild(long id) {
+        Child child = childRepository.findById(id).orElseThrow();
+        long userId = child.getUser().getId();
+        userRepository.deleteById(userId);
         childRepository.deleteById(id);
     }
 }
