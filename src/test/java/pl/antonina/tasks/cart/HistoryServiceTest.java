@@ -8,14 +8,14 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.antonina.tasks.child.Child;
-import pl.antonina.tasks.child.ChildRepository;
+import pl.antonina.tasks.task.Task;
+import pl.antonina.tasks.taskToDo.TaskToDo;
 
-import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class HistoryServiceTest {
@@ -24,8 +24,6 @@ class HistoryServiceTest {
     private HistoryRepository historyRepository;
     @Mock
     private HistoryMapper historyMapper;
-    @Mock
-    private ChildRepository childRepository;
 
     private HistoryService historyService;
 
@@ -34,7 +32,7 @@ class HistoryServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        historyService = new HistoryService(historyRepository, historyMapper, childRepository);
+        historyService = new HistoryService(historyRepository, historyMapper);
     }
 
     @Test
@@ -55,28 +53,28 @@ class HistoryServiceTest {
 
     @Test
     void addHistory() {
-        long childId = 123;
-        String message = "Zapłaciłam 10 zł";
-        Instant modificationDate = Instant.now();
-        Integer quantity = 10;
+        String description = "description";
+        String name = "name";
+        String message = "Approved: " + name + " - " + description;
+        Integer points= 123;
 
-        HistoryData historyData = new HistoryData();
-        historyData.setMessage(message);
-        historyData.setModificationDate(modificationDate);
-        historyData.setQuantity(quantity);
-
+        Task task = new Task();
+        task.setDescription(description);
+        task.setName(name);
+        task.setPoints(points);
+        TaskToDo taskToDo = new TaskToDo();
+        taskToDo.setTask(task);
         Child child = new Child();
+        taskToDo.setChild(child);
 
-        when(childRepository.findById(childId)).thenReturn(Optional.of(child));
-        historyService.addHistory(childId, historyData);
+        historyService.addHistory(taskToDo);
 
         verify(historyRepository).save(historyArgumentCaptor.capture());
         History historyCaptured = historyArgumentCaptor.getValue();
 
         assertThat(historyCaptured.getChild()).isEqualTo(child);
         assertThat(historyCaptured.getMessage()).isEqualTo(message);
-        assertThat(historyCaptured.getModificationDate()).isEqualTo(modificationDate);
-        assertThat(historyCaptured.getQuantity()).isEqualTo(quantity);
+        assertThat(historyCaptured.getQuantity()).isEqualTo(points);
     }
 
     @Test

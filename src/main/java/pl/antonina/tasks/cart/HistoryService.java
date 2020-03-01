@@ -1,23 +1,21 @@
 package pl.antonina.tasks.cart;
 
 import org.springframework.stereotype.Service;
-import pl.antonina.tasks.child.Child;
-import pl.antonina.tasks.child.ChildRepository;
+import pl.antonina.tasks.taskToDo.TaskToDo;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-class HistoryService {
+public class HistoryService {
 
     private final HistoryRepository historyRepository;
     private final HistoryMapper historyMapper;
-    private final ChildRepository childRepository;
 
-    public HistoryService(HistoryRepository historyRepository, HistoryMapper historyMapper, ChildRepository childRepository) {
+    public HistoryService(HistoryRepository historyRepository, HistoryMapper historyMapper) {
         this.historyRepository = historyRepository;
         this.historyMapper = historyMapper;
-        this.childRepository = childRepository;
     }
 
     List<HistoryView> getByChildId(long childId) {
@@ -27,22 +25,17 @@ class HistoryService {
                 .collect(Collectors.toList());
     }
 
-    void addHistory(long childId, HistoryData historyData) {
-        Child child = childRepository.findById(childId).orElseThrow();
+    public void addHistory(TaskToDo taskToDo) {
         History history = new History();
-        mapHistory(historyData, history);
-        history.setChild(child);
+        history.setQuantity(taskToDo.getTask().getPoints());
+        history.setModificationDate(Instant.now());
+        history.setMessage("Approved: " + taskToDo.getTask().getName() + " - " + taskToDo.getTask().getDescription());
+        history.setChild(taskToDo.getChild());
         historyRepository.save(history);
     }
 
     void deleteHistory(long id) {
         historyRepository.deleteById(id);
-    }
-
-    private void mapHistory(HistoryData historyData, History history) {
-        history.setMessage(historyData.getMessage());
-        history.setModificationDate(historyData.getModificationDate());
-        history.setQuantity(historyData.getQuantity());
     }
 }
 
