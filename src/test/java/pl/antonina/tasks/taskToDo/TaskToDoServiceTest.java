@@ -7,7 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.antonina.tasks.cart.HistoryRepository;
+import pl.antonina.tasks.cart.HistoryService;
 import pl.antonina.tasks.child.Child;
 import pl.antonina.tasks.child.ChildRepository;
 import pl.antonina.tasks.task.Task;
@@ -18,7 +18,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TaskToDoServiceTest {
@@ -32,16 +33,19 @@ class TaskToDoServiceTest {
     @Mock
     private TaskToDoMapper taskToDoMapper;
     @Mock
-    private HistoryRepository historyRepository;
+    private HistoryService historyService;
 
     private TaskToDoService taskToDoService;
 
     @Captor
     ArgumentCaptor<TaskToDo> taskToDoArgumentCaptor;
 
+    @Captor
+    ArgumentCaptor<Child> childArgumentCaptor;
+
     @BeforeEach
     void beforeEach() {
-        taskToDoService = new TaskToDoService(taskToDoRepository, taskRepository, childRepository, taskToDoMapper, historyRepository);
+        taskToDoService = new TaskToDoService(taskToDoRepository, taskRepository, childRepository, taskToDoMapper, historyService);
     }
 
     @Test
@@ -141,5 +145,38 @@ class TaskToDoServiceTest {
         TaskToDo taskToDoCaptured = taskToDoArgumentCaptor.getValue();
 
         assertThat(taskToDoCaptured.isDone()).isEqualTo(true);
+    }
+
+    @Test
+    void setApproved() {
+        long id = 123;
+        Integer points = 20;
+        Integer childPoints = 100;
+        long childId = 987;
+
+        Child child = new Child();
+        child.setId(childId);
+        child.setPoints(childPoints);
+        Task task = new Task();
+        task.setPoints(points);
+        TaskToDo taskToDo = new TaskToDo();
+        taskToDo.setApproved(true);
+        taskToDo.setTask(task);
+        taskToDo.setChild(child);
+
+        when(taskToDoRepository.findById(id)).thenReturn(Optional.of(taskToDo));
+        when(childRepository.findById(childId)).thenReturn(Optional.of(child));
+
+        taskToDoService.setApproved(id);
+
+        verify(taskToDoRepository).save(taskToDoArgumentCaptor.capture());
+        TaskToDo taskToDoCaptured = taskToDoArgumentCaptor.getValue();
+
+        verify(childRepository).save(childArgumentCaptor.capture());
+        Child childCaptured = childArgumentCaptor.getValue();
+
+        assertThat(taskToDoCaptured.isApproved()).isTrue();
+        assertThat(childCaptured.getPoints()).isEqualTo(points + childPoints);
+
     }
 }

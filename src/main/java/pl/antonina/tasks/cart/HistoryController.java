@@ -20,13 +20,8 @@ public class HistoryController {
         return historyService.getByChildId(childId);
     }
 
-    @PostMapping
-    public void addHistory(@RequestParam long childId, @RequestBody HistoryData historyData) {
-        historyService.addHistory(childId, historyData);
-    }
-
     @DeleteMapping("/{id}")
-    public void deleteHistory(@PathVariable long id){
+    public void deleteHistory(@PathVariable long id) {
         historyService.deleteHistory(id);
     }
 }

@@ -2,8 +2,7 @@ package pl.antonina.tasks.taskToDo;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.antonina.tasks.cart.History;
-import pl.antonina.tasks.cart.HistoryRepository;
+import pl.antonina.tasks.cart.HistoryService;
 import pl.antonina.tasks.child.Child;
 import pl.antonina.tasks.child.ChildRepository;
 import pl.antonina.tasks.task.Task;
@@ -20,17 +19,18 @@ class TaskToDoService {
     private final TaskRepository taskRepository;
     private final ChildRepository childRepository;
     private final TaskToDoMapper taskToDoMapper;
-    private final HistoryRepository historyRepository;
+    private final HistoryService historyService;
 
     public TaskToDoService(TaskToDoRepository taskToDoRepository,
                            TaskRepository taskRepository,
                            ChildRepository childRepository,
-                           TaskToDoMapper taskToDoMapper, HistoryRepository historyRepository) {
+                           TaskToDoMapper taskToDoMapper,
+                           HistoryService historyService) {
         this.taskToDoRepository = taskToDoRepository;
         this.taskRepository = taskRepository;
         this.childRepository = childRepository;
         this.taskToDoMapper = taskToDoMapper;
-        this.historyRepository = historyRepository;
+        this.historyService = historyService;
     }
 
     TaskToDoView getTaskToDo(long id) {
@@ -78,12 +78,7 @@ class TaskToDoService {
         taskToDo.setApproved(true);
         taskToDoRepository.save(taskToDo);
 
-        History history = new History();
-        history.setQuantity(taskToDo.getTask().getPoints());
-        history.setModificationDate(Instant.now());
-        history.setMessage("Approved: " + taskToDo.getTask().getName() + ". " + taskToDo.getTask().getDescription());
-        history.setChild(taskToDo.getChild());
-        historyRepository.save(history);
+        historyService.addHistory(taskToDo);
 
         Child child = childRepository.findById(taskToDo.getChild().getId()).orElseThrow();
         Integer newPoints = child.getPoints() + taskToDo.getTask().getPoints();
