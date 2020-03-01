@@ -28,7 +28,7 @@ public class ParentController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteParent(@PathVariable long id){
+    public void deleteParent(@PathVariable long id) {
         parentService.deleteParent(id);
     }
 }

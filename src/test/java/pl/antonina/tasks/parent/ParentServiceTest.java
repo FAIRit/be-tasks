@@ -9,12 +9,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.antonina.tasks.user.Gender;
 import pl.antonina.tasks.user.User;
-import pl.antonina.tasks.user.UserRepository;
+import pl.antonina.tasks.user.UserData;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ParentServiceTest {
@@ -50,15 +51,18 @@ class ParentServiceTest {
 
     @Test
     void addParent() {
-        ParentData parentData = new ParentData();
+        String password = "password";
+        String email = "amarikhina@gmail.com";
+        UserData userData = new UserData();
+        userData.setEmail(email);
+        userData.setPassword(password);
+
         Gender gender = Gender.FEMALE;
         String name = "Antonina";
-        String password = "password";
-        String email= "amarikhina@gmail.com";
+        ParentData parentData = new ParentData();
         parentData.setGender(gender);
         parentData.setName(name);
-        parentData.setEmail(email);
-        parentData.setPassword(password);
+        parentData.setUserData(userData);
 
         parentService.addParent(parentData);
 
@@ -74,13 +78,21 @@ class ParentServiceTest {
     @Test
     void updateParent() {
         long id = 123;
+        String password = "password";
+        String email = "amarikhina@gmail.com";
+        UserData userData = new UserData();
+        userData.setEmail(email);
+        userData.setPassword(password);
+
         ParentData parentData = new ParentData();
         String name = "Michał";
         Gender gender = Gender.MALE;
         parentData.setName(name);
         parentData.setGender(gender);
+        parentData.setUserData(userData);
 
         Parent parent = new Parent();
+        parent.setUser(new User());
         when(parentRepository.findById(id)).thenReturn(Optional.of(parent));
 
         parentService.updateParent(id, parentData);
@@ -90,6 +102,8 @@ class ParentServiceTest {
 
         assertThat(parentCaptured.getName()).isEqualTo(name);
         assertThat(parentCaptured.getGender()).isEqualTo(gender);
+        assertThat(parentCaptured.getUser().getEmail()).isEqualTo(email);
+        assertThat(parentCaptured.getUser().getPassword()).isEqualTo(password);
     }
 
     @Test
