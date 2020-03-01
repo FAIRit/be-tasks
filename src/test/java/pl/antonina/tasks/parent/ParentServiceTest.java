@@ -7,13 +7,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.antonina.tasks.user.Gender;
-import pl.antonina.tasks.user.User;
-import pl.antonina.tasks.user.UserData;
+import pl.antonina.tasks.user.*;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -24,6 +23,10 @@ class ParentServiceTest {
     private ParentMapper parentMapper;
     @Mock
     private ParentRepository parentRepository;
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private UserService userService;
 
     private ParentService parentService;
 
@@ -32,7 +35,7 @@ class ParentServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        parentService = new ParentService(parentRepository, parentMapper);
+        parentService = new ParentService(parentRepository, parentMapper, userRepository, userService);
     }
 
     @Test
@@ -51,18 +54,16 @@ class ParentServiceTest {
 
     @Test
     void addParent() {
-        String password = "password";
-        String email = "amarikhina@gmail.com";
-        UserData userData = new UserData();
-        userData.setEmail(email);
-        userData.setPassword(password);
-
         Gender gender = Gender.FEMALE;
         String name = "Antonina";
         ParentData parentData = new ParentData();
         parentData.setGender(gender);
         parentData.setName(name);
+
+        User user = new User();
+        UserData userData = new UserData();
         parentData.setUserData(userData);
+        when(userService.addUser(userData)).thenReturn(user);
 
         parentService.addParent(parentData);
 
@@ -70,30 +71,26 @@ class ParentServiceTest {
         Parent parentCaptured = parentArgumentCaptor.getValue();
 
         assertThat(parentCaptured.getName()).isEqualTo(name);
-        assertThat(parentCaptured.getGender()).isEqualTo(Gender.FEMALE);
-        assertThat(parentCaptured.getUser().getPassword()).isEqualTo(password);
-        assertThat(parentCaptured.getUser().getEmail()).isEqualTo(email);
+        assertThat(parentCaptured.getGender()).isEqualTo(gender);
     }
 
     @Test
     void updateParent() {
         long id = 123;
-        String password = "password";
-        String email = "amarikhina@gmail.com";
-        UserData userData = new UserData();
-        userData.setEmail(email);
-        userData.setPassword(password);
-
         ParentData parentData = new ParentData();
         String name = "Michał";
         Gender gender = Gender.MALE;
         parentData.setName(name);
         parentData.setGender(gender);
-        parentData.setUserData(userData);
 
         Parent parent = new Parent();
-        parent.setUser(new User());
+        User user = new User();
+        parent.setUser(user);
+        UserData userData = new UserData();
+        parentData.setUserData(userData);
         when(parentRepository.findById(id)).thenReturn(Optional.of(parent));
+
+        when(userService.updateUser(user, userData)).thenReturn(user);
 
         parentService.updateParent(id, parentData);
 
@@ -102,14 +99,20 @@ class ParentServiceTest {
 
         assertThat(parentCaptured.getName()).isEqualTo(name);
         assertThat(parentCaptured.getGender()).isEqualTo(gender);
-        assertThat(parentCaptured.getUser().getEmail()).isEqualTo(email);
-        assertThat(parentCaptured.getUser().getPassword()).isEqualTo(password);
     }
 
     @Test
     void deleteById() {
         long id = 123;
+        Parent parent = new Parent();
+        User user = new User();
+        user.setId(987L);
+        parent.setUser(user);
+        when(parentRepository.findById(id)).thenReturn(Optional.of(parent));
+
         parentService.deleteParent(id);
+
+        verify(userRepository).deleteById(user.getId());
         verify(parentRepository).deleteById(id);
     }
 }
