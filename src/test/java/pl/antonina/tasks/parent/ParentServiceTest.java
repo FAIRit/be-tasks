@@ -7,10 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.antonina.tasks.user.Gender;
-import pl.antonina.tasks.user.User;
-import pl.antonina.tasks.user.UserData;
-import pl.antonina.tasks.user.UserRepository;
+import pl.antonina.tasks.user.*;
 
 import java.util.Optional;
 
@@ -28,6 +25,8 @@ class ParentServiceTest {
     private ParentRepository parentRepository;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private UserService userService;
 
     private ParentService parentService;
 
@@ -36,7 +35,7 @@ class ParentServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        parentService = new ParentService(parentRepository, parentMapper, userRepository);
+        parentService = new ParentService(parentRepository, parentMapper, userRepository, userService);
     }
 
     @Test
@@ -55,18 +54,16 @@ class ParentServiceTest {
 
     @Test
     void addParent() {
-        String password = "password";
-        String email = "amarikhina@gmail.com";
-        UserData userData = new UserData();
-        userData.setEmail(email);
-        userData.setPassword(password);
-
         Gender gender = Gender.FEMALE;
         String name = "Antonina";
         ParentData parentData = new ParentData();
         parentData.setGender(gender);
         parentData.setName(name);
+
+        User user = new User();
+        UserData userData = new UserData();
         parentData.setUserData(userData);
+        when(userService.addUser(userData)).thenReturn(user);
 
         parentService.addParent(parentData);
 
@@ -75,45 +72,25 @@ class ParentServiceTest {
 
         assertThat(parentCaptured.getName()).isEqualTo(name);
         assertThat(parentCaptured.getGender()).isEqualTo(gender);
-        assertThat(parentCaptured.getUser().getPassword()).isEqualTo(password);
-        assertThat(parentCaptured.getUser().getEmail()).isEqualTo(email);
-    }
-
-    @Test
-    void addParentEmailExists() {
-        String email = "test@gmail.com";
-        UserData userData = new UserData();
-        userData.setEmail(email);
-        ParentData parentData = new ParentData();
-        parentData.setUserData(userData);
-
-        User userExists = new User();
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(userExists));
-
-        assertThatThrownBy(() -> parentService.addParent(parentData))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("User with given email already exists");
     }
 
     @Test
     void updateParent() {
         long id = 123;
-        String password = "password";
-        String email = "amarikhina@gmail.com";
-        UserData userData = new UserData();
-        userData.setEmail(email);
-        userData.setPassword(password);
-
         ParentData parentData = new ParentData();
         String name = "Michał";
         Gender gender = Gender.MALE;
         parentData.setName(name);
         parentData.setGender(gender);
-        parentData.setUserData(userData);
 
         Parent parent = new Parent();
-        parent.setUser(new User());
+        User user = new User();
+        parent.setUser(user);
+        UserData userData = new UserData();
+        parentData.setUserData(userData);
         when(parentRepository.findById(id)).thenReturn(Optional.of(parent));
+
+        when(userService.updateUser(user, userData)).thenReturn(user);
 
         parentService.updateParent(id, parentData);
 
@@ -122,24 +99,6 @@ class ParentServiceTest {
 
         assertThat(parentCaptured.getName()).isEqualTo(name);
         assertThat(parentCaptured.getGender()).isEqualTo(gender);
-        assertThat(parentCaptured.getUser().getEmail()).isEqualTo(email);
-        assertThat(parentCaptured.getUser().getPassword()).isEqualTo(password);
-    }
-
-    @Test
-    void updateParentEmailExists() {
-        String email = "test@gmail.com";
-        UserData userData = new UserData();
-        userData.setEmail(email);
-        ParentData parentData = new ParentData();
-        parentData.setUserData(userData);
-
-        User existingUser = new User();
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(existingUser));
-
-        assertThatThrownBy(() -> parentService.updateParent(123, parentData))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("User with given email already exists");
     }
 
     @Test

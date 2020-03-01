@@ -9,10 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.antonina.tasks.parent.Parent;
 import pl.antonina.tasks.parent.ParentRepository;
-import pl.antonina.tasks.user.Gender;
-import pl.antonina.tasks.user.User;
-import pl.antonina.tasks.user.UserData;
-import pl.antonina.tasks.user.UserRepository;
+import pl.antonina.tasks.user.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -35,6 +32,9 @@ class ChildServiceTest {
     private ChildMapper childMapper;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private UserService userService;
+
 
     private ChildService childService;
 
@@ -43,7 +43,7 @@ class ChildServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        childService = new ChildService(childRepository, parentRepository, childMapper, userRepository);
+        childService = new ChildService(childRepository, parentRepository, childMapper, userRepository, userService);
     }
 
     @Test
@@ -82,20 +82,19 @@ class ChildServiceTest {
         String name = "Natalia";
         LocalDate birthDate = LocalDate.of(2017, 2, 16);
         Gender gender = Gender.FEMALE;
-        String email = "amarikhina@gmail.com";
-        String password = "password";
-        UserData userData = new UserData();
-        userData.setEmail(email);
-        userData.setPassword(password);
 
         ChildData childData = new ChildData();
         childData.setName(name);
         childData.setBirthDate(birthDate);
         childData.setGender(gender);
+        UserData userData = new UserData();
         childData.setUserData(userData);
 
         Parent parent = new Parent();
         when(parentRepository.findById(parentId)).thenReturn(Optional.of(parent));
+
+        User user = new User();
+        when(userService.addUser(childData.getUserData())).thenReturn(user);
 
         childService.addChild(parentId, childData);
 
@@ -104,39 +103,10 @@ class ChildServiceTest {
 
         assertThat(childCaptured.getName()).isEqualTo(name);
         assertThat(childCaptured.getBirthDate()).isEqualTo(birthDate);
-        assertThat(childCaptured.getGender()).isEqualTo(Gender.FEMALE);
+        assertThat(childCaptured.getGender()).isEqualTo(gender);
         assertThat(childCaptured.getParent()).isEqualTo(parent);
         assertThat(childCaptured.getPoints()).isZero();
-        assertThat(childCaptured.getUser().getPassword()).isEqualTo(password);
-        assertThat(childCaptured.getUser().getEmail()).isEqualTo(email);
-    }
-
-    @Test
-    void addChildNoParent() {
-        String email = "test@wp.pl";
-        UserData userData = new UserData();
-        userData.setEmail(email);
-        ChildData childData = new ChildData();
-        childData.setUserData(userData);
-
-        assertThatThrownBy(() -> childService.addChild(123, childData))
-                .isInstanceOf(NoSuchElementException.class);
-    }
-
-    @Test
-    void addChildEmailExists() {
-        String email = "test@wp.pl";
-        UserData userData = new UserData();
-        userData.setEmail(email);
-        ChildData childData = new ChildData();
-        childData.setUserData(userData);
-
-        User existingUser = new User();
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(existingUser));
-
-        assertThatThrownBy(() -> childService.addChild(123, childData))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("User with given email already exists");
+        assertThat(childCaptured.getUser()).isEqualTo(user);
     }
 
     @Test
@@ -145,11 +115,7 @@ class ChildServiceTest {
         Gender gender = Gender.FEMALE;
         LocalDate birthDate = LocalDate.of(2017, 2, 16);
         String name = "Natalia";
-        String email = "amarikhina@gmail.com";
-        String password = "password";
         UserData userData = new UserData();
-        userData.setEmail(email);
-        userData.setPassword(password);
 
         ChildData childData = new ChildData();
         childData.setGender(gender);
@@ -158,7 +124,10 @@ class ChildServiceTest {
         childData.setUserData(userData);
 
         Child child = new Child();
-        child.setUser(new User());
+        User user = new User();
+        child.setUser(user);
+        when(userService.updateUser(user, userData)).thenReturn(user);
+
         when(childRepository.findById(id)).thenReturn(Optional.of(child));
 
         childService.updateChild(id, childData);
@@ -169,24 +138,6 @@ class ChildServiceTest {
         assertThat(childCaptured.getGender()).isEqualTo(gender);
         assertThat(childCaptured.getBirthDate()).isEqualTo(birthDate);
         assertThat(childCaptured.getName()).isEqualTo(name);
-        assertThat(childCaptured.getUser().getPassword()).isEqualTo(password);
-        assertThat(childCaptured.getUser().getEmail()).isEqualTo(email);
-    }
-
-    @Test
-    void updateChildEmailExists() {
-        String email = "test@gmail.com";
-        UserData userData = new UserData();
-        userData.setEmail(email);
-        ChildData childData = new ChildData();
-        childData.setUserData(userData);
-
-        User existingUser = new User();
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(existingUser));
-
-        assertThatThrownBy(() -> childService.updateChild(123, childData))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("User with given email already exists");
     }
 
     @Test
