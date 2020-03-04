@@ -34,13 +34,11 @@ class TaskToDoMapperTest {
         Instant finishDate = Instant.now().minusSeconds(20);
         Instant startDate = Instant.now().minusSeconds(10);
         boolean done = false;
-        boolean approved = true;
         TaskToDo taskToDo = new TaskToDo();
         taskToDo.setExpectedDate(expectedDate);
         taskToDo.setStartDate(startDate);
         taskToDo.setFinishDate(finishDate);
         taskToDo.setDone(done);
-        taskToDo.setApproved(approved);
 
         TaskView taskView = new TaskView();
         when(taskMapper.mapTaskView(taskToDo.getTask())).thenReturn(taskView);
@@ -51,7 +49,6 @@ class TaskToDoMapperTest {
         assertThat(taskToDoView.getFinishDate()).isEqualTo(finishDate);
         assertThat(taskToDoView.getStartDate()).isEqualTo(startDate);
         assertThat(taskToDoView.isDone()).isEqualTo(done);
-        assertThat(taskToDoView.isApproved()).isEqualTo(approved);
         assertThat(taskToDoView.getTaskView()).isEqualTo(taskView);
     }
 }

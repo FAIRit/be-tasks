@@ -10,16 +10,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import pl.antonina.tasks.cart.HistoryService;
 import pl.antonina.tasks.child.Child;
 import pl.antonina.tasks.child.ChildRepository;
+import pl.antonina.tasks.security.LoggedUserService;
 import pl.antonina.tasks.task.Task;
 import pl.antonina.tasks.task.TaskRepository;
 
+import java.security.Principal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TaskToDoServiceTest {
@@ -34,6 +35,8 @@ class TaskToDoServiceTest {
     private TaskToDoMapper taskToDoMapper;
     @Mock
     private HistoryService historyService;
+    @Mock
+    private LoggedUserService loggedUserService;
 
     private TaskToDoService taskToDoService;
 
@@ -45,40 +48,47 @@ class TaskToDoServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        taskToDoService = new TaskToDoService(taskToDoRepository, taskRepository, childRepository, taskToDoMapper, historyService);
+        taskToDoService = new TaskToDoService(taskToDoRepository, taskRepository, childRepository, taskToDoMapper, historyService, loggedUserService);
     }
 
     @Test
-    void getTaskToDo() {
-        long id = 123;
-
-        TaskToDo taskToDo = new TaskToDo();
-        TaskToDoView taskToDoView = new TaskToDoView();
-
-        when(taskToDoRepository.findById(id)).thenReturn(Optional.of(taskToDo));
-        when(taskToDoMapper.mapTaskToDoView(taskToDo)).thenReturn(taskToDoView);
-
-        TaskToDoView taskToDoViewResult = taskToDoService.getTaskToDo(id);
-
-        assertThat(taskToDoViewResult).isEqualTo(taskToDoView);
-    }
-
-    @Test
-    void getTasksToDo() {
+    void getTasksToDoChildIdExists() {
         long childId = 123;
-        boolean done = false;
-        boolean approved = true;
-
         TaskToDo taskToDo = new TaskToDo();
         List<TaskToDo> taskToDoList = List.of(taskToDo);
         TaskToDoView taskToDoView = new TaskToDoView();
         List<TaskToDoView> taskToDoViewList = List.of(taskToDoView);
 
-        when(taskToDoRepository.findByChildIdAndDoneAndApprovedOrderByExpectedDateDesc(childId, done, approved))
+        Principal principal = mock(Principal.class);
+        Child child = new Child();
+        child.setId(childId);
+        when(taskToDoRepository.findByChildIdAndApprovedOrderByExpectedDateDesc(childId, false))
                 .thenReturn(taskToDoList);
         when(taskToDoMapper.mapTaskToDoView(taskToDo)).thenReturn(taskToDoView);
 
-        List<TaskToDoView> taskToDoViewListResult = taskToDoService.getTasksToDo(childId, done, approved);
+        List<TaskToDoView> taskToDoViewListResult = taskToDoService.getTasksToDoByChildAndNotApproved(childId, principal);
+
+        assertThat(taskToDoViewListResult).isEqualTo(taskToDoViewList);
+    }
+
+    @Test
+    void getTasksToDoChildIdIsNull() {
+        TaskToDo taskToDo = new TaskToDo();
+        List<TaskToDo> taskToDoList = List.of(taskToDo);
+        TaskToDoView taskToDoView = new TaskToDoView();
+        List<TaskToDoView> taskToDoViewList = List.of(taskToDoView);
+
+        Principal principal = mock(Principal.class);
+        Child child = new Child();
+        long childId = 123;
+        child.setId(childId);
+        when(loggedUserService.getChild(principal)).thenReturn(child);
+
+        when(taskToDoRepository.findByChildIdAndApprovedOrderByExpectedDateDesc(childId, false))
+                .thenReturn(taskToDoList);
+        when(taskToDoMapper.mapTaskToDoView(taskToDo)).thenReturn(taskToDoView);
+
+        List<TaskToDoView> taskToDoViewListResult = taskToDoService.getTasksToDoByChildAndNotApproved(null, principal);
 
         assertThat(taskToDoViewListResult).isEqualTo(taskToDoViewList);
     }

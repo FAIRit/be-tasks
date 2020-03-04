@@ -1,7 +1,9 @@
 package pl.antonina.tasks.taskToDo;
 
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -14,14 +16,9 @@ public class TaskToDoController {
         this.taskToDoService = taskToDoService;
     }
 
-    @GetMapping("/{id}")
-    public TaskToDoView getTaskToDo(@PathVariable long id) {
-        return taskToDoService.getTaskToDo(id);
-    }
-
     @GetMapping
-    public List<TaskToDoView> getTasksToDoByChildByDoneByApproved(@RequestParam long childId, @RequestParam boolean done, @RequestParam boolean approved) {
-        return taskToDoService.getTasksToDo(childId, done, approved);
+    public List<TaskToDoView> getTasksToDoByChildAndNotApproved(@RequestParam(required = false) Long childId, @ApiIgnore Principal principal) {
+        return taskToDoService.getTasksToDoByChildAndNotApproved(childId, principal);
     }
 
     @PostMapping
@@ -30,22 +27,22 @@ public class TaskToDoController {
     }
 
     @PutMapping("/{id}")
-    public void updateTaskToDo(@PathVariable long id, @RequestBody TaskToDoData taskToDoData) {
-        taskToDoService.updateTaskToDo(id, taskToDoData);
+    public void updateTaskToDo(@PathVariable long taskToDoId, @RequestBody TaskToDoData taskToDoData) {
+        taskToDoService.updateTaskToDo(taskToDoId, taskToDoData);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTaskToDo(@PathVariable long id) {
-        taskToDoService.deleteTaskToDo(id);
+    public void deleteTaskToDo(@PathVariable long taskToDoId) {
+        taskToDoService.deleteTaskToDo(taskToDoId);
     }
 
     @PutMapping("/{id}/done")
-    public void setDone(@PathVariable long id) {
-        taskToDoService.setDone(id);
+    public void setDone(@PathVariable long taskToDoId) {
+        taskToDoService.setDone(taskToDoId);
     }
 
     @PutMapping("/{id}/approved")
-    public void setApproved(@PathVariable long id) {
-        taskToDoService.setApproved(id);
+    public void setApproved(@PathVariable long taskToDoId) {
+        taskToDoService.setApproved(taskToDoId);
     }
 }

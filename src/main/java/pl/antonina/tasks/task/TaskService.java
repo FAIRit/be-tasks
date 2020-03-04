@@ -2,8 +2,9 @@ package pl.antonina.tasks.task;
 
 import org.springframework.stereotype.Service;
 import pl.antonina.tasks.parent.Parent;
-import pl.antonina.tasks.parent.ParentRepository;
+import pl.antonina.tasks.security.LoggedUserService;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,50 +12,40 @@ import java.util.stream.Collectors;
 class TaskService {
 
     private final TaskRepository taskRepository;
-    private final ParentRepository parentRepository;
     private final TaskMapper taskMapper;
+    private final LoggedUserService loggedUserService;
 
     public TaskService(TaskRepository taskRepository,
-                       ParentRepository parentRepository,
-                       TaskMapper taskMapper) {
+                       TaskMapper taskMapper,
+                       LoggedUserService loggedUserService) {
         this.taskRepository = taskRepository;
-        this.parentRepository = parentRepository;
         this.taskMapper = taskMapper;
+        this.loggedUserService = loggedUserService;
     }
 
-    List<TaskView> getByParent(long parentId) {
-        return taskRepository.findByParentIdOrderByNameAsc(parentId).stream()
+    List<TaskView> getTasksByParent(Principal principal) {
+        Parent parent = loggedUserService.getParent(principal);
+        return taskRepository.findByParentIdOrderByNameAsc(parent.getId()).stream()
                 .map(taskMapper::mapTaskView)
                 .collect(Collectors.toList());
     }
 
-    List<TaskView> getByParentAndName(long parentId, String name) {
-        return taskRepository.findByParentIdAndNameContains(parentId, name).stream()
-                .map(taskMapper::mapTaskView)
-                .collect(Collectors.toList());
-    }
-
-    TaskView getTask(long id) {
-        Task task = taskRepository.findById(id).orElseThrow();
-        return taskMapper.mapTaskView(task);
-    }
-
-    void addTask(long parentId, TaskData taskData) {
-        Parent parent = parentRepository.findById(parentId).orElseThrow();
+    void addTask(Principal principal, TaskData taskData) {
+        Parent parent = loggedUserService.getParent(principal);
         Task task = new Task();
         mapTask(taskData, task);
         task.setParent(parent);
         taskRepository.save(task);
     }
 
-    void updateTask(long id, TaskData taskData) {
-        Task task = taskRepository.findById(id).orElseThrow();
+    void updateTask(long taskId, TaskData taskData) {
+        Task task = taskRepository.findById(taskId).orElseThrow();
         mapTask(taskData, task);
         taskRepository.save(task);
     }
 
-    void deleteTask(long id) {
-        taskRepository.deleteById(id);
+    void deleteTask(long taskId) {
+        taskRepository.deleteById(taskId);
     }
 
     private void mapTask(TaskData taskData, Task task) {

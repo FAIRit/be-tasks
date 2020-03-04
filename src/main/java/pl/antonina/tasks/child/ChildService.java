@@ -3,11 +3,13 @@ package pl.antonina.tasks.child;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.antonina.tasks.parent.Parent;
-import pl.antonina.tasks.parent.ParentRepository;
+import pl.antonina.tasks.security.LoggedUserService;
 import pl.antonina.tasks.user.User;
 import pl.antonina.tasks.user.UserRepository;
 import pl.antonina.tasks.user.UserService;
+import pl.antonina.tasks.user.UserType;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,17 +17,17 @@ import java.util.stream.Collectors;
 class ChildService {
 
     private final ChildRepository childRepository;
-    private final ParentRepository parentRepository;
     private final ChildMapper childMapper;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final LoggedUserService loggedUserService;
 
-    public ChildService(ChildRepository childRepository, ParentRepository parentRepository, ChildMapper childMapper, UserRepository userRepository, UserService userService) {
+    public ChildService(ChildRepository childRepository, ChildMapper childMapper, UserRepository userRepository, UserService userService, LoggedUserService loggedUserService) {
         this.childRepository = childRepository;
-        this.parentRepository = parentRepository;
         this.childMapper = childMapper;
         this.userRepository = userRepository;
         this.userService = userService;
+        this.loggedUserService = loggedUserService;
     }
 
     ChildView getChild(long id) {
@@ -33,17 +35,18 @@ class ChildService {
         return childMapper.mapChildView(child);
     }
 
-    List<ChildView> getChildrenByParentId(long parentId) {
-        List<Child> childList = childRepository.findByParentId(parentId);
+    List<ChildView> getChildrenByParent(Principal principal) {
+        Parent parent = loggedUserService.getParent(principal);
+        List<Child> childList = childRepository.findByParentId(parent.getId());
         return childList.stream()
                 .map(childMapper::mapChildView)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    void addChild(long parentId, ChildData childData) {
-        Parent parent = parentRepository.findById(parentId).orElseThrow();
-        User user = userService.addUser(childData.getUserData());
+    void addChild(Principal principal, ChildData childData) {
+        Parent parent = loggedUserService.getParent(principal);
+        User user = userService.addUser(UserType.CHILD, childData.getUserData());
         Child child = new Child();
         child.setName(childData.getName());
         child.setGender(childData.getGender());

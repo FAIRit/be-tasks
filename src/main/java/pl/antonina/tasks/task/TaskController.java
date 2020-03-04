@@ -1,7 +1,9 @@
 package pl.antonina.tasks.task;
 
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -15,31 +17,22 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<TaskView> getByParentIdAndByName(@PathVariable long parentId, @RequestParam(required = false) String name) {
-        if (name != null) {
-            return taskService.getByParentAndName(parentId, name);
-        } else {
-            return taskService.getByParent(parentId);
-        }
-    }
-
-    @GetMapping("/{id}")
-    public TaskView getTask(@PathVariable long id) {
-        return taskService.getTask(id);
+    public List<TaskView> getTasksByParent(@ApiIgnore Principal principal) {
+        return taskService.getTasksByParent(principal);
     }
 
     @PostMapping
-    public void addTask(@RequestParam long parentId, @RequestBody TaskData taskData) {
-        taskService.addTask(parentId, taskData);
+    public void addTask(@ApiIgnore Principal principal, @RequestBody TaskData taskData) {
+        taskService.addTask(principal, taskData);
     }
 
     @PutMapping("/{id}")
-    public void updateTask(@PathVariable long id, @RequestBody TaskData taskData) {
-        taskService.updateTask(id, taskData);
+    public void updateTask(@PathVariable long taskId, @RequestBody TaskData taskData) {
+        taskService.updateTask(taskId, taskData);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable long id) {
-        taskService.deleteTask(id);
+    public void deleteTask(@PathVariable long taskId) {
+        taskService.deleteTask(taskId);
     }
 }

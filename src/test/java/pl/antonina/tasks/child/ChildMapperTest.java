@@ -10,13 +10,15 @@ class ChildMapperTest {
 
     @Test
     void mapChildView() {
-
+        String name = "Natalia";
+        Integer points = 10;
         Child child = new Child();
-        child.setName("Natalia");
+        child.setName(name);
+        child.setPoints(points);
 
         ChildView childView = childMapper.mapChildView(child);
 
-        assertThat(childView.getName())
-                .isEqualTo("Natalia");
+        assertThat(childView.getName()).isEqualTo(name);
+        assertThat(childView.getPoints()).isEqualTo(points);
     }
 }

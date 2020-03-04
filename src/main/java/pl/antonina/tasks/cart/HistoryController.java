@@ -21,7 +21,7 @@ public class HistoryController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteHistory(@PathVariable long id) {
-        historyService.deleteHistory(id);
+    public void deleteHistory(@PathVariable long historyId) {
+        historyService.deleteHistory(historyId);
     }
 }

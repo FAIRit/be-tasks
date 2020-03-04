@@ -1,7 +1,9 @@
 package pl.antonina.tasks.child;
 
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -15,27 +17,27 @@ public class ChildController {
     }
 
     @GetMapping
-    public List<ChildView> getChildByParentId(@RequestParam long parentId) {
-        return childService.getChildrenByParentId(parentId);
+    public List<ChildView> getChildrenByParent(@ApiIgnore Principal principal) {
+        return childService.getChildrenByParent(principal);
     }
 
     @GetMapping("/{id}")
-    public ChildView getChild(@PathVariable long id) {
-        return childService.getChild(id);
+    public ChildView getChild(@PathVariable long childId) {
+        return childService.getChild(childId);
     }
 
     @PostMapping
-    public void addChild(@RequestParam long parentId, @RequestBody ChildData childData) {
-        childService.addChild(parentId, childData);
+    public void addChild(@ApiIgnore Principal principal, @RequestBody ChildData childData) {
+        childService.addChild(principal, childData);
     }
 
     @PutMapping("/{id}")
-    public void updateChild(@PathVariable long id, @RequestBody ChildData childData) {
-        childService.updateChild(id, childData);
+    public void updateChild(@PathVariable long childId, @RequestBody ChildData childData) {
+        childService.updateChild(childId, childData);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteChild(@PathVariable long id) {
-        childService.deleteChild(id);
+    public void deleteChild(@PathVariable long childId) {
+        childService.deleteChild(childId);
     }
 }

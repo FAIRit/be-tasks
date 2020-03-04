@@ -8,18 +8,16 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.antonina.tasks.parent.Parent;
-import pl.antonina.tasks.parent.ParentRepository;
+import pl.antonina.tasks.security.LoggedUserService;
 import pl.antonina.tasks.user.*;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ChildServiceTest {
@@ -27,14 +25,13 @@ class ChildServiceTest {
     @Mock
     private ChildRepository childRepository;
     @Mock
-    private ParentRepository parentRepository;
-    @Mock
     private ChildMapper childMapper;
     @Mock
     private UserRepository userRepository;
     @Mock
     private UserService userService;
-
+    @Mock
+    private LoggedUserService loggedUserService;
 
     private ChildService childService;
 
@@ -43,7 +40,7 @@ class ChildServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        childService = new ChildService(childRepository, parentRepository, childMapper, userRepository, userService);
+        childService = new ChildService(childRepository, childMapper, userRepository, userService, loggedUserService);
     }
 
     @Test
@@ -62,26 +59,30 @@ class ChildServiceTest {
 
     @Test
     void getChildrenByParentId() {
-        long parentId = 123;
         Child child = new Child();
         List<Child> childList = List.of(child);
         ChildView childView = new ChildView();
         List<ChildView> childViewList = List.of(childView);
 
+        Principal principal = mock(Principal.class);
+        Parent parent = new Parent();
+        long parentId = 123;
+        parent.setId(parentId);
+        when(loggedUserService.getParent(principal)).thenReturn(parent);
         when(childRepository.findByParentId(parentId)).thenReturn(childList);
         when(childMapper.mapChildView(child)).thenReturn(childView);
 
-        List<ChildView> childViewListResult = childService.getChildrenByParentId(parentId);
+        List<ChildView> childViewListResult = childService.getChildrenByParent(principal);
 
         assertThat(childViewListResult).isEqualTo(childViewList);
     }
 
     @Test
     void addChild() {
-        long parentId = 123;
         String name = "Natalia";
         LocalDate birthDate = LocalDate.of(2017, 2, 16);
         Gender gender = Gender.FEMALE;
+        UserType userType = UserType.CHILD;
 
         ChildData childData = new ChildData();
         childData.setName(name);
@@ -91,12 +92,13 @@ class ChildServiceTest {
         childData.setUserData(userData);
 
         Parent parent = new Parent();
-        when(parentRepository.findById(parentId)).thenReturn(Optional.of(parent));
-
+        Principal principal = mock(Principal.class);
+        when(loggedUserService.getParent(principal)).thenReturn(parent);
         User user = new User();
-        when(userService.addUser(childData.getUserData())).thenReturn(user);
+        user.setType(userType);
+        when(userService.addUser(userType, userData)).thenReturn(user);
 
-        childService.addChild(parentId, childData);
+        childService.addChild(principal, childData);
 
         verify(childRepository).save(childArgumentCaptor.capture());
         Child childCaptured = childArgumentCaptor.getValue();
@@ -107,6 +109,7 @@ class ChildServiceTest {
         assertThat(childCaptured.getParent()).isEqualTo(parent);
         assertThat(childCaptured.getPoints()).isZero();
         assertThat(childCaptured.getUser()).isEqualTo(user);
+        assertThat(childCaptured.getUser().getType()).isEqualTo(userType);
     }
 
     @Test

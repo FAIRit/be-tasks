@@ -1,6 +1,9 @@
 package pl.antonina.tasks.parent;
 
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/parents")
@@ -12,9 +15,9 @@ public class ParentController {
         this.parentService = parentService;
     }
 
-    @GetMapping("/{id}")
-    public ParentView getParent(@PathVariable long id) {
-        return parentService.getParent(id);
+    @GetMapping
+    public ParentView getParent(@ApiIgnore Principal principal) {
+        return parentService.getParent(principal);
     }
 
     @PostMapping
@@ -22,13 +25,13 @@ public class ParentController {
         parentService.addParent(parentData);
     }
 
-    @PutMapping("/{id}")
-    public void updateParent(@PathVariable long id, @RequestBody ParentData parentData) {
-        parentService.updateParent(id, parentData);
+    @PutMapping
+    public void updateParent(@RequestBody ParentData parentData, @ApiIgnore Principal principal) {
+        parentService.updateParent(parentData, principal);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteParent(@PathVariable long id) {
-        parentService.deleteParent(id);
+    @DeleteMapping
+    public void deleteParent(@ApiIgnore Principal principal) {
+        parentService.deleteParent(principal);
     }
 }

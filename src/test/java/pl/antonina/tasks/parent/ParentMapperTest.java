@@ -1,6 +1,7 @@
 package pl.antonina.tasks.parent;
 
 import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ParentMapperTest {
@@ -9,13 +10,12 @@ class ParentMapperTest {
 
     @Test
     void mapParentView() {
-
+        String name = "Antonina";
         Parent parent = new Parent();
-        parent.setName("Antonina");
+        parent.setName(name);
 
         ParentView parentView = parentMapper.mapParentView(parent);
 
-        assertThat(parentView.getName())
-                .isEqualTo("Antonina");
+        assertThat(parentView.getName()).isEqualTo(name);
     }
 }

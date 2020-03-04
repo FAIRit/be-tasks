@@ -12,5 +12,4 @@ public class TaskToDoView {
     private Instant expectedDate;
     private Instant finishDate;
     private boolean done;
-    private boolean approved;
 }

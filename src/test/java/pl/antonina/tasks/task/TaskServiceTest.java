@@ -8,8 +8,9 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.antonina.tasks.parent.Parent;
-import pl.antonina.tasks.parent.ParentRepository;
+import pl.antonina.tasks.security.LoggedUserService;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,9 +23,10 @@ class TaskServiceTest {
     @Mock
     private TaskRepository taskRepository;
     @Mock
-    ParentRepository parentRepository;
-    @Mock
     TaskMapper taskMapper;
+    @Mock
+    LoggedUserService loggedUserService;
+
 
     private TaskService taskService;
 
@@ -33,59 +35,31 @@ class TaskServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        taskService = new TaskService(taskRepository, parentRepository, taskMapper);
+        taskService = new TaskService(taskRepository, taskMapper, loggedUserService);
     }
 
     @Test
-    void getByParent() {
+    void getTasksByParent() {
         long parentId = 123;
+        Parent parent = new Parent();
+        parent.setId(parentId);
         Task task = new Task();
         List<Task> taskList = List.of(task);
         TaskView taskView = new TaskView();
         List<TaskView> taskViewList = List.of(taskView);
 
+        Principal principal = mock(Principal.class);
+        when(loggedUserService.getParent(principal)).thenReturn(parent);
         when(taskRepository.findByParentIdOrderByNameAsc(parentId)).thenReturn(taskList);
         when(taskMapper.mapTaskView(task)).thenReturn(taskView);
 
-        List<TaskView> taskViewListResult = taskService.getByParent(parentId);
+        List<TaskView> taskViewListResult = taskService.getTasksByParent(principal);
 
         assertThat(taskViewListResult).isEqualTo(taskViewList);
-    }
-
-    @Test
-    void getByParentAndName() {
-        long parentId = 123;
-        String name = "Antonina";
-        Task task = new Task();
-        List<Task> taskList = List.of(task);
-        TaskView taskView = new TaskView();
-        List<TaskView> taskViewList = List.of(taskView);
-
-        when(taskRepository.findByParentIdAndNameContains(parentId, name)).thenReturn(taskList);
-        when(taskMapper.mapTaskView(task)).thenReturn(taskView);
-
-        List<TaskView> taskViewListResult = taskService.getByParentAndName(parentId, name);
-
-        assertThat(taskViewListResult).isEqualTo(taskViewList);
-    }
-
-    @Test
-    void getTask() {
-        long id = 123;
-        Task task = mock(Task.class);
-        TaskView taskView = mock(TaskView.class);
-
-        when(taskRepository.findById(id)).thenReturn(Optional.of(task));
-        when(taskMapper.mapTaskView(task)).thenReturn(taskView);
-
-        TaskView taskViewResult = taskService.getTask(id);
-
-        assertThat(taskViewResult).isEqualTo(taskView);
     }
 
     @Test
     void addTask() {
-        long parentId = 123;
         String name = "Sprzątanie zabawek";
         String description = "Cały pokój";
         Integer points = 10;
@@ -94,9 +68,11 @@ class TaskServiceTest {
         taskData.setDescription(description);
         taskData.setPoints(points);
 
+        Principal principal = mock(Principal.class);
         Parent parent = new Parent();
-        when(parentRepository.findById(parentId)).thenReturn(Optional.of(parent));
-        taskService.addTask(parentId, taskData);
+        when(loggedUserService.getParent(principal)).thenReturn(parent);
+
+        taskService.addTask(principal, taskData);
 
         verify(taskRepository).save(taskArgumentCaptor.capture());
         Task taskCaptured = taskArgumentCaptor.getValue();

@@ -9,5 +9,4 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
     List<Task> findByParentIdOrderByNameAsc(long parentId);
-    List<Task> findByParentIdAndNameContains(long parentId, String name);
 }

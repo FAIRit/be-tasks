@@ -7,14 +7,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.antonina.tasks.security.LoggedUserService;
 import pl.antonina.tasks.user.*;
 
-import java.util.Optional;
+import java.security.Principal;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ParentServiceTest {
@@ -27,6 +26,8 @@ class ParentServiceTest {
     private UserRepository userRepository;
     @Mock
     private UserService userService;
+    @Mock
+    private LoggedUserService loggedUserService;
 
     private ParentService parentService;
 
@@ -35,20 +36,20 @@ class ParentServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        parentService = new ParentService(parentRepository, parentMapper, userRepository, userService);
+        parentService = new ParentService(parentRepository, parentMapper, userRepository, userService, loggedUserService);
     }
 
     @Test
     void getParent() {
-        long id = 123;
-
         Parent parent = new Parent();
         ParentView parentView = new ParentView();
 
-        when(parentRepository.findById(id)).thenReturn(Optional.of(parent));
+        Principal principal = mock(Principal.class);
+        when(loggedUserService.getParent(principal)).thenReturn(parent);
         when(parentMapper.mapParentView(parent)).thenReturn(parentView);
 
-        ParentView parentViewResult = parentService.getParent(id);
+        ParentView parentViewResult = parentService.getParent(principal);
+
         assertThat(parentViewResult).isEqualTo(parentView);
     }
 
@@ -56,14 +57,16 @@ class ParentServiceTest {
     void addParent() {
         Gender gender = Gender.FEMALE;
         String name = "Antonina";
+        UserType userType = UserType.PARENT;
         ParentData parentData = new ParentData();
         parentData.setGender(gender);
         parentData.setName(name);
 
         User user = new User();
+        user.setType(userType);
         UserData userData = new UserData();
         parentData.setUserData(userData);
-        when(userService.addUser(userData)).thenReturn(user);
+        when(userService.addUser(userType, userData)).thenReturn(user);
 
         parentService.addParent(parentData);
 
@@ -72,14 +75,14 @@ class ParentServiceTest {
 
         assertThat(parentCaptured.getName()).isEqualTo(name);
         assertThat(parentCaptured.getGender()).isEqualTo(gender);
+        assertThat(parentCaptured.getUser().getType()).isEqualTo(userType);
     }
 
     @Test
     void updateParent() {
-        long id = 123;
-        ParentData parentData = new ParentData();
         String name = "Michał";
         Gender gender = Gender.MALE;
+        ParentData parentData = new ParentData();
         parentData.setName(name);
         parentData.setGender(gender);
 
@@ -88,11 +91,11 @@ class ParentServiceTest {
         parent.setUser(user);
         UserData userData = new UserData();
         parentData.setUserData(userData);
-        when(parentRepository.findById(id)).thenReturn(Optional.of(parent));
-
+        Principal principal = mock(Principal.class);
+        when(loggedUserService.getParent(principal)).thenReturn(parent);
         when(userService.updateUser(user, userData)).thenReturn(user);
 
-        parentService.updateParent(id, parentData);
+        parentService.updateParent(parentData, principal);
 
         verify(parentRepository).save(parentArgumentCaptor.capture());
         Parent parentCaptured = parentArgumentCaptor.getValue();
@@ -103,16 +106,20 @@ class ParentServiceTest {
 
     @Test
     void deleteById() {
-        long id = 123;
+        long parentId = 123;
+        long userId = 987;
         Parent parent = new Parent();
         User user = new User();
-        user.setId(987L);
+        user.setId(userId);
         parent.setUser(user);
-        when(parentRepository.findById(id)).thenReturn(Optional.of(parent));
+        parent.setId(parentId);
 
-        parentService.deleteParent(id);
+        Principal principal = mock(Principal.class);
+        when(loggedUserService.getParent(principal)).thenReturn(parent);
 
-        verify(userRepository).deleteById(user.getId());
-        verify(parentRepository).deleteById(id);
+        parentService.deleteParent(principal);
+
+        verify(userRepository).deleteById(userId);
+        verify(parentRepository).deleteById(parentId);
     }
 }

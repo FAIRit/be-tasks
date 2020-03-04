@@ -8,5 +8,5 @@ import java.util.List;
 @Repository
 public interface TaskToDoRepository extends JpaRepository<TaskToDo, Long> {
 
-    List<TaskToDo> findByChildIdAndDoneAndApprovedOrderByExpectedDateDesc(Long childId, boolean done, boolean expected);
+    List<TaskToDo> findByChildIdAndApprovedOrderByExpectedDateDesc(Long childId, boolean approved);
 }
