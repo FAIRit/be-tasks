@@ -45,44 +45,47 @@ class ChildServiceTest {
 
     @Test
     void getChild() {
-        long id = 123;
+        final long childId = 123;
 
         Child child = new Child();
-        ChildView childView = new ChildView();
+        final ChildView childView = new ChildView();
 
-        when(childRepository.findById(id)).thenReturn(Optional.of(child));
+        when(childRepository.findById(childId)).thenReturn(Optional.of(child));
         when(childMapper.mapChildView(child)).thenReturn(childView);
 
-        ChildView childViewResult = childService.getChild(id);
+        ChildView childViewResult = childService.getChild(childId);
         assertThat(childViewResult).isEqualTo(childView);
     }
 
     @Test
     void getChildrenByParentId() {
-        Child child = new Child();
-        List<Child> childList = List.of(child);
-        ChildView childView = new ChildView();
-        List<ChildView> childViewList = List.of(childView);
+        Child child1 = new Child();
+        Child child2 = new Child();
+        List<Child> childList = List.of(child1, child2);
+        ChildView childView1 = new ChildView();
+        ChildView childView2 = new ChildView();
+        final List<ChildView> childViewList = List.of(childView1, childView2);
 
-        Principal principal = mock(Principal.class);
+        Principal parentPrincipal = mock(Principal.class);
         Parent parent = new Parent();
         long parentId = 123;
         parent.setId(parentId);
-        when(loggedUserService.getParent(principal)).thenReturn(parent);
+        when(loggedUserService.getParent(parentPrincipal)).thenReturn(parent);
         when(childRepository.findByParentId(parentId)).thenReturn(childList);
-        when(childMapper.mapChildView(child)).thenReturn(childView);
+        when(childMapper.mapChildView(child1)).thenReturn(childView2);
+        when(childMapper.mapChildView(child2)).thenReturn(childView2);
 
-        List<ChildView> childViewListResult = childService.getChildrenByParent(principal);
+        List<ChildView> childViewListResult = childService.getChildrenByParent(parentPrincipal);
 
         assertThat(childViewListResult).isEqualTo(childViewList);
     }
 
     @Test
     void addChild() {
-        String name = "Natalia";
-        LocalDate birthDate = LocalDate.of(2017, 2, 16);
-        Gender gender = Gender.FEMALE;
-        UserType userType = UserType.CHILD;
+        final String name = "Natalia";
+        final LocalDate birthDate = LocalDate.of(2017, 2, 16);
+        final Gender gender = Gender.FEMALE;
+        final UserType userType = UserType.CHILD;
 
         ChildData childData = new ChildData();
         childData.setName(name);
@@ -91,14 +94,14 @@ class ChildServiceTest {
         UserData userData = new UserData();
         childData.setUserData(userData);
 
-        Parent parent = new Parent();
-        Principal principal = mock(Principal.class);
-        when(loggedUserService.getParent(principal)).thenReturn(parent);
-        User user = new User();
+        final Parent parent = new Parent();
+        Principal parentPrincipal = mock(Principal.class);
+        when(loggedUserService.getParent(parentPrincipal)).thenReturn(parent);
+        final User user = new User();
         user.setType(userType);
         when(userService.addUser(userType, userData)).thenReturn(user);
 
-        childService.addChild(principal, childData);
+        childService.addChild(parentPrincipal, childData);
 
         verify(childRepository).save(childArgumentCaptor.capture());
         Child childCaptured = childArgumentCaptor.getValue();
@@ -114,10 +117,10 @@ class ChildServiceTest {
 
     @Test
     void updateChild() {
-        long id = 123;
-        Gender gender = Gender.FEMALE;
-        LocalDate birthDate = LocalDate.of(2017, 2, 16);
-        String name = "Natalia";
+        long childId = 123;
+        final Gender gender = Gender.FEMALE;
+        final LocalDate birthDate = LocalDate.of(2017, 2, 16);
+        final String name = "Natalia";
         UserData userData = new UserData();
 
         ChildData childData = new ChildData();
@@ -131,9 +134,9 @@ class ChildServiceTest {
         child.setUser(user);
         when(userService.updateUser(user, userData)).thenReturn(user);
 
-        when(childRepository.findById(id)).thenReturn(Optional.of(child));
+        when(childRepository.findById(childId)).thenReturn(Optional.of(child));
 
-        childService.updateChild(id, childData);
+        childService.updateChild(childId, childData);
 
         verify(childRepository).save(childArgumentCaptor.capture());
         Child childCaptured = childArgumentCaptor.getValue();
@@ -145,17 +148,18 @@ class ChildServiceTest {
 
     @Test
     void deleteChild() {
-        long id = 123;
+        final long childId = 123;
 
         Child child = new Child();
-        User user = new User();
-        user.setId(1L);
+        final User user = new User();
+        final long userId = 987;
+        user.setId(userId);
         child.setUser(user);
-        when(childRepository.findById(id)).thenReturn(Optional.of(child));
+        when(childRepository.findById(childId)).thenReturn(Optional.of(child));
 
-        childService.deleteChild(id);
+        childService.deleteChild(childId);
 
         verify(userRepository).deleteById(user.getId());
-        verify(childRepository).deleteById(id);
+        verify(childRepository).deleteById(childId);
     }
 }

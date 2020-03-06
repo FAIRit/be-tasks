@@ -11,9 +11,9 @@ class TaskMapperTest {
     @Test
     void mapTaskView() {
         Task task = new Task();
-        String name = "Sprzątanie zabawek";
-        String description = "Cały pokój";
-        Integer points = 10;
+        final String name = "Sprzątanie zabawek";
+        final String description = "Cały pokój";
+        final Integer points = 10;
         task.setName(name);
         task.setPoints(points);
         task.setDescription(description);

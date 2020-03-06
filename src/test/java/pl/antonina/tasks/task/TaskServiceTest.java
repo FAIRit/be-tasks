@@ -43,36 +43,39 @@ class TaskServiceTest {
         long parentId = 123;
         Parent parent = new Parent();
         parent.setId(parentId);
-        Task task = new Task();
-        List<Task> taskList = List.of(task);
-        TaskView taskView = new TaskView();
-        List<TaskView> taskViewList = List.of(taskView);
+        Task task1 = new Task();
+        Task task2 = new Task();
+        List<Task> taskList = List.of(task1, task2);
+        TaskView taskView1 = new TaskView();
+        TaskView taskView2 = new TaskView();
+        final List<TaskView> taskViewList = List.of(taskView1, taskView2);
 
-        Principal principal = mock(Principal.class);
-        when(loggedUserService.getParent(principal)).thenReturn(parent);
+        Principal parentPrincipal = mock(Principal.class);
+        when(loggedUserService.getParent(parentPrincipal)).thenReturn(parent);
         when(taskRepository.findByParentIdOrderByNameAsc(parentId)).thenReturn(taskList);
-        when(taskMapper.mapTaskView(task)).thenReturn(taskView);
+        when(taskMapper.mapTaskView(task1)).thenReturn(taskView1);
+        when(taskMapper.mapTaskView(task2)).thenReturn(taskView2);
 
-        List<TaskView> taskViewListResult = taskService.getTasksByParent(principal);
+        List<TaskView> taskViewListResult = taskService.getTasksByParent(parentPrincipal);
 
         assertThat(taskViewListResult).isEqualTo(taskViewList);
     }
 
     @Test
     void addTask() {
-        String name = "Sprzątanie zabawek";
-        String description = "Cały pokój";
-        Integer points = 10;
+        final String name = "Sprzątanie zabawek";
+        final String description = "Cały pokój";
+        final Integer points = 10;
         TaskData taskData = new TaskData();
         taskData.setName(name);
         taskData.setDescription(description);
         taskData.setPoints(points);
 
-        Principal principal = mock(Principal.class);
-        Parent parent = new Parent();
-        when(loggedUserService.getParent(principal)).thenReturn(parent);
+        Principal parentPrincipal = mock(Principal.class);
+        final Parent parent = new Parent();
+        when(loggedUserService.getParent(parentPrincipal)).thenReturn(parent);
 
-        taskService.addTask(principal, taskData);
+        taskService.addTask(parentPrincipal, taskData);
 
         verify(taskRepository).save(taskArgumentCaptor.capture());
         Task taskCaptured = taskArgumentCaptor.getValue();
@@ -85,19 +88,19 @@ class TaskServiceTest {
 
     @Test
     void updateTask() {
-        long id = 123;
-        Integer points = 10;
-        String name = "Sprzątanie zabawek";
-        String description = "Cały pokój";
+        long taskId = 123;
+        final Integer points = 10;
+        final String name = "Sprzątanie zabawek";
+        final String description = "Cały pokój";
         TaskData taskData = new TaskData();
         taskData.setPoints(points);
         taskData.setName(name);
         taskData.setDescription(description);
 
         Task task = new Task();
-        when(taskRepository.findById(id)).thenReturn(Optional.of(task));
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
 
-        taskService.updateTask(id, taskData);
+        taskService.updateTask(taskId, taskData);
 
         verify(taskRepository).save(taskArgumentCaptor.capture());
         Task taskCaptured = taskArgumentCaptor.getValue();
@@ -109,9 +112,9 @@ class TaskServiceTest {
 
     @Test
     void deleteTask() {
-        long id = 987;
+        final long taskId = 987;
 
-        taskService.deleteTask(id);
-        verify(taskRepository).deleteById(id);
+        taskService.deleteTask(taskId);
+        verify(taskRepository).deleteById(taskId);
     }
 }

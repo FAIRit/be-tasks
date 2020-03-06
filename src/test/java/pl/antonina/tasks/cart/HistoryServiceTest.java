@@ -41,7 +41,7 @@ class HistoryServiceTest {
         History history = new History();
         List<History> historyList = List.of(history);
         HistoryView historyView = new HistoryView();
-        List<HistoryView> historyViewList = List.of(historyView);
+        final List<HistoryView> historyViewList = List.of(historyView);
 
         when(historyRepository.findByChildId(childId)).thenReturn(historyList);
         when(historyMapper.mapHistoryView(history)).thenReturn(historyView);
@@ -55,8 +55,8 @@ class HistoryServiceTest {
     void addHistory() {
         String description = "description";
         String name = "name";
-        String message = "Approved: " + name + " - " + description;
-        Integer points= 123;
+        final String message = "Approved: " + name + " - " + description;
+        final Integer points = 123;
 
         Task task = new Task();
         task.setDescription(description);
@@ -64,7 +64,7 @@ class HistoryServiceTest {
         task.setPoints(points);
         TaskToDo taskToDo = new TaskToDo();
         taskToDo.setTask(task);
-        Child child = new Child();
+        final Child child = new Child();
         taskToDo.setChild(child);
 
         historyService.addHistory(taskToDo);
@@ -79,8 +79,8 @@ class HistoryServiceTest {
 
     @Test
     void deleteHistory() {
-        long id = 123;
-        historyService.deleteHistory(id);
-        verify(historyRepository).deleteById(id);
+        final long historyId = 123;
+        historyService.deleteHistory(historyId);
+        verify(historyRepository).deleteById(historyId);
     }
 }

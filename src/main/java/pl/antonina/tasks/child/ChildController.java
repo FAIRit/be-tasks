@@ -17,8 +17,8 @@ public class ChildController {
     }
 
     @GetMapping
-    public List<ChildView> getChildrenByParent(@ApiIgnore Principal principal) {
-        return childService.getChildrenByParent(principal);
+    public List<ChildView> getChildrenByParent(@ApiIgnore Principal parentPrincipal) {
+        return childService.getChildrenByParent(parentPrincipal);
     }
 
     @GetMapping("/{id}")
@@ -27,8 +27,8 @@ public class ChildController {
     }
 
     @PostMapping
-    public void addChild(@ApiIgnore Principal principal, @RequestBody ChildData childData) {
-        childService.addChild(principal, childData);
+    public void addChild(@ApiIgnore Principal parentPrincipal, @RequestBody ChildData childData) {
+        childService.addChild(parentPrincipal, childData);
     }
 
     @PutMapping("/{id}")

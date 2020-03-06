@@ -23,15 +23,15 @@ class TaskService {
         this.loggedUserService = loggedUserService;
     }
 
-    List<TaskView> getTasksByParent(Principal principal) {
-        Parent parent = loggedUserService.getParent(principal);
+    List<TaskView> getTasksByParent(Principal parentPrincipal) {
+        Parent parent = loggedUserService.getParent(parentPrincipal);
         return taskRepository.findByParentIdOrderByNameAsc(parent.getId()).stream()
                 .map(taskMapper::mapTaskView)
                 .collect(Collectors.toList());
     }
 
-    void addTask(Principal principal, TaskData taskData) {
-        Parent parent = loggedUserService.getParent(principal);
+    void addTask(Principal parentPrincipal, TaskData taskData) {
+        Parent parent = loggedUserService.getParent(parentPrincipal);
         Task task = new Task();
         mapTask(taskData, task);
         task.setParent(parent);
@@ -39,7 +39,7 @@ class TaskService {
     }
 
     void updateTask(long taskId, TaskData taskData) {
-        Task task = taskRepository.findById(taskId).orElseThrow();
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotExistsException("Task with given id doesn't exist."));
         mapTask(taskData, task);
         taskRepository.save(task);
     }

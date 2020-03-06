@@ -1,6 +1,5 @@
 package pl.antonina.tasks.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.antonina.tasks.child.Child;
 import pl.antonina.tasks.child.ChildRepository;
@@ -20,13 +19,13 @@ public class LoggedUserService {
         this.childRepository = childRepository;
     }
 
-    public Parent getParent(Principal principal) {
-        String email = principal.getName();
-        return parentRepository.findByUserEmail(email).orElseThrow();
+    public Parent getParent(Principal parentPrincipal) {
+        String email = parentPrincipal.getName();
+        return parentRepository.findByUserEmail(email).orElseThrow(() -> new UserNotExistsException("User with given email doesn't exist."));
     }
 
-    public Child getChild(Principal principal){
-        String email = principal.getName();
-        return childRepository.findByUserEmail(email).orElseThrow();
+    public Child getChild(Principal childPrincipal) {
+        String email = childPrincipal.getName();
+        return childRepository.findByUserEmail(email).orElseThrow(() -> new UserNotExistsException("User with given email doesn't exist."));
     }
 }

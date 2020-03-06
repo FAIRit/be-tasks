@@ -10,7 +10,7 @@ class ParentMapperTest {
 
     @Test
     void mapParentView() {
-        String name = "Antonina";
+        final String name = "Antonina";
         Parent parent = new Parent();
         parent.setName(name);
 

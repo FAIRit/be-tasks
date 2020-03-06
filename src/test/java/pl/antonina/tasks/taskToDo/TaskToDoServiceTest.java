@@ -13,6 +13,7 @@ import pl.antonina.tasks.child.ChildRepository;
 import pl.antonina.tasks.security.LoggedUserService;
 import pl.antonina.tasks.task.Task;
 import pl.antonina.tasks.task.TaskRepository;
+import pl.antonina.tasks.task.TaskView;
 
 import java.security.Principal;
 import java.time.Instant;
@@ -54,41 +55,47 @@ class TaskToDoServiceTest {
     @Test
     void getTasksToDoChildIdExists() {
         long childId = 123;
-        TaskToDo taskToDo = new TaskToDo();
-        List<TaskToDo> taskToDoList = List.of(taskToDo);
-        TaskToDoView taskToDoView = new TaskToDoView();
-        List<TaskToDoView> taskToDoViewList = List.of(taskToDoView);
+        TaskToDo taskToDo1 = new TaskToDo();
+        TaskToDo taskToDo2 = new TaskToDo();
+        List<TaskToDo> taskToDoList = List.of(taskToDo1, taskToDo2);
+        TaskToDoView taskToDoView1 = new TaskToDoView();
+        TaskToDoView taskToDoView2 = new TaskToDoView();
+        final List<TaskToDoView> taskToDoViewList = List.of(taskToDoView1, taskToDoView2);
 
-        Principal principal = mock(Principal.class);
+        Principal childPrincipal = mock(Principal.class);
         Child child = new Child();
         child.setId(childId);
         when(taskToDoRepository.findByChildIdAndApprovedOrderByExpectedDateDesc(childId, false))
                 .thenReturn(taskToDoList);
-        when(taskToDoMapper.mapTaskToDoView(taskToDo)).thenReturn(taskToDoView);
+        when(taskToDoMapper.mapTaskToDoView(taskToDo1)).thenReturn(taskToDoView1);
+        when(taskToDoMapper.mapTaskToDoView(taskToDo2)).thenReturn(taskToDoView2);
 
-        List<TaskToDoView> taskToDoViewListResult = taskToDoService.getTasksToDoByChildAndNotApproved(childId, principal);
+        List<TaskToDoView> taskToDoViewListResult = taskToDoService.getTasksToDoByChildAndNotApproved(childId, childPrincipal);
 
         assertThat(taskToDoViewListResult).isEqualTo(taskToDoViewList);
     }
 
     @Test
     void getTasksToDoChildIdIsNull() {
-        TaskToDo taskToDo = new TaskToDo();
-        List<TaskToDo> taskToDoList = List.of(taskToDo);
-        TaskToDoView taskToDoView = new TaskToDoView();
-        List<TaskToDoView> taskToDoViewList = List.of(taskToDoView);
+        TaskToDo taskToDo1 = new TaskToDo();
+        TaskToDo taskToDo2 = new TaskToDo();
+        List<TaskToDo> taskToDoList = List.of(taskToDo1, taskToDo2);
+        TaskToDoView taskToDoView1 = new TaskToDoView();
+        TaskToDoView taskToDoView2 = new TaskToDoView();
+        final List<TaskToDoView> taskToDoViewList = List.of(taskToDoView1, taskToDoView2);
 
-        Principal principal = mock(Principal.class);
+        Principal childPrincipal = mock(Principal.class);
         Child child = new Child();
         long childId = 123;
         child.setId(childId);
-        when(loggedUserService.getChild(principal)).thenReturn(child);
+        when(loggedUserService.getChild(childPrincipal)).thenReturn(child);
 
         when(taskToDoRepository.findByChildIdAndApprovedOrderByExpectedDateDesc(childId, false))
                 .thenReturn(taskToDoList);
-        when(taskToDoMapper.mapTaskToDoView(taskToDo)).thenReturn(taskToDoView);
+        when(taskToDoMapper.mapTaskToDoView(taskToDo1)).thenReturn(taskToDoView1);
+        when(taskToDoMapper.mapTaskToDoView(taskToDo2)).thenReturn(taskToDoView2);
 
-        List<TaskToDoView> taskToDoViewListResult = taskToDoService.getTasksToDoByChildAndNotApproved(null, principal);
+        List<TaskToDoView> taskToDoViewListResult = taskToDoService.getTasksToDoByChildAndNotApproved(null, childPrincipal);
 
         assertThat(taskToDoViewListResult).isEqualTo(taskToDoViewList);
     }
@@ -97,12 +104,12 @@ class TaskToDoServiceTest {
     void addTaskToDo() {
         long childId = 123;
         long taskId = 987;
-        Instant expectedDate = Instant.now();
+        final Instant expectedDate = Instant.now();
         TaskToDoData taskToDoData = new TaskToDoData();
         taskToDoData.setExpectedDate(expectedDate);
 
-        Child child = new Child();
-        Task task = new Task();
+        final Child child = new Child();
+        final Task task = new Task();
 
         when(childRepository.findById(childId)).thenReturn(Optional.of(child));
         when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
@@ -119,15 +126,15 @@ class TaskToDoServiceTest {
 
     @Test
     void updateTaskToDo() {
-        long id = 123;
-        Instant expectedDate = Instant.now();
+        long taskToDoId = 123;
+        final Instant expectedDate = Instant.now();
         TaskToDoData taskToDoData = new TaskToDoData();
         taskToDoData.setExpectedDate(expectedDate);
 
         TaskToDo taskToDo = new TaskToDo();
-        when(taskToDoRepository.findById(id)).thenReturn(Optional.of(taskToDo));
+        when(taskToDoRepository.findById(taskToDoId)).thenReturn(Optional.of(taskToDo));
 
-        taskToDoService.updateTaskToDo(id, taskToDoData);
+        taskToDoService.updateTaskToDo(taskToDoId, taskToDoData);
 
         verify(taskToDoRepository).save(taskToDoArgumentCaptor.capture());
         TaskToDo taskToDoCaptured = taskToDoArgumentCaptor.getValue();
@@ -137,19 +144,19 @@ class TaskToDoServiceTest {
 
     @Test
     void deleteTaskToDo() {
-        long id = 123;
-        taskToDoService.deleteTaskToDo(id);
-        verify(taskToDoRepository).deleteById(id);
+        final long taskToDoId = 123;
+        taskToDoService.deleteTaskToDo(taskToDoId);
+        verify(taskToDoRepository).deleteById(taskToDoId);
     }
 
     @Test
     void setDone() {
-        long id = 123;
+        long taskToDoId = 123;
 
         TaskToDo taskToDo = new TaskToDo();
-        when(taskToDoRepository.findById(id)).thenReturn(Optional.of(taskToDo));
+        when(taskToDoRepository.findById(taskToDoId)).thenReturn(Optional.of(taskToDo));
 
-        taskToDoService.setDone(id);
+        taskToDoService.setDone(taskToDoId);
 
         verify(taskToDoRepository).save(taskToDoArgumentCaptor.capture());
         TaskToDo taskToDoCaptured = taskToDoArgumentCaptor.getValue();
@@ -159,25 +166,25 @@ class TaskToDoServiceTest {
 
     @Test
     void setApproved() {
-        long id = 123;
-        Integer points = 20;
-        Integer childPoints = 100;
+        long taskToDoId = 123;
+        final Integer taskPoints = 20;
+        final Integer childPoints = 100;
         long childId = 987;
 
         Child child = new Child();
         child.setId(childId);
         child.setPoints(childPoints);
         Task task = new Task();
-        task.setPoints(points);
+        task.setPoints(taskPoints);
         TaskToDo taskToDo = new TaskToDo();
         taskToDo.setApproved(true);
         taskToDo.setTask(task);
         taskToDo.setChild(child);
 
-        when(taskToDoRepository.findById(id)).thenReturn(Optional.of(taskToDo));
+        when(taskToDoRepository.findById(taskToDoId)).thenReturn(Optional.of(taskToDo));
         when(childRepository.findById(childId)).thenReturn(Optional.of(child));
 
-        taskToDoService.setApproved(id);
+        taskToDoService.setApproved(taskToDoId);
 
         verify(taskToDoRepository).save(taskToDoArgumentCaptor.capture());
         TaskToDo taskToDoCaptured = taskToDoArgumentCaptor.getValue();
@@ -186,7 +193,7 @@ class TaskToDoServiceTest {
         Child childCaptured = childArgumentCaptor.getValue();
 
         assertThat(taskToDoCaptured.isApproved()).isTrue();
-        assertThat(childCaptured.getPoints()).isEqualTo(points + childPoints);
+        assertThat(childCaptured.getPoints()).isEqualTo(taskPoints + childPoints);
 
     }
 }

@@ -16,8 +16,8 @@ public class ParentController {
     }
 
     @GetMapping
-    public ParentView getParent(@ApiIgnore Principal principal) {
-        return parentService.getParent(principal);
+    public ParentView getParent(@ApiIgnore Principal parentPrincipal) {
+        return parentService.getParent(parentPrincipal);
     }
 
     @PostMapping
@@ -26,12 +26,12 @@ public class ParentController {
     }
 
     @PutMapping
-    public void updateParent(@RequestBody ParentData parentData, @ApiIgnore Principal principal) {
-        parentService.updateParent(parentData, principal);
+    public void updateParent(@RequestBody ParentData parentData, @ApiIgnore Principal parentPrincipal) {
+        parentService.updateParent(parentData, parentPrincipal);
     }
 
     @DeleteMapping
-    public void deleteParent(@ApiIgnore Principal principal) {
-        parentService.deleteParent(principal);
+    public void deleteParent(@ApiIgnore Principal parentPrincipal) {
+        parentService.deleteParent(parentPrincipal);
     }
 }

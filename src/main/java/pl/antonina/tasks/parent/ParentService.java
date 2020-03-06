@@ -27,8 +27,8 @@ class ParentService {
         this.loggedUserService = loggedUserService;
     }
 
-    ParentView getParent(Principal principal) {
-        Parent parent = loggedUserService.getParent(principal);
+    ParentView getParent(Principal parentPrincipal) {
+        Parent parent = loggedUserService.getParent(parentPrincipal);
         return parentMapper.mapParentView(parent);
     }
 
@@ -43,8 +43,8 @@ class ParentService {
     }
 
     @Transactional
-    void updateParent(ParentData parentData, Principal principal) {
-        Parent parent = loggedUserService.getParent(principal);
+    void updateParent(ParentData parentData, Principal parentPrincipal) {
+        Parent parent = loggedUserService.getParent(parentPrincipal);
         User user = userService.updateUser(parent.getUser(), parentData.getUserData());
         parent.setName(parentData.getName());
         parent.setGender(parentData.getGender());
@@ -53,8 +53,8 @@ class ParentService {
     }
 
     @Transactional
-    void deleteParent(Principal principal) {
-        Parent parent = loggedUserService.getParent(principal);
+    void deleteParent(Principal parentPrincipal) {
+        Parent parent = loggedUserService.getParent(parentPrincipal);
         long userId = parent.getUser().getId();
         long parentId = parent.getId();
         userRepository.deleteById(userId);

@@ -36,15 +36,15 @@ class UserServiceTest {
 
     @Test
     void addUser() {
-        String email = "test@gmail.com";
+        final String email = "test@gmail.com";
         String password = "password";
-        UserType userType = UserType.CHILD;
+        final UserType userType = UserType.CHILD;
 
         UserData userData = new UserData();
         userData.setEmail(email);
         userData.setPassword(password);
 
-        String encodedPassword = "encodedPassword";
+        final String encodedPassword = "encodedPassword";
         when(bCryptPasswordEncoder.encode(password)).thenReturn(encodedPassword);
 
         userService.addUser(userType, userData);
@@ -73,16 +73,16 @@ class UserServiceTest {
 
     @Test
     void updateUser() {
-        String email = "test@gmail.com";
+        final String email = "test@gmail.com";
         String password = "password";
-        long id = 123;
+        long userId = 123;
         UserData userData = new UserData();
         userData.setEmail(email);
         userData.setPassword(password);
         User user = new User();
-        user.setId(id);
+        user.setId(userId);
 
-        String encodedPassword = "encodedPassword";
+        final String encodedPassword = "encodedPassword";
         when(bCryptPasswordEncoder.encode(password)).thenReturn(encodedPassword);
 
         userService.updateUser(user, userData);
@@ -97,14 +97,14 @@ class UserServiceTest {
     @Test
     void updateUserEmailExists() {
         String email = "Test@gmail.com";
-        long id = 123;
+        long userId = 123;
         User user = new User();
         user.setEmail(email);
-        when(userRepository.findByEmailAndIdNot(email, id)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailAndIdNot(email, userId)).thenReturn(Optional.of(user));
 
         UserData userData = new UserData();
         userData.setEmail(email);
-        user.setId(id);
+        user.setId(userId);
         assertThatThrownBy(() -> userService.updateUser(user, userData))
                 .isInstanceOf(UserAlreadyExistsException.class);
     }

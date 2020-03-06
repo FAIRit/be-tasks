@@ -17,13 +17,13 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<TaskView> getTasksByParent(@ApiIgnore Principal principal) {
-        return taskService.getTasksByParent(principal);
+    public List<TaskView> getTasksByParent(@ApiIgnore Principal parentPrincipal) {
+        return taskService.getTasksByParent(parentPrincipal);
     }
 
     @PostMapping
-    public void addTask(@ApiIgnore Principal principal, @RequestBody TaskData taskData) {
-        taskService.addTask(principal, taskData);
+    public void addTask(@ApiIgnore Principal parentPrincipal, @RequestBody TaskData taskData) {
+        taskService.addTask(parentPrincipal, taskData);
     }
 
     @PutMapping("/{id}")

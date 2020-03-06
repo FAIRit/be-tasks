@@ -42,26 +42,25 @@ class ParentServiceTest {
     @Test
     void getParent() {
         Parent parent = new Parent();
-        ParentView parentView = new ParentView();
+        final ParentView parentView = new ParentView();
 
-        Principal principal = mock(Principal.class);
-        when(loggedUserService.getParent(principal)).thenReturn(parent);
+        Principal parentPrincipal = mock(Principal.class);
+        when(loggedUserService.getParent(parentPrincipal)).thenReturn(parent);
         when(parentMapper.mapParentView(parent)).thenReturn(parentView);
 
-        ParentView parentViewResult = parentService.getParent(principal);
+        ParentView parentViewResult = parentService.getParent(parentPrincipal);
 
         assertThat(parentViewResult).isEqualTo(parentView);
     }
 
     @Test
     void addParent() {
-        Gender gender = Gender.FEMALE;
-        String name = "Antonina";
-        UserType userType = UserType.PARENT;
+        final Gender gender = Gender.FEMALE;
+        final String name = "Antonina";
+        final UserType userType = UserType.PARENT;
         ParentData parentData = new ParentData();
         parentData.setGender(gender);
         parentData.setName(name);
-
         User user = new User();
         user.setType(userType);
         UserData userData = new UserData();
@@ -80,8 +79,8 @@ class ParentServiceTest {
 
     @Test
     void updateParent() {
-        String name = "Michał";
-        Gender gender = Gender.MALE;
+        final String name = "Michał";
+        final Gender gender = Gender.MALE;
         ParentData parentData = new ParentData();
         parentData.setName(name);
         parentData.setGender(gender);
@@ -91,11 +90,11 @@ class ParentServiceTest {
         parent.setUser(user);
         UserData userData = new UserData();
         parentData.setUserData(userData);
-        Principal principal = mock(Principal.class);
-        when(loggedUserService.getParent(principal)).thenReturn(parent);
+        Principal parentPrincipal = mock(Principal.class);
+        when(loggedUserService.getParent(parentPrincipal)).thenReturn(parent);
         when(userService.updateUser(user, userData)).thenReturn(user);
 
-        parentService.updateParent(parentData, principal);
+        parentService.updateParent(parentData, parentPrincipal);
 
         verify(parentRepository).save(parentArgumentCaptor.capture());
         Parent parentCaptured = parentArgumentCaptor.getValue();
@@ -106,18 +105,18 @@ class ParentServiceTest {
 
     @Test
     void deleteById() {
-        long parentId = 123;
-        long userId = 987;
+        final long parentId = 123;
+        final long userId = 987;
         Parent parent = new Parent();
         User user = new User();
         user.setId(userId);
         parent.setUser(user);
         parent.setId(parentId);
 
-        Principal principal = mock(Principal.class);
-        when(loggedUserService.getParent(principal)).thenReturn(parent);
+        Principal parentPrincipal = mock(Principal.class);
+        when(loggedUserService.getParent(parentPrincipal)).thenReturn(parent);
 
-        parentService.deleteParent(principal);
+        parentService.deleteParent(parentPrincipal);
 
         verify(userRepository).deleteById(userId);
         verify(parentRepository).deleteById(parentId);

@@ -18,7 +18,7 @@ public class UserService {
         String email = userData.getEmail();
         boolean userExists = userRepository.findByEmail(email).isPresent();
         if (userExists) {
-            throw new UserAlreadyExistsException("User with given email already exists");
+            throw new UserAlreadyExistsException("User with given email already exists.");
         }
         User user = new User();
         user.setType(userType);
@@ -31,7 +31,7 @@ public class UserService {
         String email = userData.getEmail();
         boolean userExists = userRepository.findByEmailAndIdNot(email, user.getId()).isPresent();
         if (userExists) {
-            throw new UserAlreadyExistsException("User with given email already exists");
+            throw new UserAlreadyExistsException("User with given email already exists.");
         }
         user.setEmail(userData.getEmail());
         if (userData.getPassword() != null) {

@@ -31,12 +31,12 @@ class ChildService {
     }
 
     ChildView getChild(long id) {
-        Child child = childRepository.findById(id).orElseThrow();
+        Child child = childRepository.findById(id).orElseThrow(() -> new ChildNotExistsException("Child with given id doesn't exist."));
         return childMapper.mapChildView(child);
     }
 
-    List<ChildView> getChildrenByParent(Principal principal) {
-        Parent parent = loggedUserService.getParent(principal);
+    List<ChildView> getChildrenByParent(Principal parentPrincipal) {
+        Parent parent = loggedUserService.getParent(parentPrincipal);
         List<Child> childList = childRepository.findByParentId(parent.getId());
         return childList.stream()
                 .map(childMapper::mapChildView)
@@ -44,8 +44,8 @@ class ChildService {
     }
 
     @Transactional
-    void addChild(Principal principal, ChildData childData) {
-        Parent parent = loggedUserService.getParent(principal);
+    void addChild(Principal parentPrincipal, ChildData childData) {
+        Parent parent = loggedUserService.getParent(parentPrincipal);
         User user = userService.addUser(UserType.CHILD, childData.getUserData());
         Child child = new Child();
         child.setName(childData.getName());
@@ -59,7 +59,7 @@ class ChildService {
 
     @Transactional
     void updateChild(long id, ChildData childData) {
-        Child child = childRepository.findById(id).orElseThrow();
+        Child child = childRepository.findById(id).orElseThrow(() -> new ChildNotExistsException("Child with given id doesn't exist."));
         User user = userService.updateUser(child.getUser(), childData.getUserData());
         child.setName(childData.getName());
         child.setGender(childData.getGender());
@@ -70,7 +70,7 @@ class ChildService {
 
     @Transactional
     void deleteChild(long id) {
-        Child child = childRepository.findById(id).orElseThrow();
+        Child child = childRepository.findById(id).orElseThrow(() -> new ChildNotExistsException("Child with given id doesn't exist."));
         long userId = child.getUser().getId();
         userRepository.deleteById(userId);
         childRepository.deleteById(id);
