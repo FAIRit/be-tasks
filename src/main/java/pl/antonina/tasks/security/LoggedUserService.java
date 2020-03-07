@@ -5,6 +5,7 @@ import pl.antonina.tasks.child.Child;
 import pl.antonina.tasks.child.ChildRepository;
 import pl.antonina.tasks.parent.Parent;
 import pl.antonina.tasks.parent.ParentRepository;
+import pl.antonina.tasks.user.UserNotExistsException;
 
 import java.security.Principal;
 

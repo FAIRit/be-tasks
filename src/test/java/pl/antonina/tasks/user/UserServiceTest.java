@@ -9,12 +9,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.security.Principal;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -23,6 +23,8 @@ class UserServiceTest {
     private UserRepository userRepository;
     @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Mock
+    private UserMapper userMapper;
 
     private UserService userService;
 
@@ -31,7 +33,7 @@ class UserServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        userService = new UserService(userRepository, bCryptPasswordEncoder);
+        userService = new UserService(userRepository, bCryptPasswordEncoder, userMapper);
     }
 
     @Test
@@ -107,5 +109,21 @@ class UserServiceTest {
         user.setId(userId);
         assertThatThrownBy(() -> userService.updateUser(user, userData))
                 .isInstanceOf(UserAlreadyExistsException.class);
+    }
+
+    @Test
+    void getUser() {
+        User user = new User();
+        final UserView userView = new UserView();
+        String email = "test@gmail.com";
+
+        Principal userPrincipal = mock(Principal.class);
+        when(userPrincipal.getName()).thenReturn(email);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(userMapper.mapUserView(user)).thenReturn(userView);
+
+        UserView userViewResult = userService.getUser(userPrincipal);
+
+        assertThat(userViewResult).isEqualTo(userView);
     }
 }

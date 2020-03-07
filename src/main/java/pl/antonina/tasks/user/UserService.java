@@ -3,15 +3,19 @@ package pl.antonina.tasks.user;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
+
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.userMapper = userMapper;
     }
 
     public User addUser(UserType userType, UserData userData) {
@@ -34,9 +38,15 @@ public class UserService {
             throw new UserAlreadyExistsException("User with given email already exists.");
         }
         user.setEmail(userData.getEmail());
-        if (userData.getPassword() != null) {
+        if (userData.getPassword() != null && !userData.getPassword().isEmpty()) {
             user.setPassword(bCryptPasswordEncoder.encode(userData.getPassword()));
         }
         return userRepository.save(user);
+    }
+
+    UserView getUser(Principal principal) {
+        return userRepository.findByEmail(principal.getName())
+                .map(userMapper::mapUserView)
+                .orElseThrow(() -> new UserNotExistsException("User with given email doesn't exist."));
     }
 }
