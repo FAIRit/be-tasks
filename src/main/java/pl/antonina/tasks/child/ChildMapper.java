@@ -8,7 +8,9 @@ public class ChildMapper {
     public ChildView mapChildView(Child child){
        ChildView childView = new ChildView();
        childView.setName(child.getName());
-       childView.setPoints(child.getPoints());
+       childView.setBirthDate(child.getBirthDate());
+       childView.setEmail(child.getUser().getEmail());
+       childView.setGender(child.getGender());
        return childView;
     }
 }

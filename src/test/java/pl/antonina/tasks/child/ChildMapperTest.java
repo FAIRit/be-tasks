@@ -1,6 +1,10 @@
 package pl.antonina.tasks.child;
 
 import org.junit.jupiter.api.Test;
+import pl.antonina.tasks.user.Gender;
+import pl.antonina.tasks.user.User;
+
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,14 +15,19 @@ class ChildMapperTest {
     @Test
     void mapChildView() {
         final String name = "Natalia";
-        final Integer childPoints = 10;
+        final String email = "test@gmail.com";
+        final Gender gender = Gender.FEMALE;
+        final LocalDate birthDate = LocalDate.of(2019, 2, 16);
         Child child = new Child();
+        User user = new User();
+        child.setUser(user);
         child.setName(name);
-        child.setPoints(childPoints);
+        child.setGender(gender);
+        child.setBirthDate(birthDate);
+        child.getUser().setEmail(email);
 
         ChildView childView = childMapper.mapChildView(child);
 
         assertThat(childView.getName()).isEqualTo(name);
-        assertThat(childView.getPoints()).isEqualTo(childPoints);
     }
 }
