@@ -34,10 +34,7 @@ public class HistoryService {
         historyRepository.save(history);
     }
 
-    void deleteHistory(long id) {
-        historyRepository.deleteById(id);
+    void deleteHistory(long historyId) {
+        historyRepository.deleteById(historyId);
     }
 }
-
-
-

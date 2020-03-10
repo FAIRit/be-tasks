@@ -12,7 +12,6 @@ import pl.antonina.tasks.child.ChildView;
 import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,9 +30,9 @@ class HistoryMapperTest {
     @Test
     void mapHistoryView() {
         History history = new History();
-        String message = "Message";
-        Instant modificationDate = Instant.now();
-        Integer quantity = 5;
+        final String message = "Message";
+        final Instant modificationDate = Instant.now();
+        final Integer quantity = 5;
         history.setModificationDate(modificationDate);
         history.setMessage(message);
         history.setQuantity(quantity);
@@ -41,7 +40,7 @@ class HistoryMapperTest {
         Child child = new Child();
         history.setChild(child);
 
-        ChildView childView = new ChildView();
+        final ChildView childView = new ChildView();
         when(childMapper.mapChildView(child)).thenReturn(childView);
 
         HistoryView historyView = historyMapper.mapHistoryView(history);

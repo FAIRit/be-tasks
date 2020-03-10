@@ -5,4 +5,5 @@ import lombok.Data;
 @Data
 public class ChildView {
     private String name;
+    private Integer points;
 }

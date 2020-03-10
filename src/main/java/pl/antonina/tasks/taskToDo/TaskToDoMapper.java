@@ -19,7 +19,6 @@ public class TaskToDoMapper {
         taskToDoView.setStartDate(taskToDo.getStartDate());
         taskToDoView.setFinishDate(taskToDo.getFinishDate());
         taskToDoView.setDone(taskToDo.isDone());
-        taskToDoView.setApproved(taskToDo.isApproved());
         return taskToDoView;
     }
 }
