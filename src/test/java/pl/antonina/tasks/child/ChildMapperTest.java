@@ -14,12 +14,14 @@ class ChildMapperTest {
 
     @Test
     void mapChildView() {
+        final long childId = 1;
         final String name = "Natalia";
         final String email = "test@gmail.com";
         final Gender gender = Gender.FEMALE;
         final LocalDate birthDate = LocalDate.of(2019, 2, 16);
         Child child = new Child();
         User user = new User();
+        child.setId(childId);
         child.setUser(user);
         child.setName(name);
         child.setGender(gender);
@@ -28,6 +30,10 @@ class ChildMapperTest {
 
         ChildView childView = childMapper.mapChildView(child);
 
+        assertThat(childView.getId()).isEqualTo(childId);
         assertThat(childView.getName()).isEqualTo(name);
+        assertThat(childView.getEmail()).isEqualTo(email);
+        assertThat(childView.getGender()).isEqualTo(gender);
+        assertThat(childView.getBirthDate()).isEqualTo(birthDate);
     }
 }

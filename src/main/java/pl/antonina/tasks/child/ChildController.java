@@ -21,7 +21,7 @@ public class ChildController {
         return childService.getChildrenByParent(parentPrincipal);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{childId}")
     public ChildView getChild(@PathVariable long childId) {
         return childService.getChild(childId);
     }
@@ -31,12 +31,12 @@ public class ChildController {
         childService.addChild(parentPrincipal, childData);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{childId}")
     public void updateChild(@PathVariable long childId, @RequestBody ChildData childData) {
         childService.updateChild(childId, childData);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{childId}")
     public void deleteChild(@PathVariable long childId) {
         childService.deleteChild(childId);
     }

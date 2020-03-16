@@ -41,6 +41,11 @@ class TaskToDoService {
         this.loggedUserService = loggedUserService;
     }
 
+    TaskToDoView getTaskToDoById(long taskToDoId) {
+        TaskToDo taskToDo = taskToDoRepository.findById(taskToDoId).orElseThrow(() -> new TaskToDoNotExistsException("TaskToDo with given id doesn't exist."));
+        return taskToDoMapper.mapTaskToDoView(taskToDo);
+    }
+
     List<TaskToDoView> getTasksToDoByChildAndNotApproved(Long childId, Principal childPrincipal) {
         long childIdNotNull = Optional.ofNullable(childId).orElseGet(() ->
                 loggedUserService.getChild(childPrincipal).getId()

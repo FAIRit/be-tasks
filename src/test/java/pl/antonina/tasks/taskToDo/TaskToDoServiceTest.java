@@ -17,6 +17,7 @@ import pl.antonina.tasks.task.TaskView;
 
 import java.security.Principal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,6 +51,20 @@ class TaskToDoServiceTest {
     @BeforeEach
     void beforeEach() {
         taskToDoService = new TaskToDoService(taskToDoRepository, taskRepository, childRepository, taskToDoMapper, historyService, loggedUserService);
+    }
+
+    @Test
+    void getTaskToDoById(){
+        long taskToDoId = 1;
+        TaskToDo taskToDo = new TaskToDo();
+        TaskToDoView taskToDoView = new TaskToDoView();
+
+        when(taskToDoRepository.findById(taskToDoId)).thenReturn(Optional.of(taskToDo));
+        when(taskToDoMapper.mapTaskToDoView(taskToDo)).thenReturn(taskToDoView);
+
+        TaskToDoView taskToDoViewResult = taskToDoService.getTaskToDoById(taskToDoId);
+
+        assertThat(taskToDoViewResult).isEqualTo(taskToDoView);
     }
 
     @Test
@@ -104,7 +119,7 @@ class TaskToDoServiceTest {
     void addTaskToDo() {
         long childId = 123;
         long taskId = 987;
-        final Instant expectedDate = Instant.now();
+        final LocalDate expectedDate = LocalDate.of(2019, 2, 16);
         TaskToDoData taskToDoData = new TaskToDoData();
         taskToDoData.setExpectedDate(expectedDate);
 
@@ -127,7 +142,7 @@ class TaskToDoServiceTest {
     @Test
     void updateTaskToDo() {
         long taskToDoId = 123;
-        final Instant expectedDate = Instant.now();
+        final LocalDate expectedDate = LocalDate.of(2019, 2, 16);
         TaskToDoData taskToDoData = new TaskToDoData();
         taskToDoData.setExpectedDate(expectedDate);
 

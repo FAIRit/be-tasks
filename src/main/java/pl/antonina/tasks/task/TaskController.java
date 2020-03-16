@@ -16,6 +16,11 @@ public class TaskController {
         this.taskService = taskService;
     }
 
+    @GetMapping("/{taskId}")
+    public Task getTask(@PathVariable long taskId){
+        return taskService.getTask(taskId);
+    }
+
     @GetMapping
     public List<TaskView> getTasksByParent(@ApiIgnore Principal parentPrincipal) {
         return taskService.getTasksByParent(parentPrincipal);
@@ -26,12 +31,12 @@ public class TaskController {
         taskService.addTask(parentPrincipal, taskData);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{taskId}")
     public void updateTask(@PathVariable long taskId, @RequestBody TaskData taskData) {
         taskService.updateTask(taskId, taskData);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{taskId}")
     public void deleteTask(@PathVariable long taskId) {
         taskService.deleteTask(taskId);
     }

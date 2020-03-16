@@ -16,6 +16,11 @@ public class TaskToDoController {
         this.taskToDoService = taskToDoService;
     }
 
+    @GetMapping("/{taskToDoId}")
+    public TaskToDoView getTaskToDoById(@PathVariable long taskToDoId) {
+        return taskToDoService.getTaskToDoById(taskToDoId);
+    }
+
     @GetMapping
     public List<TaskToDoView> getTasksToDoByChildAndNotApproved(@RequestParam(required = false) Long childId, @ApiIgnore Principal principal) {
         return taskToDoService.getTasksToDoByChildAndNotApproved(childId, principal);
@@ -26,22 +31,22 @@ public class TaskToDoController {
         taskToDoService.addTaskToDo(childId, taskId, taskToDoData);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{taskToDoId}")
     public void updateTaskToDo(@PathVariable long taskToDoId, @RequestBody TaskToDoData taskToDoData) {
         taskToDoService.updateTaskToDo(taskToDoId, taskToDoData);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{taskToDoId}")
     public void deleteTaskToDo(@PathVariable long taskToDoId) {
         taskToDoService.deleteTaskToDo(taskToDoId);
     }
 
-    @PutMapping("/{id}/done")
+    @PutMapping("/{taskToDoId}/done")
     public void setDone(@PathVariable long taskToDoId) {
         taskToDoService.setDone(taskToDoId);
     }
 
-    @PutMapping("/{id}/approved")
+    @PutMapping("/{taskToDoId}/approved")
     public void setApproved(@PathVariable long taskToDoId) {
         taskToDoService.setApproved(taskToDoId);
     }

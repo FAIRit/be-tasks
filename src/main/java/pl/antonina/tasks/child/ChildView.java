@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 @Data
 public class ChildView {
+    private Long id;
     private String name;
     private String email;
     private Gender gender;

@@ -2,6 +2,7 @@ package pl.antonina.tasks.user;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 
@@ -18,6 +19,7 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
+    @Transactional
     public User addUser(UserType userType, UserData userData) {
         String email = userData.getEmail();
         boolean userExists = userRepository.findByEmail(email).isPresent();
@@ -31,6 +33,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
     public User updateUser(User user, UserData userData) {
         String email = userData.getEmail();
         boolean userExists = userRepository.findByEmailAndIdNot(email, user.getId()).isPresent();

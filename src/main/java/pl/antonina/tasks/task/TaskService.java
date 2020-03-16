@@ -23,6 +23,10 @@ class TaskService {
         this.loggedUserService = loggedUserService;
     }
 
+    Task getTask(long taskId){
+        return taskRepository.findById(taskId).orElseThrow(() -> new TaskNotExistsException("Task with given id doesn't exist."));
+    }
+
     List<TaskView> getTasksByParent(Principal parentPrincipal) {
         Parent parent = loggedUserService.getParent(parentPrincipal);
         return taskRepository.findByParentIdOrderByNameAsc(parent.getId()).stream()

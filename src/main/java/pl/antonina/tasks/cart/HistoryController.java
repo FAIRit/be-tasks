@@ -20,7 +20,7 @@ public class HistoryController {
         return historyService.getByChildId(childId);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{historyId}")
     public void deleteHistory(@PathVariable long historyId) {
         historyService.deleteHistory(historyId);
     }
