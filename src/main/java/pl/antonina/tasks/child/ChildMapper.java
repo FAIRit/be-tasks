@@ -12,6 +12,7 @@ public class ChildMapper {
        childView.setBirthDate(child.getBirthDate());
        childView.setEmail(child.getUser().getEmail());
        childView.setGender(child.getGender());
+       childView.setPoints(child.getPoints());
        return childView;
     }
 }

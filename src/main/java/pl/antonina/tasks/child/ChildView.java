@@ -13,4 +13,5 @@ public class ChildView {
     private String email;
     private Gender gender;
     private LocalDate birthDate;
+    private Integer points;
 }

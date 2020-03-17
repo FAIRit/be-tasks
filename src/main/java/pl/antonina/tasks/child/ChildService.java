@@ -22,7 +22,11 @@ class ChildService {
     private final UserService userService;
     private final LoggedUserService loggedUserService;
 
-    public ChildService(ChildRepository childRepository, ChildMapper childMapper, UserRepository userRepository, UserService userService, LoggedUserService loggedUserService) {
+    public ChildService(ChildRepository childRepository,
+                        ChildMapper childMapper,
+                        UserRepository userRepository,
+                        UserService userService,
+                        LoggedUserService loggedUserService) {
         this.childRepository = childRepository;
         this.childMapper = childMapper;
         this.userRepository = userRepository;
@@ -31,7 +35,13 @@ class ChildService {
     }
 
     ChildView getChild(long childId) {
-        Child child = childRepository.findById(childId).orElseThrow(() -> new ChildNotExistsException("Child with given id doesn't exist."));
+        Child child = childRepository.findById(childId)
+                .orElseThrow(() -> new ChildNotExistsException("Child with given id doesn't exist."));
+        return childMapper.mapChildView(child);
+    }
+
+    ChildView getChild(Principal childPrincipal) {
+        Child child = loggedUserService.getChild(childPrincipal);
         return childMapper.mapChildView(child);
     }
 

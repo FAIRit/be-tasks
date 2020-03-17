@@ -46,11 +46,16 @@ class TaskToDoService {
         return taskToDoMapper.mapTaskToDoView(taskToDo);
     }
 
-    List<TaskToDoView> getTasksToDoByChildAndNotApproved(Long childId, Principal childPrincipal) {
-        long childIdNotNull = Optional.ofNullable(childId).orElseGet(() ->
-                loggedUserService.getChild(childPrincipal).getId()
-        );
-        List<TaskToDo> taskToDoList = taskToDoRepository.findByChildIdAndApprovedOrderByExpectedDateDesc(childIdNotNull, false);
+    List<TaskToDoView> getTasksToDoByChildAndNotApproved(Principal childPrincipal) {
+        long childId = loggedUserService.getChild(childPrincipal).getId();
+        List<TaskToDo> taskToDoList = taskToDoRepository.findByChildIdAndApprovedOrderByExpectedDateDesc(childId, false);
+        return taskToDoList.stream()
+                .map(taskToDoMapper::mapTaskToDoView)
+                .collect(Collectors.toList());
+    }
+
+    List<TaskToDoView> getTasksToDoByChildAndNotApproved(long childId) {
+        List<TaskToDo> taskToDoList = taskToDoRepository.findByChildIdAndApprovedOrderByExpectedDateDesc(childId, false);
         return taskToDoList.stream()
                 .map(taskToDoMapper::mapTaskToDoView)
                 .collect(Collectors.toList());
@@ -79,9 +84,11 @@ class TaskToDoService {
 
     void setDone(long taskToDoId) {
         TaskToDo taskToDo = taskToDoRepository.findById(taskToDoId).orElseThrow(() -> new TaskToDoNotExistsException("TaskToDo with given id doesn't exist."));
-        taskToDo.setFinishDate(Instant.now());
-        taskToDo.setDone(true);
-        taskToDoRepository.save(taskToDo);
+        if (!taskToDo.isDone()){
+            taskToDo.setFinishDate(Instant.now());
+            taskToDo.setDone(true);
+            taskToDoRepository.save(taskToDo);
+        }
     }
 
     @Transactional

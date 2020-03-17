@@ -21,9 +21,16 @@ public class TaskToDoController {
         return taskToDoService.getTaskToDoById(taskToDoId);
     }
 
+    @GetMapping("/byChild")
+    public List<TaskToDoView> getTasksToDoByChildAndNotApproved(@ApiIgnore Principal principal) {
+        return taskToDoService.getTasksToDoByChildAndNotApproved(principal);
+    }
+
     @GetMapping
-    public List<TaskToDoView> getTasksToDoByChildAndNotApproved(@RequestParam(required = false) Long childId, @ApiIgnore Principal principal) {
-        return taskToDoService.getTasksToDoByChildAndNotApproved(childId, principal);
+    public List<TaskToDoView> getTasksToDoByChildAndNotApproved(@RequestParam long childId
+
+    ) {
+        return taskToDoService.getTasksToDoByChildAndNotApproved(childId);
     }
 
     @PostMapping

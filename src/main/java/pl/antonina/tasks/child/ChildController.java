@@ -16,9 +16,14 @@ public class ChildController {
         this.childService = childService;
     }
 
-    @GetMapping
+    @GetMapping("/byParent")
     public List<ChildView> getChildrenByParent(@ApiIgnore Principal parentPrincipal) {
         return childService.getChildrenByParent(parentPrincipal);
+    }
+
+    @GetMapping
+    public ChildView getChild(@ApiIgnore Principal parentPrincipal) {
+        return childService.getChild(parentPrincipal);
     }
 
     @GetMapping("/{childId}")
