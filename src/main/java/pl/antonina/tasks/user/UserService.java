@@ -24,7 +24,7 @@ public class UserService {
         String email = userData.getEmail();
         boolean userExists = userRepository.findByEmail(email).isPresent();
         if (userExists) {
-            throw new UserAlreadyExistsException("User with given email already exists.");
+            throw new UserAlreadyExistsException("User with email=" + email + " already exist.");
         }
         User user = new User();
         user.setType(userType);
@@ -38,7 +38,7 @@ public class UserService {
         String email = userData.getEmail();
         boolean userExists = userRepository.findByEmailAndIdNot(email, user.getId()).isPresent();
         if (userExists) {
-            throw new UserAlreadyExistsException("User with given email already exists.");
+            throw new UserAlreadyExistsException("User with email=" + email + " already exist.");
         }
         user.setEmail(userData.getEmail());
         if (userData.getPassword() != null && !userData.getPassword().isEmpty()) {
@@ -50,6 +50,6 @@ public class UserService {
     UserView getUser(Principal principal) {
         return userRepository.findByEmail(principal.getName())
                 .map(userMapper::mapUserView)
-                .orElseThrow(() -> new UserNotExistsException("User with given email doesn't exist."));
+                .orElseThrow(() -> new UserNotExistsException("User with email=" + principal.getName() + " doesn't exist."));
     }
 }

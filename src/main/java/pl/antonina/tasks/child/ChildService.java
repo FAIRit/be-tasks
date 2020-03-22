@@ -36,7 +36,7 @@ class ChildService {
 
     ChildView getChild(long childId) {
         Child child = childRepository.findById(childId)
-                .orElseThrow(() -> new ChildNotExistsException("Child with given id doesn't exist."));
+                .orElseThrow(() -> new ChildNotExistsException("Child with id=" + childId + " doesn't exist."));
         return childMapper.mapChildView(child);
     }
 
@@ -69,7 +69,7 @@ class ChildService {
 
     @Transactional
     void updateChild(long childId, ChildData childData) {
-        Child child = childRepository.findById(childId).orElseThrow(() -> new ChildNotExistsException("Child with given id doesn't exist."));
+        Child child = childRepository.findById(childId).orElseThrow(() -> new ChildNotExistsException("Child with id=" + childId + " doesn't exist."));
         User user = userService.updateUser(child.getUser(), childData.getUserData());
         child.setName(childData.getName());
         child.setGender(childData.getGender());
@@ -80,7 +80,7 @@ class ChildService {
 
     @Transactional
     void deleteChild(long childId) {
-        Child child = childRepository.findById(childId).orElseThrow(() -> new ChildNotExistsException("Child with given id doesn't exist."));
+        Child child = childRepository.findById(childId).orElseThrow(() -> new ChildNotExistsException("Child with id=" + childId + " doesn't exist."));
         long userId = child.getUser().getId();
         childRepository.deleteById(childId);
         userRepository.deleteById(userId);

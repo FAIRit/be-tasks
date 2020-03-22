@@ -24,7 +24,7 @@ class TaskService {
     }
 
     Task getTask(long taskId){
-        return taskRepository.findById(taskId).orElseThrow(() -> new TaskNotExistsException("Task with given id doesn't exist."));
+        return taskRepository.findById(taskId).orElseThrow(() -> new TaskNotExistsException("Task with id=" + taskId + " doesn't exist."));
     }
 
     List<TaskView> getTasksByParent(Principal parentPrincipal) {
@@ -43,7 +43,7 @@ class TaskService {
     }
 
     void updateTask(long taskId, TaskData taskData) {
-        Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotExistsException("Task with given id doesn't exist."));
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotExistsException("Task with id=" + taskId + " doesn't exist."));
         mapTask(taskData, task);
         taskRepository.save(task);
     }

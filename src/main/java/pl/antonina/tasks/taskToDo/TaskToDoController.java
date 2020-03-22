@@ -27,9 +27,7 @@ public class TaskToDoController {
     }
 
     @GetMapping
-    public List<TaskToDoView> getTasksToDoByChildAndNotApproved(@RequestParam long childId
-
-    ) {
+    public List<TaskToDoView> getTasksToDoByChildAndNotApproved(@RequestParam long childId) {
         return taskToDoService.getTasksToDoByChildAndNotApproved(childId);
     }
 
