@@ -22,11 +22,11 @@ public class LoggedUserService {
 
     public Parent getParent(Principal parentPrincipal) {
         String email = parentPrincipal.getName();
-        return parentRepository.findByUserEmail(email).orElseThrow(() -> new UserNotExistsException("User with given email doesn't exist."));
+        return parentRepository.findByUserEmail(email).orElseThrow(() -> new UserNotExistsException("User with email=" + email + " doesn't exist."));
     }
 
     public Child getChild(Principal childPrincipal) {
         String email = childPrincipal.getName();
-        return childRepository.findByUserEmail(email).orElseThrow(() -> new UserNotExistsException("User with given email doesn't exist."));
+        return childRepository.findByUserEmail(email).orElseThrow(() -> new UserNotExistsException("User with email=" + email + " doesn't exist."));
     }
 }

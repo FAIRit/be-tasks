@@ -17,6 +17,7 @@ import pl.antonina.tasks.task.TaskView;
 
 import java.security.Principal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,7 +54,21 @@ class TaskToDoServiceTest {
     }
 
     @Test
-    void getTasksToDoChildIdExists() {
+    void getTaskToDoById(){
+        long taskToDoId = 1;
+        TaskToDo taskToDo = new TaskToDo();
+        TaskToDoView taskToDoView = new TaskToDoView();
+
+        when(taskToDoRepository.findById(taskToDoId)).thenReturn(Optional.of(taskToDo));
+        when(taskToDoMapper.mapTaskToDoView(taskToDo)).thenReturn(taskToDoView);
+
+        TaskToDoView taskToDoViewResult = taskToDoService.getTaskToDoById(taskToDoId);
+
+        assertThat(taskToDoViewResult).isEqualTo(taskToDoView);
+    }
+
+    @Test
+    void getTasksToDoByChildId() {
         long childId = 123;
         TaskToDo taskToDo1 = new TaskToDo();
         TaskToDo taskToDo2 = new TaskToDo();
@@ -62,7 +77,6 @@ class TaskToDoServiceTest {
         TaskToDoView taskToDoView2 = new TaskToDoView();
         final List<TaskToDoView> taskToDoViewList = List.of(taskToDoView1, taskToDoView2);
 
-        Principal childPrincipal = mock(Principal.class);
         Child child = new Child();
         child.setId(childId);
         when(taskToDoRepository.findByChildIdAndApprovedOrderByExpectedDateDesc(childId, false))
@@ -70,13 +84,13 @@ class TaskToDoServiceTest {
         when(taskToDoMapper.mapTaskToDoView(taskToDo1)).thenReturn(taskToDoView1);
         when(taskToDoMapper.mapTaskToDoView(taskToDo2)).thenReturn(taskToDoView2);
 
-        List<TaskToDoView> taskToDoViewListResult = taskToDoService.getTasksToDoByChildAndNotApproved(childId, childPrincipal);
+        List<TaskToDoView> taskToDoViewListResult = taskToDoService.getTasksToDoByChildAndNotApproved(childId);
 
         assertThat(taskToDoViewListResult).isEqualTo(taskToDoViewList);
     }
 
     @Test
-    void getTasksToDoChildIdIsNull() {
+    void getTasksToDoByChildPrincipal() {
         TaskToDo taskToDo1 = new TaskToDo();
         TaskToDo taskToDo2 = new TaskToDo();
         List<TaskToDo> taskToDoList = List.of(taskToDo1, taskToDo2);
@@ -95,7 +109,7 @@ class TaskToDoServiceTest {
         when(taskToDoMapper.mapTaskToDoView(taskToDo1)).thenReturn(taskToDoView1);
         when(taskToDoMapper.mapTaskToDoView(taskToDo2)).thenReturn(taskToDoView2);
 
-        List<TaskToDoView> taskToDoViewListResult = taskToDoService.getTasksToDoByChildAndNotApproved(null, childPrincipal);
+        List<TaskToDoView> taskToDoViewListResult = taskToDoService.getTasksToDoByChildAndNotApproved(childPrincipal);
 
         assertThat(taskToDoViewListResult).isEqualTo(taskToDoViewList);
     }
@@ -104,7 +118,7 @@ class TaskToDoServiceTest {
     void addTaskToDo() {
         long childId = 123;
         long taskId = 987;
-        final Instant expectedDate = Instant.now();
+        final LocalDate expectedDate = LocalDate.of(2019, 2, 16);
         TaskToDoData taskToDoData = new TaskToDoData();
         taskToDoData.setExpectedDate(expectedDate);
 
@@ -127,7 +141,7 @@ class TaskToDoServiceTest {
     @Test
     void updateTaskToDo() {
         long taskToDoId = 123;
-        final Instant expectedDate = Instant.now();
+        final LocalDate expectedDate = LocalDate.of(2019, 2, 16);
         TaskToDoData taskToDoData = new TaskToDoData();
         taskToDoData.setExpectedDate(expectedDate);
 
@@ -150,7 +164,7 @@ class TaskToDoServiceTest {
     }
 
     @Test
-    void setDone() {
+    void setDoneFirstTime() {
         long taskToDoId = 123;
 
         TaskToDo taskToDo = new TaskToDo();
@@ -162,6 +176,20 @@ class TaskToDoServiceTest {
         TaskToDo taskToDoCaptured = taskToDoArgumentCaptor.getValue();
 
         assertThat(taskToDoCaptured.isDone()).isEqualTo(true);
+    }
+
+    @Test
+    void setDoneExists() {
+        long taskToDoId = 123;
+        boolean done = true;
+        TaskToDo taskToDo = new TaskToDo();
+        taskToDo.setDone(done);
+
+        when(taskToDoRepository.findById(taskToDoId)).thenReturn(Optional.of(taskToDo));
+
+        taskToDoService.setDone(taskToDoId);
+
+        verify(taskToDoRepository, never()).save(any());
     }
 
     @Test

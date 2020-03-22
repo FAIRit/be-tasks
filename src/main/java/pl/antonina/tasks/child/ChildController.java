@@ -1,5 +1,6 @@
 package pl.antonina.tasks.child;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -16,27 +17,32 @@ public class ChildController {
         this.childService = childService;
     }
 
-    @GetMapping
+    @GetMapping("/byParent")
     public List<ChildView> getChildrenByParent(@ApiIgnore Principal parentPrincipal) {
         return childService.getChildrenByParent(parentPrincipal);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping
+    public ChildView getChild(@ApiIgnore Principal parentPrincipal) {
+        return childService.getChild(parentPrincipal);
+    }
+
+    @GetMapping("/{childId}")
     public ChildView getChild(@PathVariable long childId) {
         return childService.getChild(childId);
     }
 
     @PostMapping
-    public void addChild(@ApiIgnore Principal parentPrincipal, @RequestBody ChildData childData) {
+    public void addChild(@ApiIgnore Principal parentPrincipal, @Validated @RequestBody ChildData childData) {
         childService.addChild(parentPrincipal, childData);
     }
 
-    @PutMapping("/{id}")
-    public void updateChild(@PathVariable long childId, @RequestBody ChildData childData) {
+    @PutMapping("/{childId}")
+    public void updateChild(@PathVariable long childId, @Validated @RequestBody ChildData childData) {
         childService.updateChild(childId, childData);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{childId}")
     public void deleteChild(@PathVariable long childId) {
         childService.deleteChild(childId);
     }

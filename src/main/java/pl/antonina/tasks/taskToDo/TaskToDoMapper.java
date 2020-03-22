@@ -14,6 +14,7 @@ public class TaskToDoMapper {
 
     public TaskToDoView mapTaskToDoView(TaskToDo taskToDo) {
         TaskToDoView taskToDoView = new TaskToDoView();
+        taskToDoView.setId(taskToDo.getId());
         taskToDoView.setTaskView(taskMapper.mapTaskView(taskToDo.getTask()));
         taskToDoView.setExpectedDate(taskToDo.getExpectedDate());
         taskToDoView.setStartDate(taskToDo.getStartDate());

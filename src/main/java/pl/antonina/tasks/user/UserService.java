@@ -2,6 +2,7 @@ package pl.antonina.tasks.user;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 
@@ -18,11 +19,12 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
+    @Transactional
     public User addUser(UserType userType, UserData userData) {
         String email = userData.getEmail();
         boolean userExists = userRepository.findByEmail(email).isPresent();
         if (userExists) {
-            throw new UserAlreadyExistsException("User with given email already exists.");
+            throw new UserAlreadyExistsException("User with email=" + email + " already exist.");
         }
         User user = new User();
         user.setType(userType);
@@ -31,11 +33,12 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
     public User updateUser(User user, UserData userData) {
         String email = userData.getEmail();
         boolean userExists = userRepository.findByEmailAndIdNot(email, user.getId()).isPresent();
         if (userExists) {
-            throw new UserAlreadyExistsException("User with given email already exists.");
+            throw new UserAlreadyExistsException("User with email=" + email + " already exist.");
         }
         user.setEmail(userData.getEmail());
         if (userData.getPassword() != null && !userData.getPassword().isEmpty()) {
@@ -47,6 +50,6 @@ public class UserService {
     UserView getUser(Principal principal) {
         return userRepository.findByEmail(principal.getName())
                 .map(userMapper::mapUserView)
-                .orElseThrow(() -> new UserNotExistsException("User with given email doesn't exist."));
+                .orElseThrow(() -> new UserNotExistsException("User with email=" + principal.getName() + " doesn't exist."));
     }
 }

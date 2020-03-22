@@ -10,6 +10,7 @@ import pl.antonina.tasks.task.TaskMapper;
 import pl.antonina.tasks.task.TaskView;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -30,11 +31,13 @@ class TaskToDoMapperTest {
 
     @Test
     void mapTaskToDoView() {
-        final Instant expectedDate = Instant.now().minusSeconds(30);
+        final long taskToDoId = 1;
+        final LocalDate expectedDate = LocalDate.of(2019, 2, 16);
         final Instant finishDate = Instant.now().minusSeconds(20);
         final Instant startDate = Instant.now().minusSeconds(10);
         final boolean done = false;
         TaskToDo taskToDo = new TaskToDo();
+        taskToDo.setId(taskToDoId);
         taskToDo.setExpectedDate(expectedDate);
         taskToDo.setStartDate(startDate);
         taskToDo.setFinishDate(finishDate);
@@ -45,6 +48,7 @@ class TaskToDoMapperTest {
 
         TaskToDoView taskToDoView = taskToDoMapper.mapTaskToDoView(taskToDo);
 
+        assertThat(taskToDoView.getId()).isEqualTo(taskToDoId);
         assertThat(taskToDoView.getExpectedDate()).isEqualTo(expectedDate);
         assertThat(taskToDoView.getFinishDate()).isEqualTo(finishDate);
         assertThat(taskToDoView.getStartDate()).isEqualTo(startDate);

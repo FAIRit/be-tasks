@@ -41,19 +41,29 @@ class TaskToDoService {
         this.loggedUserService = loggedUserService;
     }
 
-    List<TaskToDoView> getTasksToDoByChildAndNotApproved(Long childId, Principal childPrincipal) {
-        long childIdNotNull = Optional.ofNullable(childId).orElseGet(() ->
-                loggedUserService.getChild(childPrincipal).getId()
-        );
-        List<TaskToDo> taskToDoList = taskToDoRepository.findByChildIdAndApprovedOrderByExpectedDateDesc(childIdNotNull, false);
+    TaskToDoView getTaskToDoById(long taskToDoId) {
+        TaskToDo taskToDo = taskToDoRepository.findById(taskToDoId).orElseThrow(() -> new TaskToDoNotExistsException("TaskToDo with id=" + taskToDoId + " doesn't exist."));
+        return taskToDoMapper.mapTaskToDoView(taskToDo);
+    }
+
+    List<TaskToDoView> getTasksToDoByChildAndNotApproved(Principal childPrincipal) {
+        long childId = loggedUserService.getChild(childPrincipal).getId();
+        List<TaskToDo> taskToDoList = taskToDoRepository.findByChildIdAndApprovedOrderByExpectedDateDesc(childId, false);
+        return taskToDoList.stream()
+                .map(taskToDoMapper::mapTaskToDoView)
+                .collect(Collectors.toList());
+    }
+
+    List<TaskToDoView> getTasksToDoByChildAndNotApproved(long childId) {
+        List<TaskToDo> taskToDoList = taskToDoRepository.findByChildIdAndApprovedOrderByExpectedDateDesc(childId, false);
         return taskToDoList.stream()
                 .map(taskToDoMapper::mapTaskToDoView)
                 .collect(Collectors.toList());
     }
 
     void addTaskToDo(long childId, long taskId, TaskToDoData taskToDoData) {
-        Child child = childRepository.findById(childId).orElseThrow(() -> new ChildNotExistsException("Child with given id doesn't exist."));
-        Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotExistsException("Task with given id doesn't exist."));
+        Child child = childRepository.findById(childId).orElseThrow(() -> new ChildNotExistsException("Child with id=" + childId + " doesn't exist."));
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotExistsException("Task with id=" + taskId + " doesn't exist."));
         TaskToDo taskToDo = new TaskToDo();
         taskToDo.setExpectedDate(taskToDoData.getExpectedDate());
         taskToDo.setTask(task);
@@ -63,7 +73,7 @@ class TaskToDoService {
     }
 
     void updateTaskToDo(long taskToDoId, TaskToDoData taskToDoData) {
-        TaskToDo taskToDo = taskToDoRepository.findById(taskToDoId).orElseThrow(() -> new TaskToDoNotExistsException("TaskToDo with given id doesn't exist."));
+        TaskToDo taskToDo = taskToDoRepository.findById(taskToDoId).orElseThrow(() -> new TaskToDoNotExistsException("TaskToDo with id=" + taskToDoId + " doesn't exist."));
         taskToDo.setExpectedDate(taskToDoData.getExpectedDate());
         taskToDoRepository.save(taskToDo);
     }
@@ -73,21 +83,23 @@ class TaskToDoService {
     }
 
     void setDone(long taskToDoId) {
-        TaskToDo taskToDo = taskToDoRepository.findById(taskToDoId).orElseThrow(() -> new TaskToDoNotExistsException("TaskToDo with given id doesn't exist."));
-        taskToDo.setFinishDate(Instant.now());
-        taskToDo.setDone(true);
-        taskToDoRepository.save(taskToDo);
+        TaskToDo taskToDo = taskToDoRepository.findById(taskToDoId).orElseThrow(() -> new TaskToDoNotExistsException("TaskToDo with id=" + taskToDoId + " doesn't exist."));
+        if (!taskToDo.isDone()){
+            taskToDo.setFinishDate(Instant.now());
+            taskToDo.setDone(true);
+            taskToDoRepository.save(taskToDo);
+        }
     }
 
     @Transactional
     void setApproved(long taskToDoId) {
-        TaskToDo taskToDo = taskToDoRepository.findById(taskToDoId).orElseThrow(() -> new TaskToDoNotExistsException("TaskToDo with given id doesn't exist."));
+        TaskToDo taskToDo = taskToDoRepository.findById(taskToDoId).orElseThrow(() -> new TaskToDoNotExistsException("TaskToDo with id=" + taskToDoId + " doesn't exist."));
         taskToDo.setApproved(true);
         taskToDoRepository.save(taskToDo);
 
         historyService.addHistory(taskToDo);
 
-        Child child = childRepository.findById(taskToDo.getChild().getId()).orElseThrow(() -> new ChildNotExistsException("Child with given id doesn't exist."));
+        Child child = childRepository.findById(taskToDo.getChild().getId()).orElseThrow(() -> new ChildNotExistsException("Child with id=" + taskToDo.getChild().getId() + " doesn't exist."));
         Integer newPoints = child.getPoints() + taskToDo.getTask().getPoints();
         child.setPoints(newPoints);
         childRepository.save(child);
