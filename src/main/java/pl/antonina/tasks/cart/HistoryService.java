@@ -1,6 +1,7 @@
 package pl.antonina.tasks.cart;
 
 import org.springframework.stereotype.Service;
+import pl.antonina.tasks.reward.Reward;
 import pl.antonina.tasks.taskToDo.TaskToDo;
 
 import java.time.Instant;
@@ -31,6 +32,15 @@ public class HistoryService {
         history.setModificationDate(Instant.now());
         history.setMessage("Approved: " + taskToDo.getTask().getName() + " - " + taskToDo.getTask().getDescription());
         history.setChild(taskToDo.getChild());
+        historyRepository.save(history);
+    }
+
+    public void addHistory(Reward reward){
+        History history = new History();
+        history.setQuantity(reward.getPoints() * -1);
+        history.setModificationDate(Instant.now());
+        history.setMessage("Bought reward: " + reward.getName());
+        history.setChild(reward.getChild());
         historyRepository.save(history);
     }
 
