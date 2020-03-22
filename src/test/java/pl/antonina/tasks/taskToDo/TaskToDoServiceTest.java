@@ -13,10 +13,8 @@ import pl.antonina.tasks.child.ChildRepository;
 import pl.antonina.tasks.security.LoggedUserService;
 import pl.antonina.tasks.task.Task;
 import pl.antonina.tasks.task.TaskRepository;
-import pl.antonina.tasks.task.TaskView;
 
 import java.security.Principal;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -54,7 +52,7 @@ class TaskToDoServiceTest {
     }
 
     @Test
-    void getTaskToDoById(){
+    void getTaskToDoById() {
         long taskToDoId = 1;
         TaskToDo taskToDo = new TaskToDo();
         TaskToDoView taskToDoView = new TaskToDoView();
