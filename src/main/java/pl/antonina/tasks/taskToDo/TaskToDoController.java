@@ -1,5 +1,6 @@
 package pl.antonina.tasks.taskToDo;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -32,12 +33,12 @@ public class TaskToDoController {
     }
 
     @PostMapping
-    public void addTaskToDo(@RequestParam long childId, @RequestParam long taskId, @RequestBody TaskToDoData taskToDoData) {
+    public void addTaskToDo(@RequestParam long childId, @RequestParam long taskId, @Validated @RequestBody TaskToDoData taskToDoData) {
         taskToDoService.addTaskToDo(childId, taskId, taskToDoData);
     }
 
     @PutMapping("/{taskToDoId}")
-    public void updateTaskToDo(@PathVariable long taskToDoId, @RequestBody TaskToDoData taskToDoData) {
+    public void updateTaskToDo(@PathVariable long taskToDoId, @Validated @RequestBody TaskToDoData taskToDoData) {
         taskToDoService.updateTaskToDo(taskToDoId, taskToDoData);
     }
 

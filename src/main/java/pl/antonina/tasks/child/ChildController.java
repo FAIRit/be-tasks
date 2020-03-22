@@ -1,5 +1,6 @@
 package pl.antonina.tasks.child;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -32,12 +33,12 @@ public class ChildController {
     }
 
     @PostMapping
-    public void addChild(@ApiIgnore Principal parentPrincipal, @RequestBody ChildData childData) {
+    public void addChild(@ApiIgnore Principal parentPrincipal, @Validated @RequestBody ChildData childData) {
         childService.addChild(parentPrincipal, childData);
     }
 
     @PutMapping("/{childId}")
-    public void updateChild(@PathVariable long childId, @RequestBody ChildData childData) {
+    public void updateChild(@PathVariable long childId, @Validated @RequestBody ChildData childData) {
         childService.updateChild(childId, childData);
     }
 

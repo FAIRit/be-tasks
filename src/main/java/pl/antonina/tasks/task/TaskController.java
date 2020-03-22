@@ -1,5 +1,6 @@
 package pl.antonina.tasks.task;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -17,7 +18,7 @@ public class TaskController {
     }
 
     @GetMapping("/{taskId}")
-    public Task getTask(@PathVariable long taskId){
+    public Task getTask(@PathVariable long taskId) {
         return taskService.getTask(taskId);
     }
 
@@ -27,12 +28,12 @@ public class TaskController {
     }
 
     @PostMapping
-    public void addTask(@ApiIgnore Principal parentPrincipal, @RequestBody TaskData taskData) {
+    public void addTask(@ApiIgnore Principal parentPrincipal, @Validated @RequestBody TaskData taskData) {
         taskService.addTask(parentPrincipal, taskData);
     }
 
     @PutMapping("/{taskId}")
-    public void updateTask(@PathVariable long taskId, @RequestBody TaskData taskData) {
+    public void updateTask(@PathVariable long taskId, @Validated @RequestBody TaskData taskData) {
         taskService.updateTask(taskId, taskData);
     }
 

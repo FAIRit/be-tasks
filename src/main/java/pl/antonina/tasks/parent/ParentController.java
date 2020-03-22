@@ -1,5 +1,6 @@
 package pl.antonina.tasks.parent;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -21,12 +22,12 @@ public class ParentController {
     }
 
     @PostMapping
-    public void addParent(@RequestBody ParentData parentData) {
+    public void addParent(@Validated @RequestBody ParentData parentData) {
         parentService.addParent(parentData);
     }
 
     @PutMapping
-    public void updateParent(@RequestBody ParentData parentData, @ApiIgnore Principal parentPrincipal) {
+    public void updateParent(@Validated @RequestBody ParentData parentData, @ApiIgnore Principal parentPrincipal) {
         parentService.updateParent(parentData, parentPrincipal);
     }
 
