@@ -8,10 +8,11 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 
 @Service
-public class AccessTokenProvider {
+public class AccessTokenServiceImpl implements AccessTokenService {
 
     private final OkHttpClient httpClient = new OkHttpClient.Builder().build();
 
+    @Override
     public String getAccessToken() {
         RequestBody formBody = new FormBody.Builder().build();
         String clientId = "2d28293921ae472c9d82d99b2d9268eb";

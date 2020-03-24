@@ -1,12 +1,11 @@
 package pl.antonina.tasks.cart;
 
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RestController
 @RequestMapping("/api/history")
-@Controller
 public class HistoryController {
 
     private final HistoryService historyService;
@@ -15,8 +14,8 @@ public class HistoryController {
         this.historyService = historyService;
     }
 
-    @GetMapping
-    public List<HistoryView> getByChildId(@RequestParam long childId) {
+    @GetMapping("/{childId}")
+    public List<HistoryView> getByChildId(@PathVariable long childId) {
         return historyService.getByChildId(childId);
     }
 

@@ -36,7 +36,7 @@ class ParentServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        parentService = new ParentService(parentRepository, parentMapper, userRepository, userService, loggedUserService);
+        parentService = new ParentServiceImpl(parentRepository, parentMapper, userRepository, userService, loggedUserService);
     }
 
     @Test

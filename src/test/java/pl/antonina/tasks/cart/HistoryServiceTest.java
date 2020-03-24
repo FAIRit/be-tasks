@@ -33,7 +33,7 @@ class HistoryServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        historyService = new HistoryService(historyRepository, historyMapper);
+        historyService = new HistoryServiceImpl(historyRepository, historyMapper);
     }
 
     @Test
