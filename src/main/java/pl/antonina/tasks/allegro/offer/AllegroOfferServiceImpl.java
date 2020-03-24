@@ -1,7 +1,10 @@
 package pl.antonina.tasks.allegro.offer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.*;
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.springframework.stereotype.Service;
 import pl.antonina.tasks.allegro.accessToken.AccessTokenService;
 import pl.antonina.tasks.allegro.offer.api.Items;
@@ -17,6 +20,7 @@ public class AllegroOfferServiceImpl implements AllegroOfferService {
     private final AccessTokenService accessTokenService;
     private final OfferViewMapper offerViewMapper;
     private final OkHttpClient httpClient = new OkHttpClient.Builder().build();
+    private final AllegroOfferConfig allegroOfferConfig = new AllegroOfferConfig();
 
     public AllegroOfferServiceImpl(AccessTokenService accessTokenService,
                                    OfferViewMapper offerViewMapper) {
@@ -26,14 +30,8 @@ public class AllegroOfferServiceImpl implements AllegroOfferService {
 
     @Override
     public List<OfferView> getOffers() {
-        Request request = new Request.Builder()
-                .url("https://api.allegro.pl/offers/listing?seller.id=1680&category.id=11818")
-                .addHeader("Accept", "application/vnd.allegro.public.v1+json")
-                .addHeader("Authorization", "Bearer " + accessTokenService.getAccessToken())
-                .get()
-                .build();
 
-        Call call = httpClient.newCall(request);
+        Call call = httpClient.newCall(allegroOfferConfig.getRequest(accessTokenService));
 
         try {
             Response response = call.execute();

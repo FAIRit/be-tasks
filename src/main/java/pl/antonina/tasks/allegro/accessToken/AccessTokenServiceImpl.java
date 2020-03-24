@@ -1,7 +1,10 @@
 package pl.antonina.tasks.allegro.accessToken;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.*;
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -11,21 +14,12 @@ import java.io.UncheckedIOException;
 public class AccessTokenServiceImpl implements AccessTokenService {
 
     private final OkHttpClient httpClient = new OkHttpClient.Builder().build();
+    private final AccessTokenConfig accessTokenConfig = new AccessTokenConfig();
 
     @Override
     public String getAccessToken() {
-        RequestBody formBody = new FormBody.Builder().build();
-        String clientId = "2d28293921ae472c9d82d99b2d9268eb";
-        String clientSecret = "k0GW7MrzsCaIvN3o8NkPQx1GdsjBhEpFZG1dzYaj0NdFP8B27vHTAA1K5SRIXTys";
-        String basicAuth = Credentials.basic(clientId, clientSecret);
 
-        Request request = new Request.Builder()
-                .url("https://allegro.pl/auth/oauth/token?grant_type=client_credentials")
-                .addHeader("Authorization", basicAuth)
-                .post(formBody)
-                .build();
-
-        Call call = httpClient.newCall(request);
+        Call call = httpClient.newCall(accessTokenConfig.getRequest());
 
         try {
             Response response = call.execute();
