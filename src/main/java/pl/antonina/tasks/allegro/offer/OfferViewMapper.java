@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
-public class OfferViewMapper {
+class OfferViewMapper {
 
     List<OfferView> mapOfferViews(Items items) {
         return Stream.concat(items.getPromoted().stream(), items.getRegular().stream())
@@ -20,8 +20,8 @@ public class OfferViewMapper {
     private OfferView mapOffer(Offer offer) {
         OfferView offerView = new OfferView();
         offerView.setName(offer.getName());
-        offerView.setPrice(offer.getSellingMode().getPrice().getAmount());
-        offerView.setUrl(offer.getImages().get(0).getUrl());
+        offerView.setPrice(offer.getAmount());
+        offerView.setUrl(offer.getUrl());
         return offerView;
     }
 }
