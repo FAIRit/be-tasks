@@ -8,10 +8,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Objects.requireNonNull;
+
 @Component
 class OfferViewMapper {
 
     List<OfferView> mapOfferViews(Items items) {
+        requireNonNull(items);
         return Stream.concat(items.getPromoted().stream(), items.getRegular().stream())
                 .map(this::mapOffer)
                 .collect(Collectors.toList());

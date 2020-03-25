@@ -13,7 +13,11 @@ import java.io.IOException;
 public class AccessTokenServiceImpl implements AccessTokenService {
 
     private final OkHttpClient httpClient = new OkHttpClient.Builder().build();
-    private final AccessTokenConfig accessTokenConfig = new AccessTokenConfig();
+    private final AccessTokenConfig accessTokenConfig;
+
+    public AccessTokenServiceImpl(AccessTokenConfig accessTokenConfig) {
+        this.accessTokenConfig = accessTokenConfig;
+    }
 
     @Override
     public String getAccessToken() throws IOException {

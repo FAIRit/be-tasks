@@ -20,3 +20,12 @@ spring:
     # Hibernate ddl auto (create, create-drop, validate, update)
     hibernate:
       ddl-auto: update
+
+# Allegro Properties
+allegro:
+  auth:
+    clientId: 2d28293921ae472c9d82d99b2d9268eb
+    clientSecret: k0GW7MrzsCaIvN3o8NkPQx1GdsjBhEpFZG1dzYaj0NdFP8B27vHTAA1K5SRIXTys
+  offers:
+    sellerId: 1680
+    categoryId: 11818

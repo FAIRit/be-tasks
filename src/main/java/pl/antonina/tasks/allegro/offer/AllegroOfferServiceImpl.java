@@ -18,13 +18,15 @@ public class AllegroOfferServiceImpl implements AllegroOfferService {
 
     private final AccessTokenService accessTokenService;
     private final OfferViewMapper offerViewMapper;
+    private final AllegroOfferConfig allegroOfferConfig;
     private final OkHttpClient httpClient = new OkHttpClient.Builder().build();
-    private final AllegroOfferConfig allegroOfferConfig = new AllegroOfferConfig();
 
     public AllegroOfferServiceImpl(AccessTokenService accessTokenService,
-                                   OfferViewMapper offerViewMapper) {
+                                   OfferViewMapper offerViewMapper,
+                                   AllegroOfferConfig allegroOfferConfig) {
         this.accessTokenService = accessTokenService;
         this.offerViewMapper = offerViewMapper;
+        this.allegroOfferConfig = allegroOfferConfig;
     }
 
     @Override
