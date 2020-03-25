@@ -1,6 +1,8 @@
 package pl.antonina.tasks.allegro.accessToken;
 
+import java.io.IOException;
+
 public interface AccessTokenService {
 
-    String getAccessToken();
+    String getAccessToken() throws IOException;
 }

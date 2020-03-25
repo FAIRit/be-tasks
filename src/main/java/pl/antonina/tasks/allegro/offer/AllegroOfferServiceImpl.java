@@ -11,7 +11,6 @@ import pl.antonina.tasks.allegro.offer.api.Items;
 import pl.antonina.tasks.allegro.offer.api.OfferResponse;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.List;
 
 @Service
@@ -29,19 +28,17 @@ public class AllegroOfferServiceImpl implements AllegroOfferService {
     }
 
     @Override
-    public List<OfferView> getOffers() {
+    public List<OfferView> getOffers() throws IOException {
 
-        Call call = httpClient.newCall(allegroOfferConfig.getRequest(accessTokenService.getAccessToken()));
+        String accessToken = accessTokenService.getAccessToken();
 
-        try {
-            Response response = call.execute();
-            ResponseBody responseBody = response.body();
-            ObjectMapper objectMapper = new ObjectMapper();
-            OfferResponse offerResponse = objectMapper.readValue(responseBody.string(), OfferResponse.class);
-            Items items = offerResponse.getItems();
-            return offerViewMapper.mapOfferViews(items);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        Call call = httpClient.newCall(allegroOfferConfig.getRequest(accessToken));
+
+        Response response = call.execute();
+        ResponseBody responseBody = response.body();
+        ObjectMapper objectMapper = new ObjectMapper();
+        OfferResponse offerResponse = objectMapper.readValue(responseBody.string(), OfferResponse.class);
+        Items items = offerResponse.getItems();
+        return offerViewMapper.mapOfferViews(items);
     }
 }

@@ -8,7 +8,6 @@ import okhttp3.ResponseBody;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 
 @Service
 public class AccessTokenServiceImpl implements AccessTokenService {
@@ -17,18 +16,14 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     private final AccessTokenConfig accessTokenConfig = new AccessTokenConfig();
 
     @Override
-    public String getAccessToken() {
+    public String getAccessToken() throws IOException {
 
         Call call = httpClient.newCall(accessTokenConfig.getRequest());
 
-        try {
-            Response response = call.execute();
-            ObjectMapper objectMapper = new ObjectMapper();
-            ResponseBody responseBody = response.body();
-            AccessTokenResponse accessTokenResponse = objectMapper.readValue(responseBody.string(), AccessTokenResponse.class);
-            return accessTokenResponse.getAccessToken();
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        Response response = call.execute();
+        ObjectMapper objectMapper = new ObjectMapper();
+        ResponseBody responseBody = response.body();
+        AccessTokenResponse accessTokenResponse = objectMapper.readValue(responseBody.string(), AccessTokenResponse.class);
+        return accessTokenResponse.getAccessToken();
     }
 }
