@@ -44,7 +44,7 @@ class HistoryServiceTest {
         HistoryView historyView = new HistoryView();
         final List<HistoryView> historyViewList = List.of(historyView);
 
-        when(historyRepository.findByChildId(childId)).thenReturn(historyList);
+        when(historyRepository.findByChildIdOrderByModificationDateDesc(childId)).thenReturn(historyList);
         when(historyMapper.mapHistoryView(history)).thenReturn(historyView);
 
         List<HistoryView> historyViewListResult = historyService.getByChildId(childId);

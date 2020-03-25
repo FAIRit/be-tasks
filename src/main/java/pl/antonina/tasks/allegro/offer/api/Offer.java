@@ -46,7 +46,7 @@ public class Offer {
     }
 
     public BigDecimal getAmount(){
-        return sellingMode.getPrice().getAmount();
+        return sellingMode.getPriceAmount();
     }
 
     public String getUrl(){

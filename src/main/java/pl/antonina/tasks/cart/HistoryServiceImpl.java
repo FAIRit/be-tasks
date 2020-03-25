@@ -21,7 +21,7 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     public List<HistoryView> getByChildId(long childId) {
-        List<History> historyList = historyRepository.findByChildId(childId);
+        List<History> historyList = historyRepository.findByChildIdOrderByModificationDateDesc(childId);
         return historyList.stream()
                 .map(historyMapper::mapHistoryView)
                 .collect(Collectors.toList());
