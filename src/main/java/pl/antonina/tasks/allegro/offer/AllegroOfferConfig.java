@@ -2,16 +2,26 @@ package pl.antonina.tasks.allegro.offer;
 
 import okhttp3.Request;
 import org.springframework.context.annotation.Configuration;
-import pl.antonina.tasks.allegro.accessToken.AccessTokenService;
 
 @Configuration
-public class AllegroOfferConfig {
+class AllegroOfferConfig {
 
-    Request getRequest(AccessTokenService accessTokenService) {
+    private int sellerId = 1680;
+    private int categoryId = 11818;
+
+    public void setSellerId(int sellerId) {
+        this.sellerId = sellerId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    Request getRequest(String accessToken) {
         return new Request.Builder()
-                .url("https://api.allegro.pl/offers/listing?seller.id=1680&category.id=11818")
+                .url("https://api.allegro.pl/offers/listing?seller.id=" + sellerId + "&category.id=" + categoryId)
                 .addHeader("Accept", "application/vnd.allegro.public.v1+json")
-                .addHeader("Authorization", "Bearer " + accessTokenService.getAccessToken())
+                .addHeader("Authorization", "Bearer " + accessToken)
                 .get()
                 .build();
     }

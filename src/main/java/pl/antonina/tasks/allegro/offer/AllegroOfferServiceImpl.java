@@ -31,7 +31,7 @@ public class AllegroOfferServiceImpl implements AllegroOfferService {
     @Override
     public List<OfferView> getOffers() {
 
-        Call call = httpClient.newCall(allegroOfferConfig.getRequest(accessTokenService));
+        Call call = httpClient.newCall(allegroOfferConfig.getRequest(accessTokenService.getAccessToken()));
 
         try {
             Response response = call.execute();

@@ -7,14 +7,14 @@ import okhttp3.RequestBody;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class AccessTokenConfig {
+class AccessTokenConfig {
 
-    private String clientId = "2d28293921ae472c9d82d99b2d9268eb";
-    private String clientSecret = "k0GW7MrzsCaIvN3o8NkPQx1GdsjBhEpFZG1dzYaj0NdFP8B27vHTAA1K5SRIXTys";
-    private String basicAuth = Credentials.basic(clientId, clientSecret);
-    private RequestBody formBody = new FormBody.Builder().build();
+    private final String clientId = "2d28293921ae472c9d82d99b2d9268eb";
+    private final String clientSecret = "k0GW7MrzsCaIvN3o8NkPQx1GdsjBhEpFZG1dzYaj0NdFP8B27vHTAA1K5SRIXTys";
+    private final String basicAuth = Credentials.basic(clientId, clientSecret);
 
-    public Request getRequest() {
+    Request getRequest() {
+        final RequestBody formBody = new FormBody.Builder().build();
         return new Request.Builder()
                 .url("https://allegro.pl/auth/oauth/token?grant_type=client_credentials")
                 .addHeader("Authorization", basicAuth)
