@@ -40,7 +40,7 @@ class ChildServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        childService = new ChildService(childRepository, childMapper, userRepository, userService, loggedUserService);
+        childService = new ChildServiceImpl(childRepository, childMapper, userRepository, userService, loggedUserService);
     }
 
     @Test

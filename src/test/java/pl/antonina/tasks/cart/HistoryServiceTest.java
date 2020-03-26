@@ -8,6 +8,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.antonina.tasks.child.Child;
+import pl.antonina.tasks.reward.Reward;
 import pl.antonina.tasks.task.Task;
 import pl.antonina.tasks.taskToDo.TaskToDo;
 
@@ -32,7 +33,7 @@ class HistoryServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        historyService = new HistoryService(historyRepository, historyMapper);
+        historyService = new HistoryServiceImpl(historyRepository, historyMapper);
     }
 
     @Test
@@ -43,7 +44,7 @@ class HistoryServiceTest {
         HistoryView historyView = new HistoryView();
         final List<HistoryView> historyViewList = List.of(historyView);
 
-        when(historyRepository.findByChildId(childId)).thenReturn(historyList);
+        when(historyRepository.findByChildIdOrderByModificationDateDesc(childId)).thenReturn(historyList);
         when(historyMapper.mapHistoryView(history)).thenReturn(historyView);
 
         List<HistoryView> historyViewListResult = historyService.getByChildId(childId);
@@ -52,22 +53,47 @@ class HistoryServiceTest {
     }
 
     @Test
-    void addHistory() {
-        String description = "description";
+    void addHistoryTaskToDo() {
         String name = "name";
-        final String message = "Approved: " + name + " - " + description;
         final Integer points = 123;
+        String description = "description";
+        final Child child = new Child();
 
         Task task = new Task();
         task.setDescription(description);
         task.setName(name);
         task.setPoints(points);
+
         TaskToDo taskToDo = new TaskToDo();
         taskToDo.setTask(task);
-        final Child child = new Child();
         taskToDo.setChild(child);
 
+        final String message = "Approved: " + taskToDo.getTask().getName() + " - " + taskToDo.getTask().getDescription();
+
         historyService.addHistory(taskToDo);
+
+        verify(historyRepository).save(historyArgumentCaptor.capture());
+        History historyCaptured = historyArgumentCaptor.getValue();
+
+        assertThat(historyCaptured.getChild()).isEqualTo(child);
+        assertThat(historyCaptured.getMessage()).isEqualTo(message);
+        assertThat(historyCaptured.getQuantity()).isEqualTo(points);
+    }
+
+    @Test
+    void addHistoryReward() {
+        String name = "name";
+        final Integer points = 123;
+        final Child child = new Child();
+
+        Reward reward = new Reward();
+        reward.setPoints(points * -1);
+        reward.setName(name);
+        reward.setChild(child);
+
+        final String message = "Bought reward: " + reward.getName();
+
+        historyService.addHistory(reward);
 
         verify(historyRepository).save(historyArgumentCaptor.capture());
         History historyCaptured = historyArgumentCaptor.getValue();

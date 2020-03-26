@@ -21,7 +21,7 @@ dependencies {
 	compile 'io.springfox:springfox-swagger2:2.9.2'
 	compile 'io.springfox:springfox-swagger-ui:2.9.2'
 	compile 'org.springframework.boot:spring-boot-starter-security'
-
+	compile 'com.squareup.okhttp3:okhttp:3.4.2'
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

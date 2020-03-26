@@ -29,7 +29,7 @@ class LoggedUserServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        loggedUserService = new LoggedUserService(parentRepository, childRepository);
+        loggedUserService = new LoggedUserServiceImpl(parentRepository, childRepository);
     }
 
     @Test

@@ -33,7 +33,7 @@ class UserServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        userService = new UserService(userRepository, bCryptPasswordEncoder, userMapper);
+        userService = new UserServiceImpl(userRepository, bCryptPasswordEncoder, userMapper);
     }
 
     @Test

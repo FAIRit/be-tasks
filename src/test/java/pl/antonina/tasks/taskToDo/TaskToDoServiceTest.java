@@ -8,15 +8,14 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.antonina.tasks.cart.HistoryService;
+import pl.antonina.tasks.cart.HistoryServiceImpl;
 import pl.antonina.tasks.child.Child;
 import pl.antonina.tasks.child.ChildRepository;
 import pl.antonina.tasks.security.LoggedUserService;
 import pl.antonina.tasks.task.Task;
 import pl.antonina.tasks.task.TaskRepository;
-import pl.antonina.tasks.task.TaskView;
 
 import java.security.Principal;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -50,11 +49,11 @@ class TaskToDoServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        taskToDoService = new TaskToDoService(taskToDoRepository, taskRepository, childRepository, taskToDoMapper, historyService, loggedUserService);
+        taskToDoService = new TaskToDoServiceImpl(taskToDoRepository, taskRepository, childRepository, taskToDoMapper, historyService, loggedUserService);
     }
 
     @Test
-    void getTaskToDoById(){
+    void getTaskToDoById() {
         long taskToDoId = 1;
         TaskToDo taskToDo = new TaskToDo();
         TaskToDoView taskToDoView = new TaskToDoView();

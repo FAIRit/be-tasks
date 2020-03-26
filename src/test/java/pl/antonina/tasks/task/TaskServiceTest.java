@@ -27,7 +27,6 @@ class TaskServiceTest {
     @Mock
     LoggedUserService loggedUserService;
 
-
     private TaskService taskService;
 
     @Captor
@@ -35,7 +34,7 @@ class TaskServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        taskService = new TaskService(taskRepository, taskMapper, loggedUserService);
+        taskService = new TaskServiceImpl(taskRepository, taskMapper, loggedUserService);
     }
 
     @Test
