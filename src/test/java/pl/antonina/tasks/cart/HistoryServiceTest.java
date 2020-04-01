@@ -8,15 +8,17 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.antonina.tasks.child.Child;
+import pl.antonina.tasks.parent.Parent;
 import pl.antonina.tasks.reward.Reward;
+import pl.antonina.tasks.security.LoggedUserService;
 import pl.antonina.tasks.task.Task;
 import pl.antonina.tasks.taskToDo.TaskToDo;
 
+import java.security.Principal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class HistoryServiceTest {
@@ -25,6 +27,8 @@ class HistoryServiceTest {
     private HistoryRepository historyRepository;
     @Mock
     private HistoryMapper historyMapper;
+    @Mock
+    private LoggedUserService loggedUserService;
 
     private HistoryService historyService;
 
@@ -33,7 +37,7 @@ class HistoryServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        historyService = new HistoryServiceImpl(historyRepository, historyMapper);
+        historyService = new HistoryServiceImpl(historyRepository, historyMapper, loggedUserService);
     }
 
     @Test
@@ -44,10 +48,15 @@ class HistoryServiceTest {
         HistoryView historyView = new HistoryView();
         final List<HistoryView> historyViewList = List.of(historyView);
 
-        when(historyRepository.findByChildIdOrderByModificationDateDesc(childId)).thenReturn(historyList);
+        Parent parent = new Parent();
+        long parentId = 345;
+        parent.setId(parentId);
+        Principal parentPrincipal = mock(Principal.class);
+        when(loggedUserService.getParent(parentPrincipal)).thenReturn(parent);
+        when(historyRepository.findByChildIdAndChildParentIdOrderByModificationDateDesc(childId, parentId)).thenReturn(historyList);
         when(historyMapper.mapHistoryView(history)).thenReturn(historyView);
 
-        List<HistoryView> historyViewListResult = historyService.getByChildId(childId);
+        List<HistoryView> historyViewListResult = historyService.getByChildId(parentPrincipal, childId);
 
         assertThat(historyViewListResult).isEqualTo(historyViewList);
     }
@@ -101,12 +110,5 @@ class HistoryServiceTest {
         assertThat(historyCaptured.getChild()).isEqualTo(child);
         assertThat(historyCaptured.getMessage()).isEqualTo(message);
         assertThat(historyCaptured.getQuantity()).isEqualTo(points);
-    }
-
-    @Test
-    void deleteHistory() {
-        final long historyId = 123;
-        historyService.deleteHistory(historyId);
-        verify(historyRepository).deleteById(historyId);
     }
 }

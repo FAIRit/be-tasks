@@ -95,11 +95,17 @@ class TaskServiceTest {
         taskData.setPoints(points);
         taskData.setName(name);
         taskData.setDescription(description);
-
         Task task = new Task();
-        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
 
-        taskService.updateTask(taskId, taskData);
+        Parent parent = new Parent();
+        long parentId = 345;
+        parent.setId(parentId);
+
+        Principal parentPrincipal = mock(Principal.class);
+        when(loggedUserService.getParent(parentPrincipal)).thenReturn(parent);
+        when(taskRepository.findByIdAndParentId(taskId, parentId)).thenReturn(Optional.of(task));
+
+        taskService.updateTask(parentPrincipal, taskId, taskData);
 
         verify(taskRepository).save(taskArgumentCaptor.capture());
         Task taskCaptured = taskArgumentCaptor.getValue();
@@ -111,9 +117,19 @@ class TaskServiceTest {
 
     @Test
     void deleteTask() {
+        Task task = new Task();
         final long taskId = 987;
+        task.setId(taskId);
 
-        taskService.deleteTask(taskId);
-        verify(taskRepository).deleteById(taskId);
+        Parent parent = new Parent();
+        long parentId = 345;
+        parent.setId(parentId);
+
+        Principal parentPrincipal = mock(Principal.class);
+        when(loggedUserService.getParent(parentPrincipal)).thenReturn(parent);
+        when(taskRepository.findByIdAndParentId(taskId, parentId)).thenReturn(Optional.of(task));
+
+        taskService.deleteTask(parentPrincipal, taskId);
+        verify(taskRepository).delete(task);
     }
 }

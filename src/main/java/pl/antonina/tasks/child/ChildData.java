@@ -5,6 +5,7 @@ import org.hibernate.validator.constraints.Length;
 import pl.antonina.tasks.user.Gender;
 import pl.antonina.tasks.user.UserData;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -18,5 +19,6 @@ class ChildData {
     private Gender gender;
     @NotNull
     private LocalDate birthDate;
+    @Valid
     private UserData userData;
 }

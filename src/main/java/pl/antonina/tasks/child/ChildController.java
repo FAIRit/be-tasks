@@ -23,13 +23,13 @@ public class ChildController {
     }
 
     @GetMapping
-    public ChildView getChild(@ApiIgnore Principal parentPrincipal) {
-        return childService.getChild(parentPrincipal);
+    public ChildView getChild(@ApiIgnore Principal childPrincipal) {
+        return childService.getChild(childPrincipal);
     }
 
     @GetMapping("/{childId}")
-    public ChildView getChild(@PathVariable long childId) {
-        return childService.getChild(childId);
+    public ChildView getChild(@ApiIgnore Principal parentPrincipal, @PathVariable long childId) {
+        return childService.getChild(parentPrincipal, childId);
     }
 
     @PostMapping
@@ -38,12 +38,12 @@ public class ChildController {
     }
 
     @PutMapping("/{childId}")
-    public void updateChild(@PathVariable long childId, @Validated @RequestBody ChildData childData) {
-        childService.updateChild(childId, childData);
+    public void updateChild(@ApiIgnore Principal parentPrincipal, @PathVariable long childId, @Validated @RequestBody ChildData childData) {
+        childService.updateChild(parentPrincipal, childId, childData);
     }
 
     @DeleteMapping("/{childId}")
-    public void deleteChild(@PathVariable long childId) {
-        childService.deleteChild(childId);
+    public void deleteChild(@ApiIgnore Principal parentPrincipal, @PathVariable long childId) {
+        childService.deleteChild(parentPrincipal, childId);
     }
 }

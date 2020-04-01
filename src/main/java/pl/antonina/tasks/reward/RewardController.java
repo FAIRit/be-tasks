@@ -23,8 +23,8 @@ public class RewardController {
     }
 
     @GetMapping
-    public List<Reward> getRewardsByChildAndNotBought(@RequestParam long childId) {
-        return rewardService.getRewardsByChildAndNotBought(childId);
+    public List<Reward> getRewardsByChildAndNotBought(@ApiIgnore Principal parentPrincipal, @RequestParam long childId) {
+        return rewardService.getRewardsByChildAndNotBought(parentPrincipal, childId);
     }
 
     @PostMapping
@@ -33,12 +33,12 @@ public class RewardController {
     }
 
     @PutMapping("{rewardId}/bought")
-    public void setBought(@PathVariable long rewardId){
-        rewardService.setBought(rewardId);
+    public void setBought(@ApiIgnore Principal parentPrincipal, @PathVariable long rewardId){
+        rewardService.setBought(parentPrincipal, rewardId);
     }
 
     @DeleteMapping("{rewardId}")
-    public void deleteReward(@PathVariable long rewardId){
-        rewardService.deleteReward(rewardId);
+    public void deleteReward(@ApiIgnore Principal childPrincipal, @PathVariable long rewardId){
+        rewardService.deleteReward(childPrincipal, rewardId);
     }
 }

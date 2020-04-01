@@ -8,9 +8,9 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.antonina.tasks.cart.HistoryService;
-import pl.antonina.tasks.cart.HistoryServiceImpl;
 import pl.antonina.tasks.child.Child;
 import pl.antonina.tasks.child.ChildRepository;
+import pl.antonina.tasks.parent.Parent;
 import pl.antonina.tasks.security.LoggedUserService;
 
 import java.security.Principal;
@@ -67,11 +67,17 @@ class RewardServiceTest {
         Reward reward2 = new Reward();
         final List<Reward> rewardList = List.of(reward1, reward2);
         long childId = 123;
-
         Child child = new Child();
-        when(childRepository.findById(childId)).thenReturn(Optional.of(child));
-        when(rewardRepository.findByBoughtAndChild(false, child)).thenReturn(rewardList);
-        List<Reward> rewardListResult = rewardService.getRewardsByChildAndNotBought(childId);
+
+        Parent parent = new Parent();
+        long parentId = 345;
+        parent.setId(parentId);
+        Principal parentPrincipal = mock(Principal.class);
+        when(loggedUserService.getParent(parentPrincipal)).thenReturn(parent);
+        when(childRepository.findByIdAndParentId(childId, parentId)).thenReturn(Optional.of(child));
+        when(rewardRepository.findByBoughtAndChildAndChildParentId(false, child, parentId)).thenReturn(rewardList);
+
+        List<Reward> rewardListResult = rewardService.getRewardsByChildAndNotBought(parentPrincipal, childId);
 
         assertThat(rewardListResult).isEqualTo(rewardList);
     }
@@ -104,9 +110,20 @@ class RewardServiceTest {
 
     @Test
     void deleteReward() {
+        Reward reward = new Reward();
         long rewardId = 123;
-        rewardService.deleteReward(rewardId);
-        verify(rewardRepository).deleteById(rewardId);
+        reward.setId(rewardId);
+        Child child = new Child();
+        long childId = 345;
+        child.setId(childId);
+
+        Principal childPrincipal = mock(Principal.class);
+        when(loggedUserService.getChild(childPrincipal)).thenReturn(child);
+        when(rewardRepository.findByIdAndChildId(rewardId, childId)).thenReturn(Optional.of(reward));
+
+        rewardService.deleteReward(childPrincipal, rewardId);
+
+        verify(rewardRepository).delete(reward);
     }
 
     @Test
@@ -124,10 +141,16 @@ class RewardServiceTest {
         reward.setChild(child);
         reward.setPoints(rewardPoints);
 
-        when(rewardRepository.findById(rewardId)).thenReturn(Optional.of(reward));
-        when(childRepository.findById(childId)).thenReturn(Optional.of(child));
+        Parent parent = new Parent();
+        long parentId = 345;
+        parent.setId(parentId);
 
-        rewardService.setBought(rewardId);
+        Principal parentPrincipal = mock(Principal.class);
+        when(loggedUserService.getParent(parentPrincipal)).thenReturn(parent);
+        when(rewardRepository.findByIdAndChildParentId(rewardId, parentId)).thenReturn(Optional.of(reward));
+        when(childRepository.findByIdAndParentId(childId, parentId)).thenReturn(Optional.of(child));
+
+        rewardService.setBought(parentPrincipal, rewardId);
 
         verify(rewardRepository).save(rewardArgumentCaptor.capture());
         Reward rewardCaptured = rewardArgumentCaptor.getValue();
@@ -137,6 +160,5 @@ class RewardServiceTest {
 
         assertThat(rewardCaptured.isBought()).isTrue();
         assertThat(childCaptured.getPoints()).isEqualTo(childPoints - rewardPoints);
-
     }
 }

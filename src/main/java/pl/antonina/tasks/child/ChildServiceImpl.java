@@ -35,8 +35,9 @@ class ChildServiceImpl implements ChildService {
     }
 
     @Override
-    public ChildView getChild(long childId) {
-        Child child = childRepository.findById(childId)
+    public ChildView getChild(Principal parentPrincipal, long childId) {
+        long parentId = loggedUserService.getParent(parentPrincipal).getId();
+        Child child = childRepository.findByIdAndParentId(childId, parentId)
                 .orElseThrow(() -> new ChildNotExistsException("Child with id=" + childId + " doesn't exist."));
         return childMapper.mapChildView(child);
     }
@@ -73,8 +74,10 @@ class ChildServiceImpl implements ChildService {
 
     @Override
     @Transactional
-    public void updateChild(long childId, ChildData childData) {
-        Child child = childRepository.findById(childId).orElseThrow(() -> new ChildNotExistsException("Child with id=" + childId + " doesn't exist."));
+    public void updateChild(Principal parentPrincipal, long childId, ChildData childData) {
+        long parentId = loggedUserService.getParent(parentPrincipal).getId();
+        Child child = childRepository.findByIdAndParentId(childId, parentId)
+                .orElseThrow(() -> new ChildNotExistsException("Child with id=" + childId + " doesn't exist."));
         User user = userService.updateUser(child.getUser(), childData.getUserData());
         child.setName(childData.getName());
         child.setGender(childData.getGender());
@@ -85,8 +88,10 @@ class ChildServiceImpl implements ChildService {
 
     @Override
     @Transactional
-    public void deleteChild(long childId) {
-        Child child = childRepository.findById(childId).orElseThrow(() -> new ChildNotExistsException("Child with id=" + childId + " doesn't exist."));
+    public void deleteChild(Principal parentPrincipal, long childId) {
+        long parentId = loggedUserService.getParent(parentPrincipal).getId();
+        Child child = childRepository.findByIdAndParentId(childId, parentId)
+                .orElseThrow(() -> new ChildNotExistsException("Child with id=" + childId + " doesn't exist."));
         long userId = child.getUser().getId();
         childRepository.deleteById(childId);
         userRepository.deleteById(userId);

@@ -9,12 +9,12 @@ public interface RewardService {
 
     List<Reward> getRewardsByChildAndNotBought(Principal childPrincipal);
 
-    List<Reward> getRewardsByChildAndNotBought(long childId);
+    List<Reward> getRewardsByChildAndNotBought(Principal parentPrincipal, long childId);
 
     void addReward(Principal childPrincipal, RewardData rewardData);
 
-    void deleteReward(long rewardId);
+    void deleteReward(Principal childPrincipal, long rewardId);
 
     @Transactional
-    void setBought(long rewardId);
+    void setBought(Principal parentPrincipal, long rewardId);
 }

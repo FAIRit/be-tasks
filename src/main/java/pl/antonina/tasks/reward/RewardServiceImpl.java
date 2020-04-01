@@ -36,9 +36,11 @@ public class RewardServiceImpl implements RewardService {
     }
 
     @Override
-    public List<Reward> getRewardsByChildAndNotBought(long childId) {
-        Child child = childRepository.findById(childId).orElseThrow(() -> new ChildNotExistsException("Child with id=" + childId + " doesn't exist."));
-        return rewardRepository.findByBoughtAndChild(false, child);
+    public List<Reward> getRewardsByChildAndNotBought(Principal parentPrincipal, long childId) {
+        long parentId = loggedUserService.getParent(parentPrincipal).getId();
+        Child child = childRepository.findByIdAndParentId(childId, parentId)
+                .orElseThrow(() -> new ChildNotExistsException("Child with id=" + childId + " doesn't exist."));
+        return rewardRepository.findByBoughtAndChildAndChildParentId(false, child, parentId);
     }
 
     @Override
@@ -53,14 +55,19 @@ public class RewardServiceImpl implements RewardService {
     }
 
     @Override
-    public void deleteReward(long rewardId) {
-        rewardRepository.deleteById(rewardId);
+    public void deleteReward(Principal childPrincipal, long rewardId) {
+        long childId = loggedUserService.getChild(childPrincipal).getId();
+        Reward reward = rewardRepository.findByIdAndChildId(rewardId, childId)
+                .orElseThrow(() -> new RewardNotExistsException("Reward with id=" + rewardId + " doesn't exist."));
+        rewardRepository.delete(reward);
     }
 
     @Override
     @Transactional
-    public void setBought(long rewardId) {
-        Reward reward = rewardRepository.findById(rewardId).orElseThrow(() -> new RewardNotExistsException("Reward with id=" + rewardId + " doesn't exist."));
+    public void setBought(Principal parentPrincipal, long rewardId) {
+        long parentId = loggedUserService.getParent(parentPrincipal).getId();
+        Reward reward = rewardRepository.findByIdAndChildParentId(rewardId, parentId)
+                .orElseThrow(() -> new RewardNotExistsException("Reward with id=" + rewardId + " doesn't exist."));
         Integer childPoints = reward.getChild().getPoints();
         Integer newPoints = childPoints - reward.getPoints();
 
@@ -73,7 +80,8 @@ public class RewardServiceImpl implements RewardService {
 
         historyService.addHistory(reward);
 
-        Child child = childRepository.findById(reward.getChild().getId()).orElseThrow(() -> new ChildNotExistsException("Child with id=" + reward.getChild().getId() + " doesn't exist."));
+        Child child = childRepository.findByIdAndParentId(reward.getChild().getId(), parentId)
+                .orElseThrow(() -> new ChildNotExistsException("Child with id=" + reward.getChild().getId() + " doesn't exist."));
         child.setPoints(newPoints);
         childRepository.save(child);
     }

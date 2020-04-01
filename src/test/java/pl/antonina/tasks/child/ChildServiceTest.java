@@ -45,15 +45,19 @@ class ChildServiceTest {
 
     @Test
     void getChild() {
-        final long childId = 123;
-
         Child child = new Child();
+        final long childId = 123;
         final ChildView childView = new ChildView();
+        Parent parent = new Parent();
+        long parentId = 345;
+        parent.setId(parentId);
 
-        when(childRepository.findById(childId)).thenReturn(Optional.of(child));
+        Principal parentPrincipal = mock(Principal.class);
+        when(loggedUserService.getParent(parentPrincipal)).thenReturn(parent);
+        when(childRepository.findByIdAndParentId(childId, parentId)).thenReturn(Optional.of(child));
         when(childMapper.mapChildView(child)).thenReturn(childView);
 
-        ChildView childViewResult = childService.getChild(childId);
+        ChildView childViewResult = childService.getChild(parentPrincipal, childId);
         assertThat(childViewResult).isEqualTo(childView);
     }
 
@@ -132,11 +136,16 @@ class ChildServiceTest {
         Child child = new Child();
         User user = new User();
         child.setUser(user);
+
+        Parent parent = new Parent();
+        long parentId = 456;
+        parent.setId(parentId);
+        Principal parentPrincipal = mock(Principal.class);
+        when(loggedUserService.getParent(parentPrincipal)).thenReturn(parent);
         when(userService.updateUser(user, userData)).thenReturn(user);
+        when(childRepository.findByIdAndParentId(childId, parentId)).thenReturn(Optional.of(child));
 
-        when(childRepository.findById(childId)).thenReturn(Optional.of(child));
-
-        childService.updateChild(childId, childData);
+        childService.updateChild(parentPrincipal, childId, childData);
 
         verify(childRepository).save(childArgumentCaptor.capture());
         Child childCaptured = childArgumentCaptor.getValue();
@@ -155,9 +164,15 @@ class ChildServiceTest {
         final long userId = 987;
         user.setId(userId);
         child.setUser(user);
-        when(childRepository.findById(childId)).thenReturn(Optional.of(child));
 
-        childService.deleteChild(childId);
+        Parent parent = new Parent();
+        long parentId = 345;
+        parent.setId(parentId);
+        Principal parentPrincipal = mock(Principal.class);
+        when(loggedUserService.getParent(parentPrincipal)).thenReturn(parent);
+        when(childRepository.findByIdAndParentId(childId, parentId)).thenReturn(Optional.of(child));
+
+        childService.deleteChild(parentPrincipal, childId);
 
         verify(userRepository).deleteById(user.getId());
         verify(childRepository).deleteById(childId);

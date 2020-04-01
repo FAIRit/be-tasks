@@ -1,7 +1,9 @@
 package pl.antonina.tasks.cart;
 
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -15,12 +17,7 @@ public class HistoryController {
     }
 
     @GetMapping("/{childId}")
-    public List<HistoryView> getByChildId(@PathVariable long childId) {
-        return historyService.getByChildId(childId);
-    }
-
-    @DeleteMapping("/{historyId}")
-    public void deleteHistory(@PathVariable long historyId) {
-        historyService.deleteHistory(historyId);
+    public List<HistoryView> getByChildId(@ApiIgnore Principal parentPrincipal, @PathVariable long childId) {
+        return historyService.getByChildId(parentPrincipal, childId);
     }
 }

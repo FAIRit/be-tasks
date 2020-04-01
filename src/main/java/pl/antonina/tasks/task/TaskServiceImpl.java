@@ -24,8 +24,9 @@ class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task getTask(long taskId) {
-        return taskRepository.findById(taskId)
+    public Task getTask(Principal parentPrincipal, long taskId) {
+        long parentId = loggedUserService.getParent(parentPrincipal).getId();
+        return taskRepository.findByIdAndParentId(taskId, parentId)
                 .orElseThrow(() -> new TaskNotExistsException("Task with id=" + taskId + " doesn't exist."));
     }
 
@@ -47,16 +48,20 @@ class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void updateTask(long taskId, TaskData taskData) {
-        Task task = taskRepository.findById(taskId)
+    public void updateTask(Principal parentPrincipal, long taskId, TaskData taskData) {
+        long parentId = loggedUserService.getParent(parentPrincipal).getId();
+        Task task = taskRepository.findByIdAndParentId(taskId, parentId)
                 .orElseThrow(() -> new TaskNotExistsException("Task with id=" + taskId + " doesn't exist."));
         mapTask(taskData, task);
         taskRepository.save(task);
     }
 
     @Override
-    public void deleteTask(long taskId) {
-        taskRepository.deleteById(taskId);
+    public void deleteTask(Principal parentPrincipal, long taskId) {
+        long parentId = loggedUserService.getParent(parentPrincipal).getId();
+        Task task = taskRepository.findByIdAndParentId(taskId, parentId)
+                .orElseThrow(() -> new TaskNotExistsException("Task with id=" + taskId + " doesn't exist."));
+        taskRepository.delete(task);
     }
 
     private void mapTask(TaskData taskData, Task task) {

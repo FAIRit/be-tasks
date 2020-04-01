@@ -8,5 +8,5 @@ import java.util.List;
 @Repository
 public interface HistoryRepository extends JpaRepository<History, Long> {
 
-    List<History> findByChildIdOrderByModificationDateDesc(long childId);
+    List<History> findByChildIdAndChildParentIdOrderByModificationDateDesc(long childId, long parentId);
 }
