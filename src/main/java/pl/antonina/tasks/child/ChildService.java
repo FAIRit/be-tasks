@@ -14,7 +14,7 @@ public interface ChildService {
     List<ChildView> getChildrenByParent(Principal parentPrincipal);
 
     @Transactional
-    void addChild(Principal parentPrincipal, ChildData childData);
+    long addChild(Principal parentPrincipal, ChildData childData);
 
     @Transactional
     void updateChild(Principal parentPrincipal, long childId, ChildData childData);

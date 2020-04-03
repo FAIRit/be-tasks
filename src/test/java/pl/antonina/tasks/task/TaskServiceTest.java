@@ -73,6 +73,9 @@ class TaskServiceTest {
         Principal parentPrincipal = mock(Principal.class);
         final Parent parent = new Parent();
         when(loggedUserService.getParent(parentPrincipal)).thenReturn(parent);
+        Task task = new Task();
+        task.setId(456L);
+        when(taskRepository.save(any())).thenReturn(task);
 
         taskService.addTask(parentPrincipal, taskData);
 

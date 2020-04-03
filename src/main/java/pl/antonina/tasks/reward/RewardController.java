@@ -1,9 +1,13 @@
 package pl.antonina.tasks.reward;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.net.URI;
 import java.security.Principal;
 import java.util.List;
 
@@ -28,8 +32,16 @@ public class RewardController {
     }
 
     @PostMapping
-    public void addReward(@ApiIgnore Principal childPrincipal, @Validated @RequestBody RewardData rewardData) {
-        rewardService.addReward(childPrincipal, rewardData);
+    public ResponseEntity<Void> addReward(@ApiIgnore Principal childPrincipal, @Validated @RequestBody RewardData rewardData) {
+        long rewardId = rewardService.addReward(childPrincipal, rewardData);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{rewardId}")
+                .buildAndExpand(rewardId)
+                .toUri();
+
+        return ResponseEntity.created(location).build();
     }
 
     @PutMapping("{rewardId}/bought")

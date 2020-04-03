@@ -96,6 +96,9 @@ class RewardServiceTest {
         Principal childPrincipal = mock(Principal.class);
         final Child child = new Child();
         when(loggedUserService.getChild(childPrincipal)).thenReturn(child);
+        Reward reward = new Reward();
+        reward.setId(456L);
+        when(rewardRepository.save(any())).thenReturn(reward);
 
         rewardService.addReward(childPrincipal, rewardData);
 

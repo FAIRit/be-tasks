@@ -104,6 +104,9 @@ class ChildServiceTest {
         final User user = new User();
         user.setType(userType);
         when(userService.addUser(userType, userData)).thenReturn(user);
+        Child child = new Child();
+        child.setId(456L);
+        when(childRepository.save(any())).thenReturn(child);
 
         childService.addChild(parentPrincipal, childData);
 

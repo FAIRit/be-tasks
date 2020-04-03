@@ -11,7 +11,7 @@ public interface RewardService {
 
     List<Reward> getRewardsByChildAndNotBought(Principal parentPrincipal, long childId);
 
-    void addReward(Principal childPrincipal, RewardData rewardData);
+    long addReward(Principal childPrincipal, RewardData rewardData);
 
     void deleteReward(Principal childPrincipal, long rewardId);
 

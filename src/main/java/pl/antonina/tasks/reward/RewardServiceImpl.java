@@ -44,14 +44,14 @@ public class RewardServiceImpl implements RewardService {
     }
 
     @Override
-    public void addReward(Principal childPrincipal, RewardData rewardData) {
+    public long addReward(Principal childPrincipal, RewardData rewardData) {
         Child child = loggedUserService.getChild(childPrincipal);
         Reward reward = new Reward();
         reward.setChild(child);
         reward.setName(rewardData.getName());
         reward.setUrl(rewardData.getUrl());
         reward.setPoints(rewardData.getPoints());
-        rewardRepository.save(reward);
+        return rewardRepository.save(reward).getId();
     }
 
     @Override

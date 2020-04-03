@@ -9,7 +9,7 @@ public interface TaskService {
 
     List<TaskView> getTasksByParent(Principal parentPrincipal);
 
-    void addTask(Principal parentPrincipal, TaskData taskData);
+    long addTask(Principal parentPrincipal, TaskData taskData);
 
     void updateTask(Principal parentPrincipal, long taskId, TaskData taskData);
 

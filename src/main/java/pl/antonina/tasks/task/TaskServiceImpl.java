@@ -39,12 +39,12 @@ class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void addTask(Principal parentPrincipal, TaskData taskData) {
+    public long addTask(Principal parentPrincipal, TaskData taskData) {
         Parent parent = loggedUserService.getParent(parentPrincipal);
         Task task = new Task();
         mapTask(taskData, task);
         task.setParent(parent);
-        taskRepository.save(task);
+        return taskRepository.save(task).getId();
     }
 
     @Override

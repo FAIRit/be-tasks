@@ -13,7 +13,7 @@ public interface TaskToDoService {
 
     List<TaskToDoView> getTasksToDoByChildAndNotApproved(Principal parentPrincipal, long childId);
 
-    void addTaskToDo(Principal parentPrincipal, long childId, long taskId, TaskToDoData taskToDoData);
+    long addTaskToDo(Principal parentPrincipal, long childId, long taskId, TaskToDoData taskToDoData);
 
     void updateTaskToDo(Principal parentPrincipal, long taskToDoId, TaskToDoData taskToDoData);
 

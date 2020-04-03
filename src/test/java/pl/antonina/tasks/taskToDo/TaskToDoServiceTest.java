@@ -144,6 +144,9 @@ class TaskToDoServiceTest {
         when(loggedUserService.getParent(parentPrincipal)).thenReturn(parent);
         when(childRepository.findByIdAndParentId(childId, parentId)).thenReturn(Optional.of(child));
         when(taskRepository.findByIdAndParentId(taskId, parentId)).thenReturn(Optional.of(task));
+        TaskToDo taskToDo = new TaskToDo();
+        taskToDo.setId(456L);
+        when(taskToDoRepository.save(any())).thenReturn(taskToDo);
 
         taskToDoService.addTaskToDo(parentPrincipal, childId, taskId, taskToDoData);
 
