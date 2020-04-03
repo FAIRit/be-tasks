@@ -7,20 +7,20 @@ import java.util.List;
 
 public interface TaskToDoService {
 
-    TaskToDoView getTaskToDoById(long taskToDoId);
+    TaskToDoView getTaskToDoById(Principal parentPrincipal, long taskToDoId);
 
     List<TaskToDoView> getTasksToDoByChildAndNotApproved(Principal childPrincipal);
 
-    List<TaskToDoView> getTasksToDoByChildAndNotApproved(long childId);
+    List<TaskToDoView> getTasksToDoByChildAndNotApproved(Principal parentPrincipal, long childId);
 
-    void addTaskToDo(long childId, long taskId, TaskToDoData taskToDoData);
+    void addTaskToDo(Principal parentPrincipal, long childId, long taskId, TaskToDoData taskToDoData);
 
-    void updateTaskToDo(long taskToDoId, TaskToDoData taskToDoData);
+    void updateTaskToDo(Principal parentPrincipal, long taskToDoId, TaskToDoData taskToDoData);
 
-    void deleteTaskToDo(long taskToDoId);
+    void deleteTaskToDo(Principal parentPrincipal, long taskToDoId);
 
-    void setDone(long taskToDoId);
+    void setDone(Principal childPrincipal, long taskToDoId);
 
     @Transactional
-    void setApproved(long taskToDoId);
+    void setApproved(Principal parentPrincipal, long taskToDoId);
 }

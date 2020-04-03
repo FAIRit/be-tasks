@@ -3,7 +3,6 @@ package pl.antonina.tasks.taskToDo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.antonina.tasks.cart.HistoryService;
-import pl.antonina.tasks.cart.HistoryServiceImpl;
 import pl.antonina.tasks.child.Child;
 import pl.antonina.tasks.child.ChildNotExistsException;
 import pl.antonina.tasks.child.ChildRepository;
@@ -42,8 +41,9 @@ class TaskToDoServiceImpl implements TaskToDoService {
     }
 
     @Override
-    public TaskToDoView getTaskToDoById(long taskToDoId) {
-        TaskToDo taskToDo = taskToDoRepository.findById(taskToDoId)
+    public TaskToDoView getTaskToDoById(Principal parentPrincipal, long taskToDoId) {
+        long parentId = loggedUserService.getParent(parentPrincipal).getId();
+        TaskToDo taskToDo = taskToDoRepository.findByIdAndTaskParentId(taskToDoId, parentId)
                 .orElseThrow(() -> new TaskToDoNotExistsException("TaskToDo with id=" + taskToDoId + " doesn't exist."));
         return taskToDoMapper.mapTaskToDoView(taskToDo);
     }
@@ -51,25 +51,29 @@ class TaskToDoServiceImpl implements TaskToDoService {
     @Override
     public List<TaskToDoView> getTasksToDoByChildAndNotApproved(Principal childPrincipal) {
         long childId = loggedUserService.getChild(childPrincipal).getId();
-        List<TaskToDo> taskToDoList = taskToDoRepository.findByChildIdAndApprovedOrderByExpectedDateDesc(childId, false);
+        List<TaskToDo> taskToDoList = taskToDoRepository
+                .findByChildIdAndApprovedOrderByExpectedDateDesc(childId, false);
         return taskToDoList.stream()
                 .map(taskToDoMapper::mapTaskToDoView)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<TaskToDoView> getTasksToDoByChildAndNotApproved(long childId) {
-        List<TaskToDo> taskToDoList = taskToDoRepository.findByChildIdAndApprovedOrderByExpectedDateDesc(childId, false);
+    public List<TaskToDoView> getTasksToDoByChildAndNotApproved(Principal parentPrincipal, long childId) {
+        long parentId = loggedUserService.getParent(parentPrincipal).getId();
+        List<TaskToDo> taskToDoList = taskToDoRepository
+                .findByChildIdAndTaskParentIdAndApprovedOrderByExpectedDateDesc(childId, parentId, false);
         return taskToDoList.stream()
                 .map(taskToDoMapper::mapTaskToDoView)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public void addTaskToDo(long childId, long taskId, TaskToDoData taskToDoData) {
-        Child child = childRepository.findById(childId)
+    public void addTaskToDo(Principal parentPrincipal, long childId, long taskId, TaskToDoData taskToDoData) {
+        long parentId = loggedUserService.getParent(parentPrincipal).getId();
+        Child child = childRepository.findByIdAndParentId(childId, parentId)
                 .orElseThrow(() -> new ChildNotExistsException("Child with id=" + childId + " doesn't exist."));
-        Task task = taskRepository.findById(taskId)
+        Task task = taskRepository.findByIdAndParentId(taskId, parentId)
                 .orElseThrow(() -> new TaskNotExistsException("Task with id=" + taskId + " doesn't exist."));
         TaskToDo taskToDo = new TaskToDo();
         taskToDo.setExpectedDate(taskToDoData.getExpectedDate());
@@ -80,21 +84,26 @@ class TaskToDoServiceImpl implements TaskToDoService {
     }
 
     @Override
-    public void updateTaskToDo(long taskToDoId, TaskToDoData taskToDoData) {
-        TaskToDo taskToDo = taskToDoRepository.findById(taskToDoId)
+    public void updateTaskToDo(Principal parentPrincipal, long taskToDoId, TaskToDoData taskToDoData) {
+        long parentId = loggedUserService.getParent(parentPrincipal).getId();
+        TaskToDo taskToDo = taskToDoRepository.findByIdAndTaskParentId(taskToDoId, parentId)
                 .orElseThrow(() -> new TaskToDoNotExistsException("TaskToDo with id=" + taskToDoId + " doesn't exist."));
         taskToDo.setExpectedDate(taskToDoData.getExpectedDate());
         taskToDoRepository.save(taskToDo);
     }
 
     @Override
-    public void deleteTaskToDo(long taskToDoId) {
-        taskToDoRepository.deleteById(taskToDoId);
+    public void deleteTaskToDo(Principal parentPrincipal, long taskToDoId) {
+        long parentId = loggedUserService.getParent(parentPrincipal).getId();
+        TaskToDo taskToDo = taskToDoRepository.findByIdAndTaskParentId(taskToDoId, parentId)
+                .orElseThrow(() -> new TaskToDoNotExistsException("TaskToDo with id=" + taskToDoId + " doesn't exist."));
+        taskToDoRepository.delete(taskToDo);
     }
 
     @Override
-    public void setDone(long taskToDoId) {
-        TaskToDo taskToDo = taskToDoRepository.findById(taskToDoId)
+    public void setDone(Principal childPrincipal, long taskToDoId) {
+        long childId = loggedUserService.getChild(childPrincipal).getId();
+        TaskToDo taskToDo = taskToDoRepository.findByIdAndChildId(taskToDoId, childId)
                 .orElseThrow(() -> new TaskToDoNotExistsException("TaskToDo with id=" + taskToDoId + " doesn't exist."));
         if (!taskToDo.isDone()){
             taskToDo.setFinishDate(Instant.now());
@@ -105,15 +114,16 @@ class TaskToDoServiceImpl implements TaskToDoService {
 
     @Override
     @Transactional
-    public void setApproved(long taskToDoId) {
-        TaskToDo taskToDo = taskToDoRepository.findById(taskToDoId)
+    public void setApproved(Principal parentPrincipal, long taskToDoId) {
+        long parentId = loggedUserService.getParent(parentPrincipal).getId();
+        TaskToDo taskToDo = taskToDoRepository.findByIdAndTaskParentId(taskToDoId, parentId)
                 .orElseThrow(() -> new TaskToDoNotExistsException("TaskToDo with id=" + taskToDoId + " doesn't exist."));
         taskToDo.setApproved(true);
         taskToDoRepository.save(taskToDo);
 
         historyService.addHistory(taskToDo);
 
-        Child child = childRepository.findById(taskToDo.getChild().getId())
+        Child child = childRepository.findByIdAndParentId(taskToDo.getChild().getId(), parentId)
                 .orElseThrow(() -> new ChildNotExistsException("Child with id=" + taskToDo.getChild().getId() + " doesn't exist."));
         Integer newPoints = child.getPoints() + taskToDo.getTask().getPoints();
         child.setPoints(newPoints);

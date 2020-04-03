@@ -4,6 +4,7 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Data
 public class RewardData {
@@ -11,6 +12,6 @@ public class RewardData {
     private String name;
     @NotEmpty
     private String url;
-    @NotEmpty
+    @NotNull
     private Integer points;
 }

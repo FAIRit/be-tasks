@@ -1,5 +1,6 @@
 package pl.antonina.tasks.task;
 
+import org.hibernate.validator.internal.IgnoreForbiddenApisErrors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -18,8 +19,8 @@ public class TaskController {
     }
 
     @GetMapping("/{taskId}")
-    public Task getTask(@PathVariable long taskId) {
-        return taskService.getTask(taskId);
+    public Task getTask(@ApiIgnore Principal parentPrincipal, @PathVariable long taskId) {
+        return taskService.getTask(parentPrincipal, taskId);
     }
 
     @GetMapping
@@ -33,12 +34,12 @@ public class TaskController {
     }
 
     @PutMapping("/{taskId}")
-    public void updateTask(@PathVariable long taskId, @Validated @RequestBody TaskData taskData) {
-        taskService.updateTask(taskId, taskData);
+    public void updateTask(@ApiIgnore Principal parentPrincipal, @PathVariable long taskId, @Validated @RequestBody TaskData taskData) {
+        taskService.updateTask(parentPrincipal, taskId, taskData);
     }
 
     @DeleteMapping("/{taskId}")
-    public void deleteTask(@PathVariable long taskId) {
-        taskService.deleteTask(taskId);
+    public void deleteTask(@ApiIgnore Principal parentPrincipal, @PathVariable long taskId) {
+        taskService.deleteTask(parentPrincipal, taskId);
     }
 }

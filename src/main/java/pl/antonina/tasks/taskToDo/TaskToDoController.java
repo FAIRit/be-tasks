@@ -18,42 +18,42 @@ public class TaskToDoController {
     }
 
     @GetMapping("/{taskToDoId}")
-    public TaskToDoView getTaskToDoById(@PathVariable long taskToDoId) {
-        return taskToDoService.getTaskToDoById(taskToDoId);
+    public TaskToDoView getTaskToDoById(@ApiIgnore Principal parentPrincipal, @PathVariable long taskToDoId) {
+        return taskToDoService.getTaskToDoById(parentPrincipal, taskToDoId);
     }
 
     @GetMapping("/byChild")
-    public List<TaskToDoView> getTasksToDoByChildAndNotApproved(@ApiIgnore Principal principal) {
-        return taskToDoService.getTasksToDoByChildAndNotApproved(principal);
+    public List<TaskToDoView> getTasksToDoByChildAndNotApproved(@ApiIgnore Principal childPrincipal) {
+        return taskToDoService.getTasksToDoByChildAndNotApproved(childPrincipal);
     }
 
     @GetMapping
-    public List<TaskToDoView> getTasksToDoByChildAndNotApproved(@RequestParam long childId) {
-        return taskToDoService.getTasksToDoByChildAndNotApproved(childId);
+    public List<TaskToDoView> getTasksToDoByChildAndNotApproved(@ApiIgnore Principal parentPrincipal, @RequestParam long childId) {
+        return taskToDoService.getTasksToDoByChildAndNotApproved(parentPrincipal, childId);
     }
 
     @PostMapping
-    public void addTaskToDo(@RequestParam long childId, @RequestParam long taskId, @Validated @RequestBody TaskToDoData taskToDoData) {
-        taskToDoService.addTaskToDo(childId, taskId, taskToDoData);
+    public void addTaskToDo(@ApiIgnore Principal parentPrincipal, @RequestParam long childId, @RequestParam long taskId, @Validated @RequestBody TaskToDoData taskToDoData) {
+        taskToDoService.addTaskToDo(parentPrincipal, childId, taskId, taskToDoData);
     }
 
     @PutMapping("/{taskToDoId}")
-    public void updateTaskToDo(@PathVariable long taskToDoId, @Validated @RequestBody TaskToDoData taskToDoData) {
-        taskToDoService.updateTaskToDo(taskToDoId, taskToDoData);
+    public void updateTaskToDo(@ApiIgnore Principal parentPrincipal, @PathVariable long taskToDoId, @Validated @RequestBody TaskToDoData taskToDoData) {
+        taskToDoService.updateTaskToDo(parentPrincipal, taskToDoId, taskToDoData);
     }
 
     @DeleteMapping("/{taskToDoId}")
-    public void deleteTaskToDo(@PathVariable long taskToDoId) {
-        taskToDoService.deleteTaskToDo(taskToDoId);
+    public void deleteTaskToDo(@ApiIgnore Principal parentPrincipal, @PathVariable long taskToDoId) {
+        taskToDoService.deleteTaskToDo(parentPrincipal, taskToDoId);
     }
 
     @PutMapping("/{taskToDoId}/done")
-    public void setDone(@PathVariable long taskToDoId) {
-        taskToDoService.setDone(taskToDoId);
+    public void setDone(@ApiIgnore Principal childPrincipal, @PathVariable long taskToDoId) {
+        taskToDoService.setDone(childPrincipal, taskToDoId);
     }
 
     @PutMapping("/{taskToDoId}/approved")
-    public void setApproved(@PathVariable long taskToDoId) {
-        taskToDoService.setApproved(taskToDoId);
+    public void setApproved(@ApiIgnore Principal parentPrincipal, @PathVariable long taskToDoId) {
+        taskToDoService.setApproved(parentPrincipal, taskToDoId);
     }
 }

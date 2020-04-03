@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ChildService {
 
-    ChildView getChild(long childId);
+    ChildView getChild(Principal parentPrincipal, long childId);
 
     ChildView getChild(Principal childPrincipal);
 
@@ -17,8 +17,8 @@ public interface ChildService {
     void addChild(Principal parentPrincipal, ChildData childData);
 
     @Transactional
-    void updateChild(long childId, ChildData childData);
+    void updateChild(Principal parentPrincipal, long childId, ChildData childData);
 
     @Transactional
-    void deleteChild(long childId);
+    void deleteChild(Principal parentPrincipal, long childId);
 }
