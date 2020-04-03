@@ -1,6 +1,7 @@
 package pl.antonina.tasks.taskToDo;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -41,6 +42,7 @@ public class TaskToDoController {
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
+                .replaceQuery("")
                 .path("/{taskToDoId}")
                 .buildAndExpand(taskToDoId)
                 .toUri();
