@@ -2,17 +2,17 @@ package pl.antonina.tasks.taskToDo;
 
 import java.time.LocalDate;
 
-public class TaskToDoCreator {
+class TaskToDoCreator {
 
     static TaskToDoData createTaskToDoData() {
         TaskToDoData taskToDoData = new TaskToDoData();
-        taskToDoData.setExpectedDate(LocalDate.of(2020, 03, 03));
+        taskToDoData.setExpectedDate(LocalDate.of(2020, 3, 3));
         return taskToDoData;
     }
 
     static TaskToDoData createNewTaskToDo() {
         TaskToDoData taskToDoData = new TaskToDoData();
-        taskToDoData.setExpectedDate(LocalDate.of(2019, 02, 02));
+        taskToDoData.setExpectedDate(LocalDate.of(2019, 2, 2));
         return taskToDoData;
     }
 }

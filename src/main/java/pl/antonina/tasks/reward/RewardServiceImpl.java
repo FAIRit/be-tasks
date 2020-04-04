@@ -84,7 +84,7 @@ public class RewardServiceImpl implements RewardService {
         Integer newPoints = childPoints - reward.getPoints();
 
         if (newPoints < 0) {
-            throw new IllegalArgumentException("Child has not enough points=" + childPoints + " to buy this reward=" + reward.getPoints() + ".");
+            throw new NotEnoughPointsException("Child has not enough points=" + childPoints + " to buy this reward=" + reward.getPoints() + ".");
         }
 
         reward.setBought(true);

@@ -55,19 +55,8 @@ class TaskToDoIntegrationTest {
 
     @Test
     void getTasksToDoByChild() {
-        ResponseEntity<Void> responseFirstPostEntity = taskToDoTestSupport.postTaskToDo(parentUserData, childView, taskView, taskToDoData);
-        assertThat(responseFirstPostEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        String locationFirst = responseFirstPostEntity.getHeaders().getLocation().toString();
-        ResponseEntity<TaskToDoView> responseFirstGetEntity = taskToDoTestSupport.getTaskToDo(parentUserData, locationFirst);
-        assertThat(responseFirstGetEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        TaskToDoView taskToDoViewFirst = responseFirstGetEntity.getBody();
-
-        ResponseEntity<Void> responseSecondPostEntity = taskToDoTestSupport.postTaskToDo(parentUserData, childView, taskView, newTaskToDoData);
-        assertThat(responseSecondPostEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        String locationSecond = responseSecondPostEntity.getHeaders().getLocation().toString();
-        ResponseEntity<TaskToDoView> responseSecondGetEntity = taskToDoTestSupport.getTaskToDo(parentUserData, locationSecond);
-        assertThat(responseSecondGetEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        TaskToDoView taskToDoViewSecond = responseSecondGetEntity.getBody();
+        TaskToDoView taskToDoViewFirst = postAndGetTaskToDo(taskToDoData);
+        TaskToDoView taskToDoViewSecond = postAndGetTaskToDo(newTaskToDoData);
 
         ResponseEntity<List<TaskToDoView>> responseGetListEntity = taskToDoTestSupport.getTasksToDoByChild(childUserData);
         assertThat(responseGetListEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -78,23 +67,8 @@ class TaskToDoIntegrationTest {
 
     @Test
     void getTasksToDoByParent() {
-        ResponseEntity<Void> responseFirstPostEntity = taskToDoTestSupport.postTaskToDo(parentUserData, childView, taskView, taskToDoData);
-        assertThat(responseFirstPostEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-
-        String locationFirst = responseFirstPostEntity.getHeaders().getLocation().toString();
-        ResponseEntity<TaskToDoView> responseFirstGetEntity = taskToDoTestSupport.getTaskToDo(parentUserData, locationFirst);
-        assertThat(responseFirstGetEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-        TaskToDoView taskToDoViewFirst = responseFirstGetEntity.getBody();
-
-        ResponseEntity<Void> responseSecondPostEntity = taskToDoTestSupport.postTaskToDo(parentUserData, childView, taskView, newTaskToDoData);
-        assertThat(responseSecondPostEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-
-        String locationSecond = responseSecondPostEntity.getHeaders().getLocation().toString();
-        ResponseEntity<TaskToDoView> responseSecondGetEntity = taskToDoTestSupport.getTaskToDo(parentUserData, locationSecond);
-        assertThat(responseSecondGetEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-        TaskToDoView taskToDoViewSecond = responseSecondGetEntity.getBody();
+        TaskToDoView taskToDoViewFirst = postAndGetTaskToDo(taskToDoData);
+        TaskToDoView taskToDoViewSecond = postAndGetTaskToDo(newTaskToDoData);
 
         ResponseEntity<List<TaskToDoView>> responseGetListEntity = taskToDoTestSupport.getTasksToDoByParent(parentUserData, childView);
         assertThat(responseGetListEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -105,31 +79,26 @@ class TaskToDoIntegrationTest {
 
     @Test
     void addTaskToDo() {
-        ResponseEntity<Void> responsePostEntity = taskToDoTestSupport.postTaskToDo(parentUserData, childView, taskView, taskToDoData);
-        assertThat(responsePostEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-
-        String location = responsePostEntity.getHeaders().getLocation().toString();
-        assertTaskToDo(taskToDoData, location);
+        TaskToDoView taskToDoView = postAndGetTaskToDo(taskToDoData);
+        assertTaskToDo(taskToDoData, taskToDoView);
     }
 
     @Test
     void updateTaskToDo() {
-        ResponseEntity<Void> responsePostEntity = taskToDoTestSupport.postTaskToDo(parentUserData, childView, taskView, taskToDoData);
-        assertThat(responsePostEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        String location = postAndGetLocation(taskToDoData);
 
-        String location = responsePostEntity.getHeaders().getLocation().toString();
         ResponseEntity<Void> responsePutEntity = taskToDoTestSupport.putTaskToDo(parentUserData, location, newTaskToDoData);
         assertThat(responsePutEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        assertTaskToDo(newTaskToDoData, location);
+        TaskToDoView taskToDoView = getTaskToDoView(location);
+
+        assertTaskToDo(newTaskToDoData, taskToDoView);
     }
 
     @Test
     void deleteTaskToDo() {
-        ResponseEntity<Void> responsePostEntity = taskToDoTestSupport.postTaskToDo(parentUserData, childView, taskView, taskToDoData);
-        assertThat(responsePostEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        String location = postAndGetLocation(taskToDoData);
 
-        String location = responsePostEntity.getHeaders().getLocation().toString();
         ResponseEntity<Void> responseDeleteEntity = taskToDoTestSupport.deleteTaskToDo(parentUserData, location);
         assertThat(responseDeleteEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
@@ -139,34 +108,47 @@ class TaskToDoIntegrationTest {
 
     @Test
     void setDoneTaskToDo() {
-        ResponseEntity<Void> responsePostEntity = taskToDoTestSupport.postTaskToDo(parentUserData, childView, taskView, taskToDoData);
-        assertThat(responsePostEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        String location = postAndGetLocation(taskToDoData);
 
-        String location = responsePostEntity.getHeaders().getLocation().toString();
         ResponseEntity<Void> responseSetDoneEntity = taskToDoTestSupport.setDoneTaskToDo(childUserData, location);
         assertThat(responseSetDoneEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        assertTaskToDo(taskToDoData, location);
+        TaskToDoView taskToDoView = getTaskToDoView(location);
+
+        assertThat(taskToDoView.isDone()).isTrue();
+        assertThat(taskToDoView.getFinishDate()).isNotNull();
     }
 
     @Test
     void setApprovedTaskToDo() {
-        ResponseEntity<Void> responsePostEntity = taskToDoTestSupport.postTaskToDo(parentUserData, childView, taskView, taskToDoData);
-        assertThat(responsePostEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        String location = postAndGetLocation(taskToDoData);
 
-        String location = responsePostEntity.getHeaders().getLocation().toString();
         ResponseEntity<Void> responseSetApproved = taskToDoTestSupport.setApprovedTaskToDo(parentUserData, location);
         assertThat(responseSetApproved.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-        assertTaskToDo(taskToDoData, location);
     }
 
-    private void assertTaskToDo(TaskToDoData taskToDoData, String location) {
+    private void assertTaskToDo(TaskToDoData taskToDoData, TaskToDoView taskToDoView) {
+        assertThat(taskToDoView.getExpectedDate()).isEqualTo(taskToDoData.getExpectedDate());
+        assertThat(taskToDoView.getTaskView()).isEqualTo(taskView);
+        assertThat(taskToDoView.getStartDate()).isNotNull();
+        assertThat(taskToDoView.getFinishDate()).isNull();
+        assertThat(taskToDoView.isDone()).isFalse();
+    }
+
+    private String postAndGetLocation(TaskToDoData taskToDoData) {
+        ResponseEntity<Void> responsePostEntity = taskToDoTestSupport.postTaskToDo(parentUserData, childView, taskView, taskToDoData);
+        assertThat(responsePostEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        return responsePostEntity.getHeaders().getLocation().toString();
+    }
+
+    private TaskToDoView getTaskToDoView(String location) {
         ResponseEntity<TaskToDoView> responseGetEntity = taskToDoTestSupport.getTaskToDo(parentUserData, location);
         assertThat(responseGetEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        return responseGetEntity.getBody();
+    }
 
-        TaskToDoView actualTaskToDo = responseGetEntity.getBody();
-
-        assertThat(actualTaskToDo.getExpectedDate()).isEqualTo(taskToDoData.getExpectedDate());
+    private TaskToDoView postAndGetTaskToDo(TaskToDoData taskToDoData) {
+        String location = postAndGetLocation(taskToDoData);
+        return getTaskToDoView(location);
     }
 }

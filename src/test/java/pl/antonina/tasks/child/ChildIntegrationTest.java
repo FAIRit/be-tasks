@@ -42,62 +42,55 @@ class ChildIntegrationTest {
 
     @Test
     void addChild() {
-        ResponseEntity<Void> responsePostEntity = childTestSupport.postChild(parentUserData, childData);
-        assertThat(responsePostEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        String location = postAndGetLocation(childData);
+        ChildView childView = getChildView(location);
+        UserView userView = getUserView(childData.getUserData());
 
-        assertChild(childData);
-        assertUser(childData.getUserData());
+        assertUser(childData.getUserData(), userView);
+        assertChild(childData, childView);
     }
 
     @Test
-    void getChild() {
-        ResponseEntity<Void> responsePostEntity = childTestSupport.postChild(parentUserData, childData);
-        assertThat(responsePostEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-
-        String location = responsePostEntity.getHeaders().getLocation().toString();
+    void getChildByParent() {
+        String location = postAndGetLocation(childData);
         ResponseEntity<ChildView> responseGetEntity = childTestSupport.getChildByParent(parentUserData, location);
         assertThat(responseGetEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         ChildView childView = responseGetEntity.getBody();
-        assertThat(childView.getName()).isEqualTo(childData.getName());
-        assertThat(childView.getBirthDate()).isEqualTo(childData.getBirthDate());
-        assertThat(childView.getGender()).isEqualTo(childData.getGender());
+
+        assertChild(childData, childView);
     }
 
     @Test
     void getChildren() {
-        ResponseEntity<Void> responsePostEntity = childTestSupport.postChild(parentUserData, childData);
-        assertThat(responsePostEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        String firstLocation = postAndGetLocation(childData);
+        ChildView firstChildView = getChildView(firstLocation);
+        String secondLocation = postAndGetLocation(newChildData);
+        ChildView secondChildView = getChildView(secondLocation);
 
         ResponseEntity<List<ChildView>> responseGetEntity = childTestSupport.getChildrenByParent(parentUserData);
         assertThat(responseGetEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-
         List<ChildView> childViewList = responseGetEntity.getBody();
-        ChildView childView = childViewList.get(0);
-        assertThat(childView.getName()).isEqualTo(childData.getName());
-        assertThat(childView.getBirthDate()).isEqualTo(childData.getBirthDate());
-        assertThat(childView.getGender()).isEqualTo(childData.getGender());
+
+        assertThat(childViewList).containsExactlyInAnyOrder(firstChildView, secondChildView);
     }
 
     @Test
     void updateChild() {
-        ResponseEntity<Void> responsePostEntity = childTestSupport.postChild(parentUserData, childData);
-        assertThat(responsePostEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-
-        String location = responsePostEntity.getHeaders().getLocation().toString();
+        String location = postAndGetLocation(childData);
         ResponseEntity<Void> responsePutEntity = childTestSupport.putChild(parentUserData, location, newChildData);
         assertThat(responsePutEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        assertUser(newChildData.getUserData());
-        assertChild(newChildData);
+        UserView userView = getUserView(newChildData.getUserData());
+        ChildView childView = getChildView(location);
+
+        assertUser(newChildData.getUserData(), userView);
+        assertChild(newChildData, childView);
     }
 
     @Test
     void deleteChild() {
-        ResponseEntity<Void> responsePostEntity = childTestSupport.postChild(parentUserData, childData);
-        assertThat(responsePostEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-
-        String location = responsePostEntity.getHeaders().getLocation().toString();
+        String location = postAndGetLocation(childData);
         ResponseEntity<Void> responseDeleteEntity = childTestSupport.deleteChild(parentUserData, location);
         assertThat(responseDeleteEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
@@ -105,24 +98,34 @@ class ChildIntegrationTest {
         assertThat(responseGetDeletedEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
-    private void assertUser(UserData userData) {
-        ResponseEntity<UserView> responseGetEntity = childTestSupport.getUser(userData);
-        assertThat(responseGetEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-        UserView actualUser = responseGetEntity.getBody();
-        assertThat(actualUser.getType()).isEqualTo(UserType.CHILD);
-        assertThat(actualUser.getEmail()).isEqualTo(userData.getEmail());
+    private String postAndGetLocation(ChildData childData) {
+        ResponseEntity<Void> responsePostEntity = childTestSupport.postChild(parentUserData, childData);
+        assertThat(responsePostEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        return responsePostEntity.getHeaders().getLocation().toString();
     }
 
-    private void assertChild(ChildData childData) {
-        ResponseEntity<ChildView> responseGetEntity = childTestSupport.getChildByChild(childData.getUserData());
+    private ChildView getChildView(String location) {
+        ResponseEntity<ChildView> responseGetEntity = childTestSupport.getChildByParent(parentUserData, location);
         assertThat(responseGetEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        return responseGetEntity.getBody();
+    }
 
-        ChildView actualChild = responseGetEntity.getBody();
-        assertThat(actualChild.getPoints()).isEqualTo(0);
-        assertThat(actualChild.getBirthDate()).isEqualTo(childData.getBirthDate());
-        assertThat(actualChild.getGender()).isEqualTo(childData.getGender());
-        assertThat(actualChild.getName()).isEqualTo(childData.getName());
-        assertThat(actualChild.getEmail()).isEqualTo(childData.getUserData().getEmail());
+    private UserView getUserView(UserData userData) {
+        ResponseEntity<UserView> responseGetEntity = childTestSupport.getUser(userData);
+        assertThat(responseGetEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        return responseGetEntity.getBody();
+    }
+
+    private void assertUser(UserData userData, UserView userView) {
+        assertThat(userView.getType()).isEqualTo(UserType.CHILD);
+        assertThat(userView.getEmail()).isEqualTo(userData.getEmail());
+    }
+
+    private void assertChild(ChildData childData, ChildView childView) {
+        assertThat(childView.getPoints()).isEqualTo(0);
+        assertThat(childView.getBirthDate()).isEqualTo(childData.getBirthDate());
+        assertThat(childView.getGender()).isEqualTo(childData.getGender());
+        assertThat(childView.getName()).isEqualTo(childData.getName());
+        assertThat(childView.getEmail()).isEqualTo(childData.getUserData().getEmail());
     }
 }

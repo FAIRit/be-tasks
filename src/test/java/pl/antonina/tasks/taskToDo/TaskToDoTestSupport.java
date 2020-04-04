@@ -11,12 +11,12 @@ import pl.antonina.tasks.user.UserData;
 
 import java.util.List;
 
-class TaskToDoTestSupport {
+public class TaskToDoTestSupport {
 
     private final TestRestTemplate restTemplate;
     private final int serverPort;
 
-    TaskToDoTestSupport(TestRestTemplate restTemplate, int serverPort) {
+    public TaskToDoTestSupport(TestRestTemplate restTemplate, int serverPort) {
         this.restTemplate = restTemplate;
         this.serverPort = serverPort;
     }
@@ -24,14 +24,14 @@ class TaskToDoTestSupport {
     ResponseEntity<List<TaskToDoView>> getTasksToDoByChild(UserData childUserData) {
         return restTemplate
                 .withBasicAuth(childUserData.getEmail(), childUserData.getPassword())
-                .exchange(getTasksToDoUrl() + "/byChild", HttpMethod.GET, HttpEntity.EMPTY, new ParameterizedTypeReference<List<TaskToDoView>>() {
+                .exchange(getTasksToDoUrl() + "/byChild", HttpMethod.GET, HttpEntity.EMPTY, new ParameterizedTypeReference<>() {
                 });
     }
 
     ResponseEntity<List<TaskToDoView>> getTasksToDoByParent(UserData parentUserData, ChildView childView) {
         return restTemplate
                 .withBasicAuth(parentUserData.getEmail(), parentUserData.getPassword())
-                .exchange(getTasksToDoUrl() + "?childId=" + childView.getId(), HttpMethod.GET, HttpEntity.EMPTY, new ParameterizedTypeReference<List<TaskToDoView>>() {
+                .exchange(getTasksToDoUrl() + "?childId=" + childView.getId(), HttpMethod.GET, HttpEntity.EMPTY, new ParameterizedTypeReference<>() {
                 });
     }
 
@@ -74,5 +74,12 @@ class TaskToDoTestSupport {
 
     private String getTasksToDoUrl() {
         return "http://localhost:" + serverPort + "/api/tasksToDo";
+    }
+
+    public void createAndApprovedTaskToDo(UserData parentUserData, ChildView childView, TaskView taskView) {
+        TaskToDoData taskToDoData = TaskToDoCreator.createTaskToDoData();
+        ResponseEntity<Void> responsePostEntity = postTaskToDo(parentUserData, childView, taskView, taskToDoData);
+        String location = responsePostEntity.getHeaders().getLocation().toString();
+        ResponseEntity<Void> responseSetApprovedEntity = setApprovedTaskToDo(parentUserData, location);
     }
 }
