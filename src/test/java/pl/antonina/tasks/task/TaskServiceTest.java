@@ -38,6 +38,25 @@ class TaskServiceTest {
     }
 
     @Test
+    void getTask(){
+        long parentId = 123;
+        Parent parent = new Parent();
+        parent.setId(parentId);
+        Task task = new Task();
+        long taskId = 456;
+        TaskView taskView = new TaskView();
+
+        Principal parentPrincipal = mock(Principal.class);
+        when(loggedUserService.getParent(parentPrincipal)).thenReturn(parent);
+        when(taskRepository.findByIdAndParentId(taskId, parentId)).thenReturn(Optional.of(task));
+        when (taskMapper.mapTaskView(task)).thenReturn(taskView);
+
+        TaskView taskViewResult = taskService.getTask(parentPrincipal, taskId);
+
+        assertThat(taskViewResult).isEqualTo(taskView);
+    }
+
+    @Test
     void getTasksByParent() {
         long parentId = 123;
         Parent parent = new Parent();

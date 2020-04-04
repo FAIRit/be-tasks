@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface TaskService {
 
-    Task getTask(Principal parentPrincipal, long taskId);
+    TaskView getTask(Principal parentPrincipal, long taskId);
 
     List<TaskView> getTasksByParent(Principal parentPrincipal);
 

@@ -1,10 +1,13 @@
 package pl.antonina.tasks.parent;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.Principal;
+
+import static pl.antonina.tasks.util.LocationUtils.getLocation;
 
 @RestController
 @RequestMapping("/api/parents")
@@ -22,8 +25,9 @@ public class ParentController {
     }
 
     @PostMapping
-    public void addParent(@Validated @RequestBody ParentData parentData) {
-        parentService.addParent(parentData);
+    public ResponseEntity<Void> addParent(@Validated @RequestBody ParentData parentData) {
+        long parentId = parentService.addParent(parentData);
+        return ResponseEntity.created(getLocation(parentId)).build();
     }
 
     @PutMapping

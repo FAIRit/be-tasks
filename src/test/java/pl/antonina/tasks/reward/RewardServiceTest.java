@@ -31,6 +31,8 @@ class RewardServiceTest {
     private ChildRepository childRepository;
     @Mock
     private HistoryService historyService;
+    @Mock
+    private RewardMapper rewardMapper;
 
     private RewardService rewardService;
 
@@ -42,7 +44,7 @@ class RewardServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        rewardService = new RewardServiceImpl(rewardRepository, loggedUserService, childRepository, historyService);
+        rewardService = new RewardServiceImpl(rewardRepository, loggedUserService, childRepository, historyService, rewardMapper);
     }
 
     @Test
@@ -50,22 +52,30 @@ class RewardServiceTest {
         Reward reward1 = new Reward();
         Reward reward2 = new Reward();
         final List<Reward> rewardList = List.of(reward1, reward2);
+        RewardView rewardView1 = new RewardView();
+        RewardView rewardView2 = new RewardView();
+        final List<RewardView> rewardViewList = List.of(rewardView1, rewardView2);
 
         Principal childPrincipal = mock(Principal.class);
         Child child = new Child();
         when(loggedUserService.getChild(childPrincipal)).thenReturn(child);
         when(rewardRepository.findByBoughtAndChild(false, child)).thenReturn(rewardList);
+        when(rewardMapper.mapRewardView(reward1)).thenReturn(rewardView1);
+        when(rewardMapper.mapRewardView(reward2)).thenReturn(rewardView2);
 
-        List<Reward> rewardListResult = rewardService.getRewardsByChildAndNotBought(childPrincipal);
+        List<RewardView> rewardListResult = rewardService.getRewardsByChildAndNotBought(childPrincipal);
 
-        assertThat(rewardListResult).isEqualTo(rewardList);
+        assertThat(rewardListResult).isEqualTo(rewardViewList);
     }
 
     @Test
-    void testGetRewardsByChildAndNotBoughtByChildId() {
+    void getRewardsByChildAndNotBoughtByChildId() {
         Reward reward1 = new Reward();
         Reward reward2 = new Reward();
         final List<Reward> rewardList = List.of(reward1, reward2);
+        RewardView rewardView1 = new RewardView();
+        RewardView rewardView2 = new RewardView();
+        final List<RewardView> rewardViewList = List.of(rewardView1, rewardView2);
         long childId = 123;
         Child child = new Child();
 
@@ -76,10 +86,12 @@ class RewardServiceTest {
         when(loggedUserService.getParent(parentPrincipal)).thenReturn(parent);
         when(childRepository.findByIdAndParentId(childId, parentId)).thenReturn(Optional.of(child));
         when(rewardRepository.findByBoughtAndChildAndChildParentId(false, child, parentId)).thenReturn(rewardList);
+        when(rewardMapper.mapRewardView(reward1)).thenReturn(rewardView1);
+        when(rewardMapper.mapRewardView(reward2)).thenReturn(rewardView2);
 
-        List<Reward> rewardListResult = rewardService.getRewardsByChildAndNotBought(parentPrincipal, childId);
+        List<RewardView> rewardListResult = rewardService.getRewardsByChildAndNotBought(parentPrincipal, childId);
 
-        assertThat(rewardListResult).isEqualTo(rewardList);
+        assertThat(rewardListResult).isEqualTo(rewardViewList);
     }
 
     @Test

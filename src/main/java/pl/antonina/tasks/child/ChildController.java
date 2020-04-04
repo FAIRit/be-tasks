@@ -3,12 +3,12 @@ package pl.antonina.tasks.child;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import springfox.documentation.annotations.ApiIgnore;
 
-import java.net.URI;
 import java.security.Principal;
 import java.util.List;
+
+import static pl.antonina.tasks.util.LocationUtils.getLocation;
 
 @RestController
 @RequestMapping("/api/children")
@@ -38,13 +38,7 @@ public class ChildController {
     @PostMapping
     public ResponseEntity<Void> addChild(@ApiIgnore Principal parentPrincipal, @Validated @RequestBody ChildData childData) {
         long childId = childService.addChild(parentPrincipal, childData);
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{childId}")
-                .buildAndExpand(childId)
-                .toUri();
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(getLocation(childId)).build();
     }
 
     @PutMapping("/{childId}")

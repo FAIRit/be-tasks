@@ -3,13 +3,12 @@ package pl.antonina.tasks.reward;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 import springfox.documentation.annotations.ApiIgnore;
 
-import java.net.URI;
 import java.security.Principal;
 import java.util.List;
+
+import static pl.antonina.tasks.util.LocationUtils.getLocation;
 
 @RestController
 @RequestMapping("/api/rewards")
@@ -22,35 +21,28 @@ public class RewardController {
     }
 
     @GetMapping("/byChild")
-    public List<Reward> getRewardsByChildAndNotBought(@ApiIgnore Principal childPrincipal) {
+    public List<RewardView> getRewardsByChildAndNotBought(@ApiIgnore Principal childPrincipal) {
         return rewardService.getRewardsByChildAndNotBought(childPrincipal);
     }
 
     @GetMapping
-    public List<Reward> getRewardsByChildAndNotBought(@ApiIgnore Principal parentPrincipal, @RequestParam long childId) {
+    public List<RewardView> getRewardsByChildAndNotBought(@ApiIgnore Principal parentPrincipal, @RequestParam long childId) {
         return rewardService.getRewardsByChildAndNotBought(parentPrincipal, childId);
     }
 
     @PostMapping
     public ResponseEntity<Void> addReward(@ApiIgnore Principal childPrincipal, @Validated @RequestBody RewardData rewardData) {
         long rewardId = rewardService.addReward(childPrincipal, rewardData);
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{rewardId}")
-                .buildAndExpand(rewardId)
-                .toUri();
-
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(getLocation(rewardId)).build();
     }
 
     @PutMapping("{rewardId}/bought")
-    public void setBought(@ApiIgnore Principal parentPrincipal, @PathVariable long rewardId){
+    public void setBought(@ApiIgnore Principal parentPrincipal, @PathVariable long rewardId) {
         rewardService.setBought(parentPrincipal, rewardId);
     }
 
     @DeleteMapping("{rewardId}")
-    public void deleteReward(@ApiIgnore Principal childPrincipal, @PathVariable long rewardId){
+    public void deleteReward(@ApiIgnore Principal childPrincipal, @PathVariable long rewardId) {
         rewardService.deleteReward(childPrincipal, rewardId);
     }
 }

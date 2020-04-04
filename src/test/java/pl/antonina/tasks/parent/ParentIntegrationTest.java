@@ -37,7 +37,7 @@ class ParentIntegrationTest {
     @Test
     void addParent() {
         ResponseEntity<Void> responsePostEntity = parentTestSupport.postParent(parentData);
-        assertThat(responsePostEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responsePostEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
         assertParent(parentData);
         assertUser(parentData.getUserData());
@@ -46,7 +46,7 @@ class ParentIntegrationTest {
     @Test
     void updateParent() {
         ResponseEntity<Void> responsePostEntity = parentTestSupport.postParent(parentData);
-        assertThat(responsePostEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responsePostEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
         ResponseEntity<Void> responsePutEntity = parentTestSupport.putParent(parentData.getUserData(), newParentData);
         assertThat(responsePutEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -58,7 +58,7 @@ class ParentIntegrationTest {
     @Test
     void deleteParent() {
         ResponseEntity<Void> responseEntity = parentTestSupport.postParent(parentData);
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
         ResponseEntity<Void> responseDeleteEntity = parentTestSupport.deleteParent(parentData.getUserData());
         assertThat(responseDeleteEntity.getStatusCode()).isEqualTo(HttpStatus.OK);

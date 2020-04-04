@@ -1,15 +1,14 @@
 package pl.antonina.tasks.task;
 
-import org.hibernate.validator.internal.IgnoreForbiddenApisErrors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import springfox.documentation.annotations.ApiIgnore;
 
-import java.net.URI;
 import java.security.Principal;
 import java.util.List;
+
+import static pl.antonina.tasks.util.LocationUtils.getLocation;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -22,7 +21,7 @@ public class TaskController {
     }
 
     @GetMapping("/{taskId}")
-    public Task getTask(@ApiIgnore Principal parentPrincipal, @PathVariable long taskId) {
+    public TaskView getTask(@ApiIgnore Principal parentPrincipal, @PathVariable long taskId) {
         return taskService.getTask(parentPrincipal, taskId);
     }
 
@@ -34,13 +33,7 @@ public class TaskController {
     @PostMapping
     public ResponseEntity<Void> addTask(@ApiIgnore Principal parentPrincipal, @Validated @RequestBody TaskData taskData) {
         long taskId = taskService.addTask(parentPrincipal, taskData);
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{taskId}")
-                .buildAndExpand(taskId)
-                .toUri();
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(getLocation(taskId)).build();
     }
 
     @PutMapping("/{taskId}")

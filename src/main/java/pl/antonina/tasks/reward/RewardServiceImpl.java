@@ -10,6 +10,7 @@ import pl.antonina.tasks.security.LoggedUserService;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RewardServiceImpl implements RewardService {
@@ -18,29 +19,40 @@ public class RewardServiceImpl implements RewardService {
     private final LoggedUserService loggedUserService;
     private final ChildRepository childRepository;
     private final HistoryService historyService;
+    private final RewardMapper rewardMapper;
 
     public RewardServiceImpl(RewardRepository rewardRepository,
                              LoggedUserService loggedUserService,
                              ChildRepository childRepository,
-                             HistoryService historyService) {
+                             HistoryService historyService,
+                             RewardMapper rewardMapper) {
         this.rewardRepository = rewardRepository;
         this.loggedUserService = loggedUserService;
         this.childRepository = childRepository;
         this.historyService = historyService;
+        this.rewardMapper = rewardMapper;
     }
 
     @Override
-    public List<Reward> getRewardsByChildAndNotBought(Principal childPrincipal) {
+    public List<RewardView> getRewardsByChildAndNotBought(Principal childPrincipal) {
         Child child = loggedUserService.getChild(childPrincipal);
-        return rewardRepository.findByBoughtAndChild(false, child);
+        List<Reward> rewardList = rewardRepository
+                .findByBoughtAndChild(false, child);
+        return rewardList.stream()
+                .map(rewardMapper::mapRewardView)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Reward> getRewardsByChildAndNotBought(Principal parentPrincipal, long childId) {
+    public List<RewardView> getRewardsByChildAndNotBought(Principal parentPrincipal, long childId) {
         long parentId = loggedUserService.getParent(parentPrincipal).getId();
         Child child = childRepository.findByIdAndParentId(childId, parentId)
                 .orElseThrow(() -> new ChildNotExistsException("Child with id=" + childId + " doesn't exist."));
-        return rewardRepository.findByBoughtAndChildAndChildParentId(false, child, parentId);
+        List<Reward> rewardList = rewardRepository
+                .findByBoughtAndChildAndChildParentId(false, child, parentId);
+        return rewardList.stream()
+                .map(rewardMapper::mapRewardView)
+                .collect(Collectors.toList());
     }
 
     @Override

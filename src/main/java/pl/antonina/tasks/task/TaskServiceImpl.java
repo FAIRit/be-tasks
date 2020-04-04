@@ -24,10 +24,11 @@ class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task getTask(Principal parentPrincipal, long taskId) {
+    public TaskView getTask(Principal parentPrincipal, long taskId) {
         long parentId = loggedUserService.getParent(parentPrincipal).getId();
-        return taskRepository.findByIdAndParentId(taskId, parentId)
+        Task task = taskRepository.findByIdAndParentId(taskId, parentId)
                 .orElseThrow(() -> new TaskNotExistsException("Task with id=" + taskId + " doesn't exist."));
+        return taskMapper.mapTaskView(task);
     }
 
     @Override
