@@ -69,7 +69,7 @@ class TaskToDoServiceImpl implements TaskToDoService {
     }
 
     @Override
-    public void addTaskToDo(Principal parentPrincipal, long childId, long taskId, TaskToDoData taskToDoData) {
+    public long addTaskToDo(Principal parentPrincipal, long childId, long taskId, TaskToDoData taskToDoData) {
         long parentId = loggedUserService.getParent(parentPrincipal).getId();
         Child child = childRepository.findByIdAndParentId(childId, parentId)
                 .orElseThrow(() -> new ChildNotExistsException("Child with id=" + childId + " doesn't exist."));
@@ -80,7 +80,7 @@ class TaskToDoServiceImpl implements TaskToDoService {
         taskToDo.setTask(task);
         taskToDo.setChild(child);
         taskToDo.setStartDate(Instant.now());
-        taskToDoRepository.save(taskToDo);
+        return taskToDoRepository.save(taskToDo).getId();
     }
 
     @Override

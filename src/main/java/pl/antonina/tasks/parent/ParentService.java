@@ -9,7 +9,7 @@ public interface ParentService {
     ParentView getParent(Principal parentPrincipal);
 
     @Transactional
-    void addParent(ParentData parentData);
+    long addParent(ParentData parentData);
 
     @Transactional
     void updateParent(ParentData parentData, Principal parentPrincipal);

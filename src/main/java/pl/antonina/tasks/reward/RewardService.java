@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface RewardService {
 
-    List<Reward> getRewardsByChildAndNotBought(Principal childPrincipal);
+    List<RewardView> getRewardsByChildAndNotBought(Principal childPrincipal);
 
-    List<Reward> getRewardsByChildAndNotBought(Principal parentPrincipal, long childId);
+    List<RewardView> getRewardsByChildAndNotBought(Principal parentPrincipal, long childId);
 
-    void addReward(Principal childPrincipal, RewardData rewardData);
+    long addReward(Principal childPrincipal, RewardData rewardData);
 
     void deleteReward(Principal childPrincipal, long rewardId);
 

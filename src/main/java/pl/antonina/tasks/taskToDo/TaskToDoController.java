@@ -1,11 +1,14 @@
 package pl.antonina.tasks.taskToDo;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.Principal;
 import java.util.List;
+
+import static pl.antonina.tasks.util.LocationUtils.getLocation;
 
 @RestController
 @RequestMapping("/api/tasksToDo")
@@ -33,8 +36,9 @@ public class TaskToDoController {
     }
 
     @PostMapping
-    public void addTaskToDo(@ApiIgnore Principal parentPrincipal, @RequestParam long childId, @RequestParam long taskId, @Validated @RequestBody TaskToDoData taskToDoData) {
-        taskToDoService.addTaskToDo(parentPrincipal, childId, taskId, taskToDoData);
+    public ResponseEntity<Void> addTaskToDo(@ApiIgnore Principal parentPrincipal, @RequestParam long childId, @RequestParam long taskId, @Validated @RequestBody TaskToDoData taskToDoData) {
+        long taskToDoId = taskToDoService.addTaskToDo(parentPrincipal, childId, taskId, taskToDoData);
+        return ResponseEntity.created(getLocation(taskToDoId)).build();
     }
 
     @PutMapping("/{taskToDoId}")

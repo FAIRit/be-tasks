@@ -59,7 +59,7 @@ class ChildServiceImpl implements ChildService {
 
     @Override
     @Transactional
-    public void addChild(Principal parentPrincipal, ChildData childData) {
+    public long addChild(Principal parentPrincipal, ChildData childData) {
         Parent parent = loggedUserService.getParent(parentPrincipal);
         User user = userService.addUser(UserType.CHILD, childData.getUserData());
         Child child = new Child();
@@ -69,7 +69,7 @@ class ChildServiceImpl implements ChildService {
         child.setParent(parent);
         child.setPoints(0);
         child.setUser(user);
-        childRepository.save(child);
+        return childRepository.save(child).getId();
     }
 
     @Override

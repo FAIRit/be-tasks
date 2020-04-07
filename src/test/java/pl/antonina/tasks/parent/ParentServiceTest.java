@@ -66,6 +66,9 @@ class ParentServiceTest {
         UserData userData = new UserData();
         parentData.setUserData(userData);
         when(userService.addUser(userType, userData)).thenReturn(user);
+        Parent parent = new Parent();
+        parent.setId(456L);
+        when(parentRepository.save(any())).thenReturn(parent);
 
         parentService.addParent(parentData);
 

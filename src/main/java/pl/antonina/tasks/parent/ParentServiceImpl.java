@@ -35,13 +35,13 @@ class ParentServiceImpl implements ParentService {
 
     @Override
     @Transactional
-    public void addParent(ParentData parentData) {
+    public long addParent(ParentData parentData) {
         Parent parent = new Parent();
         User user = userService.addUser(UserType.PARENT, parentData.getUserData());
         parent.setName(parentData.getName());
         parent.setGender(parentData.getGender());
         parent.setUser(user);
-        parentRepository.save(parent);
+        return parentRepository.save(parent).getId();
     }
 
     @Override
