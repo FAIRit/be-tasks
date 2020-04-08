@@ -1,4 +1,4 @@
-package pl.antonina.tasks.cart;
+package pl.antonina.tasks.history;
 
 import org.springframework.stereotype.Component;
 import pl.antonina.tasks.child.ChildMapper;

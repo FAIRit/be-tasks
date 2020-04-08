@@ -1,4 +1,4 @@
-package pl.antonina.tasks.cart;
+package pl.antonina.tasks.history;
 
 import pl.antonina.tasks.reward.Reward;
 import pl.antonina.tasks.taskToDo.TaskToDo;

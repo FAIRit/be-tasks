@@ -7,7 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.antonina.tasks.cart.HistoryService;
+import pl.antonina.tasks.history.HistoryService;
 import pl.antonina.tasks.child.Child;
 import pl.antonina.tasks.child.ChildRepository;
 import pl.antonina.tasks.parent.Parent;

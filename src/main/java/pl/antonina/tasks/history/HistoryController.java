@@ -1,4 +1,4 @@
-package pl.antonina.tasks.cart;
+package pl.antonina.tasks.history;
 
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
