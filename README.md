@@ -15,21 +15,10 @@
 
 ## User stories
 Application helps parents motivate child to get involved in chores.
+
 There are two actors in the app: parent and child.
-* Parent can:
-- [x] modify an account (CRUD)
-- [x] modify child account (CRUD)
-- [x] view children information
-- [x] view tasks
-- [x] modify a task (CRUD)
-- [x] add task to child
-- [x] set done to task to do (allocate points for child)
-- [x] buy present (remove points from child)
-- [x] view transactions
-* Child can:
-- [x] view actual tasks
-- [x] set done to task
-- [x] choose preferred present (present list from Allegro API)
+
+![Use Cases](uml/UserCasesDrawio.png)
 
 ## Technologies
 * JAVA 11
@@ -50,3 +39,13 @@ There are two actors in the app: parent and child.
 
 ## Setup:
 Needed: Java, Gradle.
+
+To run the App You need to build and run project with gradle wrapper:
+```
+$ ./gradlew bootRun
+```
+OR
+```
+$ ./gradlew build
+$ java -jar build/libs/tasks-0.0.1-SNAPSHOT.jar
+```
