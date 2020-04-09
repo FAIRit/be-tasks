@@ -38,8 +38,6 @@ There are two actors in the app: parent and child.
 * GitHub Actions
 
 ## Setup:
-Needed: Java, Gradle.
-
 To run the App You need to build and run project with gradle wrapper:
 ```
 $ ./gradlew bootRun
