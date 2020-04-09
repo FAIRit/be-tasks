@@ -1,4 +1,4 @@
-package pl.antonina.tasks.cart;
+package pl.antonina.tasks.history;
 
 import lombok.Data;
 import pl.antonina.tasks.child.ChildView;

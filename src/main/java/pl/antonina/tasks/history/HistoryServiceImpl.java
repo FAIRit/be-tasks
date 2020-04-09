@@ -1,4 +1,4 @@
-package pl.antonina.tasks.cart;
+package pl.antonina.tasks.history;
 
 import org.springframework.stereotype.Service;
 import pl.antonina.tasks.reward.Reward;

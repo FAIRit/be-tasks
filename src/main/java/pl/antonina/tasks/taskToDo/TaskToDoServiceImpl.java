@@ -2,7 +2,7 @@ package pl.antonina.tasks.taskToDo;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.antonina.tasks.cart.HistoryService;
+import pl.antonina.tasks.history.HistoryService;
 import pl.antonina.tasks.child.Child;
 import pl.antonina.tasks.child.ChildNotExistsException;
 import pl.antonina.tasks.child.ChildRepository;
